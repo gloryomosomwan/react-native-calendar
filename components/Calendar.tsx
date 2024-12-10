@@ -4,9 +4,9 @@ import * as dateFns from 'date-fns'
 
 import Day from './Day'
 
-function getWeeks() {
-  const numDaysInMonth = dateFns.getDaysInMonth(new Date())
-  let firstDay = dateFns.startOfMonth(new Date())
+function getWeeks(selectedDay: Date, setSelectedDay: (date: Date) => void) {
+  const numDaysInMonth = dateFns.getDaysInMonth(selectedDay)
+  let firstDay = dateFns.startOfMonth(selectedDay)
   let dates = []
   let currentDay = firstDay
   for (let i = 0; i < numDaysInMonth; i++) {
@@ -14,10 +14,8 @@ function getWeeks() {
     currentDay = dateFns.addDays(currentDay, 1)
   }
   dates = padDatesArray(dates)
-  let daysArray = createDays(dates)
-
+  let daysArray = createDays(dates, selectedDay, setSelectedDay)
   let weeks = createWeeks(daysArray)
-  console.log(weeks)
   return weeks
 }
 
@@ -34,10 +32,10 @@ function createWeeks(daysArray: React.ReactNode[]) {
   return weeks
 }
 
-function createDays(dates: Date[]) {
+function createDays(dates: Date[], selectedDay: Date, setSelectedDay: (date: Date) => void) {
   let days: JSX.Element[] = []
   dates.map((date) => {
-    days.push(<Day key={date.toDateString()} date={date} />)
+    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} setSelectedDay={setSelectedDay} />)
   })
   return days
 }
@@ -65,12 +63,12 @@ function padDatesArray(dates: Date[]) {
   return dates
 }
 
-getWeeks()
-
 export default function Calendar() {
   let daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-  let [currentMonth, setCurrentMonth] = useState(null)
-  let weeks = getWeeks()
+  // let [currentMonth, setCurrentMonth] = useState(null)
+  // let [currentDay, setCurrentDay]
+  let [selectedDay, setSelectedDay] = useState(new Date())
+  let weeks = getWeeks(selectedDay, setSelectedDay)
 
   return (
     <View style={styles.container}>

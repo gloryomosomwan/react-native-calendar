@@ -1,17 +1,25 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, Pressable } from 'react-native'
 import React from 'react'
 import * as dateFns from 'date-fns'
 
 type DayProps = {
   date: Date;
+  selectedDay: Date;
+  setSelectedDay: (date: Date) => void
 }
 
-export default function Day({ date }: DayProps) {
+export default function Day({ date, selectedDay, setSelectedDay }: DayProps) {
+  const onPress = () => {
+    setSelectedDay(date)
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={[dateFns.isSameMonth(date, new Date()) ? styles.activeText : styles.inactiveText, dateFns.isSameDay(date, new Date()) && styles.selectedDay]}>{date.getDate()}</Text>
-    </View>
+    <Pressable onPress={onPress}>
+      <View style={styles.container}>
+        {dateFns.isSameDay(date, selectedDay) && <View style={styles.selectedDayCircle} />}
+        <Text style={[dateFns.isSameMonth(date, selectedDay) ? styles.activeText : styles.inactiveText, dateFns.isSameDay(date, selectedDay) && styles.selectedDay]}>{date.getDate()}</Text>
+      </View>
+    </Pressable>
   )
 }
 
@@ -23,18 +31,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  selectedDay: {
-    backgroundColor: 'powderblue',
-    borderRadius: 50,
-    padding: 10
-  },
+  selectedDay: {},
   activeText: {
     textAlign: 'center',
     fontWeight: '700',
+    width: 20,
   },
   inactiveText: {
     textAlign: 'center',
     fontWeight: '700',
-    color: 'grey'
-  }
+    color: 'grey',
+  },
+  selectedDayCircle: {
+    position: 'absolute',
+    backgroundColor: 'powderblue',
+    zIndex: -1,
+    width: 34,
+    height: 34,
+    borderRadius: 100
+  },
 })
