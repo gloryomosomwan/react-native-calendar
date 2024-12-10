@@ -34,12 +34,12 @@ const styles = StyleSheet.create({
   selectedDay: {},
   activeText: {
     textAlign: 'center',
-    fontWeight: '700',
+    fontWeight: '400',
     width: 20,
   },
   inactiveText: {
     textAlign: 'center',
-    fontWeight: '700',
+    fontWeight: '400',
     color: 'grey',
   },
   selectedDayCircle: {

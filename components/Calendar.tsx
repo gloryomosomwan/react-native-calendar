@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, Pressable, Button } from 'react-native'
 import React, { useState } from 'react'
 import * as dateFns from 'date-fns'
 
@@ -45,15 +45,15 @@ function padDatesArray(dates: Date[]) {
 
   // Get day of week of first day
 
-  // let firstDay = dates[0]
-  // let dayOfFirstDay = dateFns.getDay(dates[0])
-  // let i = dayOfFirstDay
-  // let currentDay = firstDay
-  // while (i > 0) {
-  //   currentDay = dateFns.subDays(currentDay, 1)
-  //   dates.unshift(currentDay)
-  //   i--
-  // }
+  let firstDay = dates[0]
+  let dayOfFirstDay = dateFns.getDay(dates[0])
+  let i = dayOfFirstDay
+  let currentDay = firstDay
+  while (i > 0) {
+    currentDay = dateFns.subDays(currentDay, 1)
+    dates.unshift(currentDay)
+    i--
+  }
   // console.log(dates)
   let lastDay = dates[dates.length - 1]
   while (dates.length < 42) {
@@ -70,10 +70,24 @@ export default function Calendar() {
   let [selectedDay, setSelectedDay] = useState(new Date())
   let weeks = getWeeks(selectedDay, setSelectedDay)
 
+  const prevMonth = () => {
+    let firstDayOfMonth = dateFns.startOfMonth(selectedDay)
+    let lastDayOfPrevMonth = dateFns.addDays(firstDayOfMonth, -1)
+    setSelectedDay(lastDayOfPrevMonth)
+  }
+
+  const nextMonth = () => {
+    let lastDayOfMonth = dateFns.lastDayOfMonth(selectedDay)
+    let firstDayOfNextMonth = dateFns.addDays(lastDayOfMonth, 1)
+    setSelectedDay(firstDayOfNextMonth)
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.month}>December 2024</Text>
+        <Text style={styles.month}>{selectedDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
+        <Button onPress={nextMonth} title="Next"></Button>
+        <Button onPress={prevMonth} title="Previ"></Button>
         <View style={styles.weekdayNames}>
           {daysOfWeek.map((day) => (
             <Text key={day} style={styles.dayName}>{day}</Text>
