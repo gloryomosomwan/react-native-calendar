@@ -73,7 +73,8 @@ export default function Calendar() {
   const prevMonth = () => {
     let firstDayOfMonth = dateFns.startOfMonth(selectedDay)
     let lastDayOfPrevMonth = dateFns.addDays(firstDayOfMonth, -1)
-    setSelectedDay(lastDayOfPrevMonth)
+    let firstDayOfPrevMonth = dateFns.startOfMonth(lastDayOfPrevMonth)
+    setSelectedDay(firstDayOfPrevMonth)
   }
 
   const nextMonth = () => {
