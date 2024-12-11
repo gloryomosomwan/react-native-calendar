@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View, Pressable, Button } from 'react-native'
 import React, { useState } from 'react'
-// import * as dateFns from 'date-fns'
 import { startOfMonth, addDays, lastDayOfMonth, subDays, getDay, getDaysInMonth } from 'date-fns'
 
 import Day from './Day'
@@ -42,10 +41,6 @@ function createDays(dates: Date[], selectedDay: Date, setSelectedDay: (date: Dat
 }
 
 function padDatesArray(dates: Date[]) {
-  // If Day of week is 2 (Tueday) add the last two days from previous month, if day of week is 3 (wed) add last three days from previous month
-
-  // Get day of week of first day
-
   let firstDay = dates[0]
   let dayOfFirstDay = getDay(dates[0])
   let i = dayOfFirstDay
@@ -55,7 +50,6 @@ function padDatesArray(dates: Date[]) {
     dates.unshift(currentDay)
     i--
   }
-  // console.log(dates)
   let lastDay = dates[dates.length - 1]
   while (dates.length < 42) {
     lastDay = addDays(lastDay, 1)
@@ -66,8 +60,6 @@ function padDatesArray(dates: Date[]) {
 
 export default function Calendar() {
   let daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-  // let [currentMonth, setCurrentMonth] = useState(null)
-  // let [currentDay, setCurrentDay]
   let [selectedDay, setSelectedDay] = useState(new Date())
   let weeks = getWeeks(selectedDay, setSelectedDay)
 

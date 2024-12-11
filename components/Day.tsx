@@ -17,7 +17,7 @@ export default function Day({ date, selectedDay, setSelectedDay }: DayProps) {
     <Pressable onPress={onPress}>
       <View style={styles.container}>
         {isSameDay(date, selectedDay) && <View style={styles.selectedDayCircle} />}
-        <Text style={[isSameMonth(date, selectedDay) ? styles.activeText : styles.inactiveText, isSameDay(date, selectedDay) && styles.selectedDay]}>{date.getDate()}</Text>
+        <Text style={[styles.text, !isSameMonth(date, selectedDay) && styles.notInCurrentMonth]}>{date.getDate()}</Text>
       </View>
     </Pressable>
   )
@@ -31,15 +31,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  selectedDay: {},
-  activeText: {
+  text: {
     textAlign: 'center',
     fontWeight: '400',
-    width: 20,
   },
-  inactiveText: {
-    textAlign: 'center',
-    fontWeight: '400',
+  notInCurrentMonth: {
     color: 'grey',
   },
   selectedDayCircle: {
