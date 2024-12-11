@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Pressable, Dimensions } from 'react-native'
 import React from 'react'
 import { isSameMonth, isSameDay } from 'date-fns'
 
@@ -26,8 +26,7 @@ export default function Day({ date, selectedDay, setSelectedDay }: DayProps) {
 const styles = StyleSheet.create({
   container: {
     height: 47,
-    width: 54,
-    flexGrow: 1,
+    width: Dimensions.get('window').width / 7,
     justifyContent: 'center',
     alignItems: 'center',
   },

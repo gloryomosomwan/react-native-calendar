@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, Pressable, Button } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native'
 import React, { useState } from 'react'
 import { startOfMonth, addDays, lastDayOfMonth, subDays, getDay, getDaysInMonth } from 'date-fns'
 
@@ -58,9 +58,13 @@ function padDatesArray(dates: Date[]) {
   return dates
 }
 
-export default function Calendar() {
+type CalendarProps = {
+  initialDay?: Date
+}
+
+export default function Calendar({ initialDay }: CalendarProps) {
   let daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-  let [selectedDay, setSelectedDay] = useState(new Date())
+  let [selectedDay, setSelectedDay] = useState(initialDay ? initialDay : new Date())
   let weeks = getWeeks(selectedDay, setSelectedDay)
 
   const prevMonth = () => {
@@ -80,9 +84,9 @@ export default function Calendar() {
     <SafeAreaView>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Button onPress={prevMonth} title="Prev"></Button>
+          {/* <Button onPress={prevMonth} title="Prev"></Button> */}
           <Text style={styles.month}>{selectedDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
-          <Button onPress={nextMonth} title="Next"></Button>
+          {/* <Button onPress={nextMonth} title="Next"></Button> */}
         </View>
         <View style={styles.weekdayNames}>
           {daysOfWeek.map((day) => (
@@ -118,15 +122,15 @@ const styles = StyleSheet.create({
   },
   dayName: {
     textAlign: 'center',
-    width: 50,
-    flexGrow: 1
+    width: Dimensions.get('window').width / 7,
   },
   week: {
     flexDirection: 'row',
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    // justifyContent: 'space-between'
+    justifyContent: 'center'
   },
   weeks: {},
 })
