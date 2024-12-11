@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native'
 import React from 'react'
-import * as dateFns from 'date-fns'
+import { isSameMonth, isSameDay } from 'date-fns'
 
 type DayProps = {
   date: Date;
@@ -16,8 +16,8 @@ export default function Day({ date, selectedDay, setSelectedDay }: DayProps) {
   return (
     <Pressable onPress={onPress}>
       <View style={styles.container}>
-        {dateFns.isSameDay(date, selectedDay) && <View style={styles.selectedDayCircle} />}
-        <Text style={[dateFns.isSameMonth(date, selectedDay) ? styles.activeText : styles.inactiveText, dateFns.isSameDay(date, selectedDay) && styles.selectedDay]}>{date.getDate()}</Text>
+        {isSameDay(date, selectedDay) && <View style={styles.selectedDayCircle} />}
+        <Text style={[isSameMonth(date, selectedDay) ? styles.activeText : styles.inactiveText, isSameDay(date, selectedDay) && styles.selectedDay]}>{date.getDate()}</Text>
       </View>
     </Pressable>
   )

@@ -1,17 +1,18 @@
 import { StyleSheet, Text, View, Pressable, Button } from 'react-native'
 import React, { useState } from 'react'
-import * as dateFns from 'date-fns'
+// import * as dateFns from 'date-fns'
+import { startOfMonth, addDays, lastDayOfMonth, subDays, getDay, getDaysInMonth } from 'date-fns'
 
 import Day from './Day'
 
 function getWeeks(selectedDay: Date, setSelectedDay: (date: Date) => void) {
-  const numDaysInMonth = dateFns.getDaysInMonth(selectedDay)
-  let firstDay = dateFns.startOfMonth(selectedDay)
+  const numDaysInMonth = getDaysInMonth(selectedDay)
+  let firstDay = startOfMonth(selectedDay)
   let dates = []
   let currentDay = firstDay
   for (let i = 0; i < numDaysInMonth; i++) {
     dates.push(currentDay)
-    currentDay = dateFns.addDays(currentDay, 1)
+    currentDay = addDays(currentDay, 1)
   }
   dates = padDatesArray(dates)
   let daysArray = createDays(dates, selectedDay, setSelectedDay)
@@ -46,18 +47,18 @@ function padDatesArray(dates: Date[]) {
   // Get day of week of first day
 
   let firstDay = dates[0]
-  let dayOfFirstDay = dateFns.getDay(dates[0])
+  let dayOfFirstDay = getDay(dates[0])
   let i = dayOfFirstDay
   let currentDay = firstDay
   while (i > 0) {
-    currentDay = dateFns.subDays(currentDay, 1)
+    currentDay = subDays(currentDay, 1)
     dates.unshift(currentDay)
     i--
   }
   // console.log(dates)
   let lastDay = dates[dates.length - 1]
   while (dates.length < 42) {
-    lastDay = dateFns.addDays(lastDay, 1)
+    lastDay = addDays(lastDay, 1)
     dates.push(lastDay)
   }
   return dates
@@ -71,15 +72,15 @@ export default function Calendar() {
   let weeks = getWeeks(selectedDay, setSelectedDay)
 
   const prevMonth = () => {
-    let firstDayOfMonth = dateFns.startOfMonth(selectedDay)
-    let lastDayOfPrevMonth = dateFns.addDays(firstDayOfMonth, -1)
-    let firstDayOfPrevMonth = dateFns.startOfMonth(lastDayOfPrevMonth)
+    let firstDayOfMonth = startOfMonth(selectedDay)
+    let lastDayOfPrevMonth = addDays(firstDayOfMonth, -1)
+    let firstDayOfPrevMonth = startOfMonth(lastDayOfPrevMonth)
     setSelectedDay(firstDayOfPrevMonth)
   }
 
   const nextMonth = () => {
-    let lastDayOfMonth = dateFns.lastDayOfMonth(selectedDay)
-    let firstDayOfNextMonth = dateFns.addDays(lastDayOfMonth, 1)
+    let lastDayOfCurrentMonth = lastDayOfMonth(selectedDay)
+    let firstDayOfNextMonth = addDays(lastDayOfCurrentMonth, 1)
     setSelectedDay(firstDayOfNextMonth)
   }
 
