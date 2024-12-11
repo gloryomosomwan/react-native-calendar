@@ -79,14 +79,14 @@ export default function Calendar() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <Button onPress={prevMonth} title="Prev"></Button>
         <Text style={styles.month}>{selectedDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
         <Button onPress={nextMonth} title="Next"></Button>
-        <Button onPress={prevMonth} title="Previ"></Button>
-        <View style={styles.weekdayNames}>
-          {daysOfWeek.map((day) => (
-            <Text key={day} style={styles.dayName}>{day}</Text>
-          ))}
-        </View>
+      </View>
+      <View style={styles.weekdayNames}>
+        {daysOfWeek.map((day) => (
+          <Text key={day} style={styles.dayName}>{day}</Text>
+        ))}
       </View>
       <View style={styles.weeks}>
         {weeks.map((week, index) => (
@@ -122,6 +122,9 @@ const styles = StyleSheet.create({
   week: {
     flexDirection: 'row',
   },
-  header: {},
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
   weeks: {},
 })
