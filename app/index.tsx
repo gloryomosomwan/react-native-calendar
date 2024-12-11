@@ -1,5 +1,6 @@
 import { Text, View, StyleSheet } from "react-native";
 import Calendar from "@/components/Calendar";
+import { StatusBar } from 'expo-status-bar';
 
 export default function Index() {
   return (
@@ -14,7 +15,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    height: 0
+    height: 0,
+    backgroundColor: 'white'
   },
   text: {
     fontSize: 16,

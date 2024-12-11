@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable, Button } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Pressable, Button } from 'react-native'
 import React, { useState } from 'react'
 import { startOfMonth, addDays, lastDayOfMonth, subDays, getDay, getDaysInMonth } from 'date-fns'
 
@@ -77,25 +77,27 @@ export default function Calendar() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Button onPress={prevMonth} title="Prev"></Button>
-        <Text style={styles.month}>{selectedDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
-        <Button onPress={nextMonth} title="Next"></Button>
+    <SafeAreaView>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Button onPress={prevMonth} title="Prev"></Button>
+          <Text style={styles.month}>{selectedDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
+          <Button onPress={nextMonth} title="Next"></Button>
+        </View>
+        <View style={styles.weekdayNames}>
+          {daysOfWeek.map((day) => (
+            <Text key={day} style={styles.dayName}>{day}</Text>
+          ))}
+        </View>
+        <View style={styles.weeks}>
+          {weeks.map((week, index) => (
+            <View key={index} style={styles.week}>
+              {week}
+            </View>
+          ))}
+        </View>
       </View>
-      <View style={styles.weekdayNames}>
-        {daysOfWeek.map((day) => (
-          <Text key={day} style={styles.dayName}>{day}</Text>
-        ))}
-      </View>
-      <View style={styles.weeks}>
-        {weeks.map((week, index) => (
-          <View key={index} style={styles.week}>
-            {week}
-          </View>
-        ))}
-      </View>
-    </View>
+    </SafeAreaView>
   )
 }
 
@@ -103,7 +105,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 10,
-    width: '100%'
+    width: '100%',
   },
   month: {
     fontSize: 25,

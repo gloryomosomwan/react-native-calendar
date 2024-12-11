@@ -25,7 +25,7 @@ export default function Day({ date, selectedDay, setSelectedDay }: DayProps) {
 
 const styles = StyleSheet.create({
   container: {
-    height: 48,
+    height: 47,
     width: 54,
     flexGrow: 1,
     justifyContent: 'center',
