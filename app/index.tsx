@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
-import Calendar from "@/components/Calendar";
+import Month from "../components/Month";
 import { addMonths, subMonths } from "date-fns";
 
 const generateUniqueId = () => {
@@ -8,10 +8,11 @@ const generateUniqueId = () => {
 }
 
 export default function Index() {
+  const flatListRef = useRef<FlatList>(null);
   const [data, setData] = useState([
-    { id: '0', selectedDay: subMonths(new Date(), 1) },
-    { id: '1', selectedDay: new Date() },
-    { id: '2', selectedDay: addMonths(new Date(), 1) },
+    { id: generateUniqueId(), selectedDay: subMonths(new Date(), 1) },
+    { id: generateUniqueId(), selectedDay: new Date() },
+    { id: generateUniqueId(), selectedDay: addMonths(new Date(), 1) },
   ])
 
   const fetchPrevious = () => {
@@ -34,11 +35,30 @@ export default function Index() {
     });
   }
 
+  const scrollToPrevious = () => {
+    if (flatListRef.current) {
+      flatListRef?.current?.scrollToIndex({
+        index: 0,
+        animated: true
+      });
+    }
+  };
+
+  const scrollToNext = () => {
+    if (flatListRef.current) {
+      flatListRef?.current?.scrollToIndex({
+        index: 2,
+        animated: true
+      });
+    }
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
+        ref={flatListRef}
         data={data}
-        renderItem={({ item }) => <Calendar initialDay={item.selectedDay} />}
+        renderItem={({ item }) => <Month initialDay={item.selectedDay} />}
         pagingEnabled
         horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -57,6 +77,8 @@ export default function Index() {
           autoscrollToTopThreshold: undefined
         }}
       />
+      <Button title="Previous" onPress={scrollToPrevious} />
+      <Button title="Next" onPress={scrollToNext} />
       <Text>{JSON.stringify(data, null, 2)}</Text>
     </View>
   );

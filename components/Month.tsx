@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native'
 import React, { useState } from 'react'
-import { startOfMonth, addDays, lastDayOfMonth, subDays, getDay, getDaysInMonth } from 'date-fns'
+import { startOfMonth, addDays, subDays, getDay, getDaysInMonth } from 'date-fns'
 
 import Day from './Day'
 
@@ -58,35 +58,20 @@ function padDatesArray(dates: Date[]) {
   return dates
 }
 
-type CalendarProps = {
+type MonthProps = {
   initialDay?: Date
 }
 
-export default function Calendar({ initialDay }: CalendarProps) {
+export default function Month({ initialDay }: MonthProps) {
   let daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   let [selectedDay, setSelectedDay] = useState(initialDay ? initialDay : new Date())
   let weeks = getWeeks(selectedDay, setSelectedDay)
-
-  const prevMonth = () => {
-    let firstDayOfMonth = startOfMonth(selectedDay)
-    let lastDayOfPrevMonth = addDays(firstDayOfMonth, -1)
-    let firstDayOfPrevMonth = startOfMonth(lastDayOfPrevMonth)
-    setSelectedDay(firstDayOfPrevMonth)
-  }
-
-  const nextMonth = () => {
-    let lastDayOfCurrentMonth = lastDayOfMonth(selectedDay)
-    let firstDayOfNextMonth = addDays(lastDayOfCurrentMonth, 1)
-    setSelectedDay(firstDayOfNextMonth)
-  }
 
   return (
     <SafeAreaView>
       <View style={styles.container}>
         <View style={styles.header}>
-          {/* <Button onPress={prevMonth} title="Prev"></Button> */}
           <Text style={styles.month}>{selectedDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
-          {/* <Button onPress={nextMonth} title="Next"></Button> */}
         </View>
         <View style={styles.weekdayNames}>
           {daysOfWeek.map((day) => (
@@ -129,7 +114,6 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    // justifyContent: 'space-between'
     justifyContent: 'center'
   },
   weeks: {},
