@@ -8,12 +8,12 @@ type DayProps = {
   setSelectedDay: (date: Date) => void
   setPreviousSelectedDay: (date: Date) => void
   visibleDate: Date
+  handleScroll: (date: Date) => void
 }
 
-export default function Day({ date, selectedDay, setSelectedDay, setPreviousSelectedDay, visibleDate }: DayProps) {
+export default function Day({ date, selectedDay, setSelectedDay, setPreviousSelectedDay, visibleDate, handleScroll }: DayProps) {
   const onPress = () => {
-    setPreviousSelectedDay(selectedDay)
-    setSelectedDay(date)
+    handleScroll(date)
   }
 
   return (

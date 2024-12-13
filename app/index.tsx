@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
 import Month from "../components/Month";
-import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay } from "date-fns";
+import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, isSameMonth } from "date-fns";
 
 const generateUniqueId = () => {
   return `${Date.now()}-${Math.random()}`
@@ -12,17 +12,17 @@ export default function Index() {
   const [previousSelectedDay, setPreviousSelectedDay] = useState(new Date())
   const [selectedDay, setSelectedDay] = useState(new Date())
   const [visibleDate, setVisibleDate] = useState(new Date())
+
   const [data, setData] = useState([
-    { id: generateUniqueId(), initialDay: subMonths(new Date(), 1) },
+    { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
     { id: generateUniqueId(), initialDay: new Date() },
-    { id: generateUniqueId(), initialDay: addMonths(new Date(), 1) },
+    { id: generateUniqueId(), initialDay: startOfMonth(addMonths(new Date(), 1)) },
   ])
 
   function isInLaterMonth(dateToCheck: Date, referenceDate: Date) {
     // Get the start of the months for both dates
     const monthOfDateToCheck = startOfMonth(dateToCheck);
     const monthOfReferenceDate = startOfMonth(referenceDate);
-
     // Check if the month of dateToCheck is after the month of referenceDate
     return isAfter(monthOfDateToCheck, monthOfReferenceDate);
   }
@@ -31,12 +31,14 @@ export default function Index() {
     // Get the start of the months for both dates
     const monthOfDateToCheck = startOfMonth(dateToCheck);
     const monthOfReferenceDate = startOfMonth(referenceDate);
-
     // Check if the month of dateToCheck is after the month of referenceDate
     return isBefore(monthOfDateToCheck, monthOfReferenceDate);
   }
 
-  useEffect(() => {
+  const handleScroll = (date: Date) => {
+    console.log('handling')
+    setPreviousSelectedDay(selectedDay)
+    setSelectedDay(date)
     if (!isSameDay(selectedDay, previousSelectedDay)) {
       if (isInLaterMonth(selectedDay, previousSelectedDay)) {
         scrollToNext()
@@ -45,14 +47,14 @@ export default function Index() {
         scrollToPrevious()
       }
     }
-  }, [selectedDay])
+  }
 
   useEffect(() => {
     // console.log('render')
   })
 
   const fetchPrevious = () => {
-    const newDay = subMonths(data[0].initialDay, 1);
+    const newDay = startOfMonth(subMonths(data[0].initialDay, 1));
     setData(prevData => {
       const newData = [...prevData];
       newData.unshift({ id: generateUniqueId(), initialDay: newDay });
@@ -62,7 +64,7 @@ export default function Index() {
   }
 
   const fetchNext = () => {
-    const newDay = addMonths(data[data.length - 1].initialDay, 1)
+    const newDay = startOfMonth(addMonths(data[data.length - 1].initialDay, 1))
     setData(prevData => {
       const newData = [...prevData];
       newData.push({ id: generateUniqueId(), initialDay: newDay });
@@ -90,8 +92,8 @@ export default function Index() {
   };
 
   const viewabilityConfig = {
-    itemVisiblePercentThreshold: 50, // Percentage of item that needs to be visible
-    minimumViewTime: 40, // Minimum time (ms) an item must be visible to trigger
+    itemVisiblePercentThreshold: 90, // Percentage of item that needs to be visible
+    minimumViewTime: 5, // Minimum time (ms) an item must be visible to trigger
     // waitForInteraction: true // Wait for scroll to stop before checking
   };
 
@@ -100,7 +102,7 @@ export default function Index() {
       <FlatList
         ref={flatListRef}
         data={data}
-        renderItem={({ item }) => <Month initialDay={item.initialDay} selectedDay={selectedDay} setSelectedDay={setSelectedDay} setPreviousSelectedDay={setPreviousSelectedDay} visibleDate={visibleDate} />}
+        renderItem={({ item }) => <Month initialDay={item.initialDay} selectedDay={selectedDay} setSelectedDay={setSelectedDay} setPreviousSelectedDay={setPreviousSelectedDay} visibleDate={visibleDate} handleScroll={handleScroll} />}
         pagingEnabled
         horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -113,7 +115,7 @@ export default function Index() {
           { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
         )}
         initialScrollIndex={1}
-        decelerationRate={'fast'}
+        decelerationRate={'normal'}
         maintainVisibleContentPosition={{
           minIndexForVisible: 1,
           autoscrollToTopThreshold: undefined
@@ -123,11 +125,14 @@ export default function Index() {
           info.viewableItems.forEach(item => {
             console.log('Fully visible item:', item.item.initialDay);
             setVisibleDate(item.item.initialDay)
+            setPreviousSelectedDay(selectedDay)
+            setSelectedDay(item.item.initialDay)
           });
         }}
       />
-      <Text>{JSON.stringify(selectedDay, null, 2)}</Text>
-      <Text>{JSON.stringify(previousSelectedDay, null, 2)}</Text>
+      <Text>selectedDay: {JSON.stringify(selectedDay, null, 2)}</Text>
+      <Text>previousSelectedDay: {JSON.stringify(previousSelectedDay, null, 2)}</Text>
+      <Text>{JSON.stringify(data, null, 2)}</Text>
       <Button title="Previous" onPress={scrollToPrevious} />
       <Button title="Next" onPress={scrollToNext} />
     </View>

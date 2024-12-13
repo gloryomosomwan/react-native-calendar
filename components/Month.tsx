@@ -4,7 +4,7 @@ import { startOfMonth, addDays, subDays, getDay, getDaysInMonth } from 'date-fns
 
 import Day from './Day'
 
-function getWeeks(initialDay: Date, selectedDay: Date, setSelectedDay: (date: Date) => void, setPreviousSelectedDay: (date: Date) => void, visibleDate: Date) {
+function getWeeks(initialDay: Date, selectedDay: Date, setSelectedDay: (date: Date) => void, setPreviousSelectedDay: (date: Date) => void, visibleDate: Date, handleScroll: (date: Date) => void) {
   const numDaysInMonth = getDaysInMonth(initialDay)
   let firstDay = startOfMonth(initialDay)
   let dates = []
@@ -14,7 +14,7 @@ function getWeeks(initialDay: Date, selectedDay: Date, setSelectedDay: (date: Da
     currentDay = addDays(currentDay, 1)
   }
   dates = padDatesArray(dates)
-  let daysArray = createDays(dates, selectedDay, setSelectedDay, setPreviousSelectedDay, visibleDate)
+  let daysArray = createDays(dates, selectedDay, setSelectedDay, setPreviousSelectedDay, visibleDate, handleScroll)
   let weeks = createWeeks(daysArray)
   return weeks
 }
@@ -32,10 +32,10 @@ function createWeeks(daysArray: React.ReactNode[]) {
   return weeks
 }
 
-function createDays(dates: Date[], selectedDay: Date, setSelectedDay: (date: Date) => void, setPreviousSelectedDay: (date: Date) => void, visibleDate: Date) {
+function createDays(dates: Date[], selectedDay: Date, setSelectedDay: (date: Date) => void, setPreviousSelectedDay: (date: Date) => void, visibleDate: Date, handleScroll: (date: Date) => void) {
   let days: JSX.Element[] = []
   dates.map((date) => {
-    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} setSelectedDay={setSelectedDay} setPreviousSelectedDay={setPreviousSelectedDay} visibleDate={visibleDate} />)
+    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} setSelectedDay={setSelectedDay} setPreviousSelectedDay={setPreviousSelectedDay} visibleDate={visibleDate} handleScroll={handleScroll} />)
   })
   return days
 }
@@ -64,11 +64,12 @@ type MonthProps = {
   selectedDay: Date
   setPreviousSelectedDay: (date: Date) => void
   visibleDate: Date
+  handleScroll: (date: Date) => void
 }
 
-export default function Month({ initialDay, selectedDay, setSelectedDay, setPreviousSelectedDay, visibleDate }: MonthProps) {
+export default function Month({ initialDay, selectedDay, setSelectedDay, setPreviousSelectedDay, visibleDate, handleScroll }: MonthProps) {
   let daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-  let weeks = getWeeks(initialDay, selectedDay, setSelectedDay, setPreviousSelectedDay, visibleDate)
+  let weeks = getWeeks(initialDay, selectedDay, setSelectedDay, setPreviousSelectedDay, visibleDate, handleScroll)
 
   return (
     <SafeAreaView>
