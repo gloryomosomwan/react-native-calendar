@@ -23,9 +23,11 @@ export default function Index() {
     setSelectedDay(date)
     if (!isSameDay(date, selectedDay)) {
       if (isInLaterMonth(date, selectedDay)) {
+        data[2].initialDay = date
         scrollToNext()
       }
       else if (isInEarlierMonth(date, selectedDay)) {
+        data[0].initialDay = date
         scrollToPrevious()
       }
     }
