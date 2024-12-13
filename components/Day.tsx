@@ -5,15 +5,14 @@ import { isSameMonth, isSameDay } from 'date-fns'
 type DayProps = {
   date: Date;
   selectedDay: Date;
-  setSelectedDay: (date: Date) => void
-  setPreviousSelectedDay: (date: Date) => void
   visibleDate: Date
-  handleScroll: (date: Date) => void
+  handlePress: (date: Date) => void
 }
 
-export default function Day({ date, selectedDay, setSelectedDay, setPreviousSelectedDay, visibleDate, handleScroll }: DayProps) {
+export default function Day({ date, selectedDay, visibleDate, handlePress }: DayProps) {
+
   const onPress = () => {
-    handleScroll(date)
+    handlePress(date)
   }
 
   return (

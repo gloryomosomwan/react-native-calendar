@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native'
-import React, { useState } from 'react'
+import React from 'react'
 import { startOfMonth, addDays, subDays, getDay, getDaysInMonth } from 'date-fns'
 
 import Day from './Day'
@@ -34,10 +34,10 @@ function padDatesArray(dates: Date[]) {
   return dates
 }
 
-function createDays(dates: Date[], selectedDay: Date, setSelectedDay: (date: Date) => void, setPreviousSelectedDay: (date: Date) => void, visibleDate: Date, handleScroll: (date: Date) => void) {
+function createDays(dates: Date[], selectedDay: Date, visibleDate: Date, handlePress: (date: Date) => void) {
   let days: JSX.Element[] = []
   dates.map((date) => {
-    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} setSelectedDay={setSelectedDay} setPreviousSelectedDay={setPreviousSelectedDay} visibleDate={visibleDate} handleScroll={handleScroll} />)
+    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} visibleDate={visibleDate} handlePress={handlePress} />)
   })
   return days
 }
@@ -57,19 +57,17 @@ function createWeeks(daysArray: React.ReactNode[]) {
 
 type MonthProps = {
   initialDay: Date
-  setSelectedDay: (date: Date) => void
   selectedDay: Date
-  setPreviousSelectedDay: (date: Date) => void
   visibleDate: Date
-  handleScroll: (date: Date) => void
+  handlePress: (date: Date) => void
 }
 
-export default function Month({ initialDay, selectedDay, setSelectedDay, setPreviousSelectedDay, visibleDate, handleScroll }: MonthProps) {
+export default function Month({ initialDay, selectedDay, visibleDate, handlePress }: MonthProps) {
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
   const dates = getDates(initialDay)
   const paddedDates = padDatesArray(dates)
-  const daysArray = createDays(paddedDates, selectedDay, setSelectedDay, setPreviousSelectedDay, visibleDate, handleScroll)
+  const daysArray = createDays(paddedDates, selectedDay, visibleDate, handlePress)
   const weeks = createWeeks(daysArray)
 
   return (
