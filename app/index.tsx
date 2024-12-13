@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
-import Month from "../components/Month";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay } from "date-fns";
+
+import Month from "../components/Month";
 
 const generateUniqueId = () => {
   return `${Date.now()}-${Math.random()}`
@@ -33,16 +34,16 @@ export default function Index() {
     }
   }
 
-  function isInLaterMonth(dateToCheck: Date, referenceDate: Date) {
-    const monthOfDateToCheck = startOfMonth(dateToCheck);
-    const monthOfReferenceDate = startOfMonth(referenceDate);
-    return isAfter(monthOfDateToCheck, monthOfReferenceDate);
-  }
-
   function isInEarlierMonth(dateToCheck: Date, referenceDate: Date) {
     const monthOfDateToCheck = startOfMonth(dateToCheck);
     const monthOfReferenceDate = startOfMonth(referenceDate);
     return isBefore(monthOfDateToCheck, monthOfReferenceDate);
+  }
+
+  function isInLaterMonth(dateToCheck: Date, referenceDate: Date) {
+    const monthOfDateToCheck = startOfMonth(dateToCheck);
+    const monthOfReferenceDate = startOfMonth(referenceDate);
+    return isAfter(monthOfDateToCheck, monthOfReferenceDate);
   }
 
   const fetchPrevious = () => {
