@@ -6,17 +6,20 @@ type DayProps = {
   date: Date;
   selectedDay: Date;
   setSelectedDay: (date: Date) => void
+  setPreviousSelectedDay: (date: Date) => void
+  visibleDate: Date
 }
 
-export default function Day({ date, selectedDay, setSelectedDay }: DayProps) {
+export default function Day({ date, selectedDay, setSelectedDay, setPreviousSelectedDay, visibleDate }: DayProps) {
   const onPress = () => {
+    setPreviousSelectedDay(selectedDay)
     setSelectedDay(date)
   }
 
   return (
     <Pressable onPress={onPress}>
       <View style={styles.container}>
-        {isSameDay(date, selectedDay) && <View style={styles.selectedDayCircle} />}
+        {isSameDay(date, selectedDay) && isSameMonth(date, visibleDate) && <View style={styles.selectedDayCircle} />}
         <Text style={[styles.text, !isSameMonth(date, selectedDay) && styles.notInCurrentMonth]}>{date.getDate()}</Text>
       </View>
     </Pressable>
