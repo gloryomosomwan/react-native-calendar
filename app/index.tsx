@@ -83,6 +83,14 @@ export default function Index() {
     }
   };
 
+  const scrollToToday = () => {
+    setData([
+      { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
+      { id: generateUniqueId(), initialDay: new Date() },
+      { id: generateUniqueId(), initialDay: startOfMonth(addMonths(new Date(), 1)) },
+    ])
+  }
+
   const viewabilityConfig = {
     itemVisiblePercentThreshold: 90, // Percentage of item that needs to be visible
     minimumViewTime: 5, // Minimum time (ms) an item must be visible to trigger
@@ -122,6 +130,7 @@ export default function Index() {
       />
       <Text>selectedDay: {JSON.stringify(selectedDay, null, 2)}</Text>
       <Text>{JSON.stringify(data, null, 2)}</Text>
+      <Button title="Today" onPress={scrollToToday} />
       <Button title="Previous" onPress={scrollToPrevious} />
       <Button title="Next" onPress={scrollToNext} />
     </View>
