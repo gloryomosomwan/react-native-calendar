@@ -18,8 +18,7 @@ export default function Day({ date, selectedDay, firstDayOfMonth, handlePress }:
   return (
     <Pressable onPress={onPress}>
       <View style={styles.container}>
-        {/* {isSameDay(date, selectedDay) && isSameMonth(date, visibleDate) && <View style={styles.selectedDayCircle} />} */}
-        {isSameDay(date, selectedDay) && <View style={styles.selectedDayCircle} />}
+        {isSameDay(date, selectedDay) && isSameMonth(date, firstDayOfMonth) && <View style={styles.selectedDayCircle} />}
         <Text style={[styles.text, !isSameMonth(date, firstDayOfMonth) && styles.notInCurrentMonth]}>{date.getDate()}</Text>
       </View>
     </Pressable>
