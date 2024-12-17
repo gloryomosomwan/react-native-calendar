@@ -11,7 +11,6 @@ const generateUniqueId = () => {
 export default function Index() {
   const flatListRef = useRef<FlatList>(null);
   const [selectedDay, setSelectedDay] = useState(new Date())
-  const [visibleDate, setVisibleDate] = useState(new Date())
 
   const [data, setData] = useState([
     { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
@@ -117,7 +116,6 @@ export default function Index() {
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
             console.log('Fully visible item:', item.item.initialDay);
-            setVisibleDate(item.item.initialDay)
             setSelectedDay(item.item.initialDay)
           });
         }}
