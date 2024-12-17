@@ -34,10 +34,10 @@ function padDatesArray(dates: Date[]) {
   return dates
 }
 
-function createDays(dates: Date[], selectedDay: Date, visibleDate: Date, handlePress: (date: Date) => void) {
+function createDays(dates: Date[], selectedDay: Date, initialDay: Date, handlePress: (date: Date) => void) {
   let days: JSX.Element[] = []
   dates.map((date) => {
-    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} visibleDate={visibleDate} handlePress={handlePress} />)
+    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} firstDayOfMonth={initialDay} handlePress={handlePress} />)
   })
   return days
 }
@@ -58,16 +58,15 @@ function createWeeks(daysArray: React.ReactNode[]) {
 type MonthProps = {
   initialDay: Date
   selectedDay: Date
-  visibleDate: Date
   handlePress: (date: Date) => void
 }
 
-export default function Month({ initialDay, selectedDay, visibleDate, handlePress }: MonthProps) {
+export default function Month({ initialDay, selectedDay, handlePress }: MonthProps) {
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
   const dates = getDates(initialDay)
   const paddedDates = padDatesArray(dates)
-  const daysArray = createDays(paddedDates, selectedDay, visibleDate, handlePress)
+  const daysArray = createDays(paddedDates, selectedDay, initialDay, handlePress)
   const weeks = createWeeks(daysArray)
 
   return (

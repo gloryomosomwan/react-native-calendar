@@ -5,11 +5,11 @@ import { isSameMonth, isSameDay } from 'date-fns'
 type DayProps = {
   date: Date;
   selectedDay: Date;
-  visibleDate: Date
+  firstDayOfMonth: Date;
   handlePress: (date: Date) => void
 }
 
-export default function Day({ date, selectedDay, visibleDate, handlePress }: DayProps) {
+export default function Day({ date, selectedDay, firstDayOfMonth, handlePress }: DayProps) {
 
   const onPress = () => {
     handlePress(date)
@@ -18,8 +18,9 @@ export default function Day({ date, selectedDay, visibleDate, handlePress }: Day
   return (
     <Pressable onPress={onPress}>
       <View style={styles.container}>
-        {isSameDay(date, selectedDay) && isSameMonth(date, visibleDate) && <View style={styles.selectedDayCircle} />}
-        <Text style={[styles.text, !isSameMonth(date, selectedDay) && styles.notInCurrentMonth]}>{date.getDate()}</Text>
+        {/* {isSameDay(date, selectedDay) && isSameMonth(date, visibleDate) && <View style={styles.selectedDayCircle} />} */}
+        {isSameDay(date, selectedDay) && <View style={styles.selectedDayCircle} />}
+        <Text style={[styles.text, !isSameMonth(date, firstDayOfMonth) && styles.notInCurrentMonth]}>{date.getDate()}</Text>
       </View>
     </Pressable>
   )

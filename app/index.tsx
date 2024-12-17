@@ -95,7 +95,7 @@ export default function Index() {
       <FlatList
         ref={flatListRef}
         data={data}
-        renderItem={({ item }) => <Month initialDay={item.initialDay} selectedDay={selectedDay} visibleDate={visibleDate} handlePress={handlePress} />}
+        renderItem={({ item }) => <Month initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} />}
         pagingEnabled
         horizontal={true}
         showsHorizontalScrollIndicator={false}
