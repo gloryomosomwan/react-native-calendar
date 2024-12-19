@@ -1,13 +1,25 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { StatusBar } from "expo-status-bar";
+import { useRef, useCallback } from "react";
 
-import Calendar from "@/components/Calendar";
+// import Calendar from "@/components/Calendar";
+import BottomSheet, { BottomSheetRefProps } from "@/components/BottomSheet";
 
 export default function Index() {
+  const ref = useRef<BottomSheetRefProps>(null)
+  const onPress = useCallback(() => {
+    ref?.current?.scrollTo(-100)
+  }, [])
 
   return (
-    <View style={styles.container}>
-      <Calendar />
-    </View>
+    <GestureHandlerRootView>
+      <View style={styles.container}>
+        <StatusBar style="light" />
+        <TouchableOpacity style={styles.button} />
+        <BottomSheet ref={ref} />
+      </View>
+    </GestureHandlerRootView>
   );
 }
 
@@ -16,11 +28,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    height: 0,
-    backgroundColor: 'white'
+    backgroundColor: '#111'
   },
-  text: {
-    fontSize: 16,
-    color: 'black',
-  },
+  button: {
+    height: 50,
+    borderRadius: 25,
+    aspectRatio: 1,
+    backgroundColor: 'white',
+    opacity: 0.6,
+  }
 });
