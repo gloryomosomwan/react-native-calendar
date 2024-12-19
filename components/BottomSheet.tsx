@@ -31,6 +31,7 @@ const BottomSheet = React.forwardRef<BottomSheetRefProps, BottomSheetProps>(({ }
       translateY.value = event.translationY + context.value.y
       translateY.value = Math.max(translateY.value, MAX_TRANSLATE_Y)
       translateY.value = Math.min(translateY.value, 0)
+      // Set on direct reference to TopSheet's translateY
     })
     .onEnd(() => {
       if (translateY.value > -SCREEN_HEIGHT / 4) {
@@ -43,6 +44,7 @@ const BottomSheet = React.forwardRef<BottomSheetRefProps, BottomSheetProps>(({ }
 
   const rBottomSheetStyle = useAnimatedStyle(() => {
     const borderRadius = interpolate(translateY.value, [MAX_TRANSLATE_Y + 50, MAX_TRANSLATE_Y], [25, 5], Extrapolate.CLAMP)
+    // console.log('style changed')
 
     return {
       borderRadius,

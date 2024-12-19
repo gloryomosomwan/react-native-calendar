@@ -16,7 +16,8 @@ export default function Index() {
     <GestureHandlerRootView>
       <View style={styles.container}>
         <StatusBar style="light" />
-        <TouchableOpacity style={styles.button} />
+        {/* <TouchableOpacity style={styles.button} /> */}
+        <View style={styles.page} />
         <BottomSheet ref={ref} />
       </View>
     </GestureHandlerRootView>
@@ -30,11 +31,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: '#111'
   },
+  page: {
+    backgroundColor: 'grey',
+    flex: 1,
+    width: '100%'
+    // height: 
+  },
   button: {
     height: 50,
     borderRadius: 25,
     aspectRatio: 1,
     backgroundColor: 'white',
     opacity: 0.6,
-  }
+  },
 });
