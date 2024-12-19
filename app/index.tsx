@@ -1,24 +1,26 @@
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Button } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { StatusBar } from "expo-status-bar";
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
+import { useSharedValue } from "react-native-reanimated";
 
-// import Calendar from "@/components/Calendar";
-import BottomSheet, { BottomSheetRefProps } from "@/components/BottomSheet";
+import Calendar from "@/components/Calendar";
+import BottomSheet from "@/components/BottomSheet";
+import TopSheet from "@/components/TopSheet";
 
 export default function Index() {
-  const ref = useRef<BottomSheetRefProps>(null)
-  const onPress = useCallback(() => {
-    ref?.current?.scrollTo(-100)
-  }, [])
+  const bottomSheetTranslationY = useSharedValue(0)
+
+  useEffect(() => {
+    console.log('render')
+  })
 
   return (
     <GestureHandlerRootView>
       <View style={styles.container}>
         <StatusBar style="light" />
-        {/* <TouchableOpacity style={styles.button} /> */}
-        <View style={styles.page} />
-        <BottomSheet ref={ref} />
+        <TopSheet bottomSheetTranslationY={bottomSheetTranslationY} />
+        <BottomSheet translateY={bottomSheetTranslationY} />
       </View>
     </GestureHandlerRootView>
   );
@@ -30,18 +32,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: '#111'
-  },
-  page: {
-    backgroundColor: 'grey',
-    flex: 1,
-    width: '100%'
-    // height: 
-  },
-  button: {
-    height: 50,
-    borderRadius: 25,
-    aspectRatio: 1,
-    backgroundColor: 'white',
-    opacity: 0.6,
   },
 });
