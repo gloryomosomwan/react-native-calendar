@@ -128,11 +128,11 @@ export default function Calendar() {
           });
         }}
       />
-      <Text>selectedDay: {JSON.stringify(selectedDay, null, 2)}</Text>
+      {/* <Text>selectedDay: {JSON.stringify(selectedDay, null, 2)}</Text>
       <Text>{JSON.stringify(data, null, 2)}</Text>
       <Button title="Today" onPress={scrollToToday} />
       <Button title="Previous" onPress={scrollToPrevious} />
-      <Button title="Next" onPress={scrollToNext} />
+      <Button title="Next" onPress={scrollToNext} /> */}
     </View>
   );
 }

@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, Dimensions, Button } from 'react-native'
 import React, { useEffect } from 'react'
 import Animated, { Extrapolate, interpolate, SharedValue, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
+import Calendar from "@/components/Calendar";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
 // const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + 100
@@ -14,12 +15,13 @@ export default function TopSheet({ bottomSheetTranslationY }: TopSheetProps) {
 
   const rTopSheetStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: 1 * bottomSheetTranslationY.value }],
+      transform: [{ translateY: 0.6 * bottomSheetTranslationY.value }],
     }
   })
 
   return (
     <Animated.View style={[styles.topSheetContainer, rTopSheetStyle]} >
+      <Calendar />
     </Animated.View>
   )
 }

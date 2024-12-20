@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   bottomSheetContainer: {
     height: SCREEN_HEIGHT,
     width: '100%',
-    backgroundColor: 'white',
+    backgroundColor: 'powderblue',
     position: 'absolute',
     top: SCREEN_HEIGHT / 2,
     borderRadius: 25,
