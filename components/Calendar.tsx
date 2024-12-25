@@ -181,10 +181,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     paddingTop: 50
   },
-  text: {
-    fontSize: 16,
-    color: 'black',
-  },
   header: {
     position: 'absolute',
     zIndex: 1,
