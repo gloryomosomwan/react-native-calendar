@@ -28,6 +28,7 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
   ])
 
   const selectedDayPosition = useSharedValue(0)
+  const topRowPosition = useSharedValue(0)
 
   const rTopSheetStyle = useAnimatedStyle(() => {
     return {
@@ -35,7 +36,7 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
         translateY: interpolate(
           bottomSheetTranslationY.value,
           [0, MAX_TRANSLATE_Y],
-          [0, -selectedDayPosition.value + 70]
+          [0, -selectedDayPosition.value + topRowPosition.value]
         )
       }],
     }
@@ -133,13 +134,13 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
         </View>
       </View>
       <View style={{ position: 'absolute', zIndex: 2, top: 0, left: 0 }}>
-        <Button title='Log' onPress={() => { console.log(selectedDayPosition.value) }}></Button>
+        <Button title='Log' onPress={() => { console.log(topRowPosition.value) }}></Button>
       </View>
       <Animated.View style={[rTopSheetStyle]}>
         <FlatList
           ref={flatListRef}
           data={data}
-          renderItem={({ item }) => <Month initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} />}
+          renderItem={({ item }) => <Month initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} topRowPosition={topRowPosition} />}
           pagingEnabled
           horizontal={true}
           showsHorizontalScrollIndicator={false}
