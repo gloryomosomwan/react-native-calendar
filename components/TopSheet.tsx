@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Dimensions, Button } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import Animated, { Extrapolate, interpolate, SharedValue, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
 
 import Calendar from "@/components/Calendar";
@@ -12,13 +12,15 @@ type TopSheetProps = {
 }
 
 export default function TopSheet({ bottomSheetTranslationY }: TopSheetProps) {
+  const selectedDayPosition = useSharedValue(0)
+
   const rTopSheetStyle = useAnimatedStyle(() => {
     return {
       transform: [{
         translateY: interpolate(
           bottomSheetTranslationY.value,
           [0, MAX_TRANSLATE_Y],
-          [0, -190]
+          [0, (-selectedDayPosition.value) + 33]
         )
       }],
     }
@@ -26,7 +28,8 @@ export default function TopSheet({ bottomSheetTranslationY }: TopSheetProps) {
 
   return (
     <Animated.View style={[styles.topSheetContainer, rTopSheetStyle]} >
-      <Calendar />
+      {/* <Button title='ref' onPress={() => { console.log(selectedDayPosition.value) }}></Button> */}
+      <Calendar selectedDayPosition={selectedDayPosition} />
     </Animated.View>
   )
 }

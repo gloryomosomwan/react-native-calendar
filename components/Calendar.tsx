@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay } from "date-fns";
+import { SharedValue } from "react-native-reanimated";
 
 import Month from "./Month";
 
@@ -8,7 +9,11 @@ const generateUniqueId = () => {
   return `${Date.now()}-${Math.random()}`
 }
 
-export default function Calendar() {
+type CalendarProps = {
+  selectedDayPosition: SharedValue<number>
+}
+
+export default function Calendar({ selectedDayPosition }: CalendarProps) {
   const flatListRef = useRef<FlatList>(null);
   const [selectedDay, setSelectedDay] = useState(new Date())
 
@@ -102,7 +107,7 @@ export default function Calendar() {
       <FlatList
         ref={flatListRef}
         data={data}
-        renderItem={({ item }) => <Month initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} />}
+        renderItem={({ item }) => <Month initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} />}
         pagingEnabled
         horizontal={true}
         showsHorizontalScrollIndicator={false}

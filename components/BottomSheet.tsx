@@ -23,7 +23,6 @@ export default function BottomSheet({ translateY }: BottomSheetProps) {
       context.value = { y: translateY.value }
     })
     .onUpdate((event) => {
-      console.log(event.translationY)
       translateY.value = event.translationY + context.value.y
       translateY.value = Math.max(translateY.value, MAX_TRANSLATE_Y)
       translateY.value = Math.min(translateY.value, 0)

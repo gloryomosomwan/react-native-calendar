@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Dimensions, Button } from 'react-native'
 import React from 'react'
 import { startOfMonth, addDays, subDays, getDay, getDaysInMonth } from 'date-fns'
+import { SharedValue } from 'react-native-reanimated'
 
 import Day from './Day'
 
@@ -34,10 +35,10 @@ function padDatesArray(dates: Date[]) {
   return dates
 }
 
-function createDays(dates: Date[], selectedDay: Date, initialDay: Date, handlePress: (date: Date) => void) {
+function createDays(dates: Date[], selectedDay: Date, initialDay: Date, handlePress: (date: Date) => void, selectedDayPosition: SharedValue<number>) {
   let days: JSX.Element[] = []
   dates.map((date) => {
-    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} firstDayOfMonth={initialDay} handlePress={handlePress} />)
+    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} firstDayOfMonth={initialDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} />)
   })
   return days
 }
@@ -59,14 +60,15 @@ type MonthProps = {
   initialDay: Date
   selectedDay: Date
   handlePress: (date: Date) => void
+  selectedDayPosition: SharedValue<number>
 }
 
-export default function Month({ initialDay, selectedDay, handlePress }: MonthProps) {
+export default function Month({ initialDay, selectedDay, handlePress, selectedDayPosition }: MonthProps) {
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
   const dates = getDates(initialDay)
   const paddedDates = padDatesArray(dates)
-  const daysArray = createDays(paddedDates, selectedDay, initialDay, handlePress)
+  const daysArray = createDays(paddedDates, selectedDay, initialDay, handlePress, selectedDayPosition)
   const weeks = createWeeks(daysArray)
 
   return (

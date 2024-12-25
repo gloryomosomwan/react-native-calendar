@@ -2,7 +2,6 @@ import { View, StyleSheet, Text, TouchableOpacity, Button, Dimensions, StatusBar
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useRef, useCallback, useEffect } from "react";
 import Animated, { useSharedValue, interpolate, useAnimatedStyle } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import Calendar from "@/components/Calendar";
 import BottomSheet from "@/components/BottomSheet";
@@ -14,10 +13,10 @@ const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + 50
 export default function Index() {
   const animationValue = useSharedValue(0)
 
-  useEffect(() => {
-    console.log(SCREEN_HEIGHT / 2 + 20)
-    console.log(MAX_TRANSLATE_Y)
-  })
+  // useEffect(() => {
+  //   console.log(SCREEN_HEIGHT / 2 + 20)
+  //   console.log(MAX_TRANSLATE_Y)
+  // })
 
   return (
     <GestureHandlerRootView>
