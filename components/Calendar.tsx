@@ -16,6 +16,7 @@ type CalendarProps = {
 export default function Calendar({ selectedDayPosition }: CalendarProps) {
   const flatListRef = useRef<FlatList>(null);
   const [selectedDay, setSelectedDay] = useState(new Date())
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
   const [data, setData] = useState([
     { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
@@ -104,6 +105,14 @@ export default function Calendar({ selectedDayPosition }: CalendarProps) {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.month}>{selectedDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
+      </View>
+      <View style={styles.weekdayNames}>
+        {daysOfWeek.map((day) => (
+          <Text key={day} style={styles.dayName}>{day}</Text>
+        ))}
+      </View>
       <FlatList
         ref={flatListRef}
         data={data}
@@ -152,5 +161,22 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     color: 'black',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'center'
+  },
+  month: {
+    fontSize: 25,
+    textAlign: 'center',
+    marginBottom: 5
+  },
+  weekdayNames: {
+    flexDirection: 'row',
+    width: '100%'
+  },
+  dayName: {
+    textAlign: 'center',
+    width: Dimensions.get('window').width / 7,
   },
 });

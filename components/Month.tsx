@@ -64,8 +64,6 @@ type MonthProps = {
 }
 
 export default function Month({ initialDay, selectedDay, handlePress, selectedDayPosition }: MonthProps) {
-  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-
   const dates = getDates(initialDay)
   const paddedDates = padDatesArray(dates)
   const daysArray = createDays(paddedDates, selectedDay, initialDay, handlePress, selectedDayPosition)
@@ -74,14 +72,6 @@ export default function Month({ initialDay, selectedDay, handlePress, selectedDa
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.month}>{initialDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
-        </View>
-        <View style={styles.weekdayNames}>
-          {daysOfWeek.map((day) => (
-            <Text key={day} style={styles.dayName}>{day}</Text>
-          ))}
-        </View>
         <View style={styles.weeks}>
           {weeks.map((week, index) => (
             <View key={index} style={styles.week}>
@@ -97,28 +87,10 @@ export default function Month({ initialDay, selectedDay, handlePress, selectedDa
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 10,
     width: '100%',
-  },
-  month: {
-    fontSize: 25,
-    textAlign: 'center',
-    marginBottom: 5
-  },
-  weekdayNames: {
-    flexDirection: 'row',
-    width: '100%'
-  },
-  dayName: {
-    textAlign: 'center',
-    width: Dimensions.get('window').width / 7,
   },
   week: {
     flexDirection: 'row',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'center'
   },
   weeks: {},
 })
