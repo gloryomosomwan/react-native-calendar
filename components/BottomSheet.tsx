@@ -4,7 +4,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, { Extrapolate, interpolate, SharedValue, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
-const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + 100
+const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + 50
 
 type BottomSheetProps = {
   translateY: SharedValue<number>
@@ -23,6 +23,7 @@ export default function BottomSheet({ translateY }: BottomSheetProps) {
       context.value = { y: translateY.value }
     })
     .onUpdate((event) => {
+      console.log(event.translationY)
       translateY.value = event.translationY + context.value.y
       translateY.value = Math.max(translateY.value, MAX_TRANSLATE_Y)
       translateY.value = Math.min(translateY.value, 0)
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: 'powderblue',
     position: 'absolute',
-    top: SCREEN_HEIGHT / 2,
+    top: SCREEN_HEIGHT / 2 + 20,
     borderRadius: 25,
   },
   line: {

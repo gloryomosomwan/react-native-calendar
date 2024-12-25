@@ -142,8 +142,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    height: 0,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   text: {
     fontSize: 16,
