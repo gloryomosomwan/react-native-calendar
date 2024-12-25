@@ -6,7 +6,7 @@ import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue } 
 import Month from "./Month";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
-const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + 50
+const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + 80
 
 const generateUniqueId = () => {
   return `${Date.now()}-${Math.random()}`
@@ -35,8 +35,7 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
         translateY: interpolate(
           bottomSheetTranslationY.value,
           [0, MAX_TRANSLATE_Y],
-          // [0, (-selectedDayPosition.value) + 33]
-          [0, -190]
+          [0, -selectedDayPosition.value + 70]
         )
       }],
     }
@@ -132,6 +131,9 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
             <Text key={day} style={styles.dayName}>{day}</Text>
           ))}
         </View>
+      </View>
+      <View style={{ position: 'absolute', zIndex: 2, top: 0, left: 0 }}>
+        <Button title='Log' onPress={() => { console.log(selectedDayPosition.value) }}></Button>
       </View>
       <Animated.View style={[rTopSheetStyle]}>
         <FlatList
