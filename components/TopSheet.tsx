@@ -20,7 +20,8 @@ export default function TopSheet({ bottomSheetTranslationY }: TopSheetProps) {
         translateY: interpolate(
           bottomSheetTranslationY.value,
           [0, MAX_TRANSLATE_Y],
-          [0, (-selectedDayPosition.value) + 33]
+          // [0, (-selectedDayPosition.value) + 33]
+          [0, -190]
         )
       }],
     }

@@ -22,7 +22,8 @@ export default function Index() {
     <GestureHandlerRootView>
       {/* <View style={styles.header}></View> */}
       <View style={styles.container}>
-        <TopSheet bottomSheetTranslationY={animationValue} />
+        {/* <TopSheet bottomSheetTranslationY={animationValue} /> */}
+        <Calendar bottomSheetTranslationY={animationValue} />
         <BottomSheet translateY={animationValue} />
       </View>
     </GestureHandlerRootView>

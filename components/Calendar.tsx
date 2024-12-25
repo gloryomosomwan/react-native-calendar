@@ -1,19 +1,22 @@
-import { useState, useRef, useEffect } from "react";
 import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
+import { useState, useRef, useEffect } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay } from "date-fns";
-import { SharedValue } from "react-native-reanimated";
+import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 
 import Month from "./Month";
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window')
+const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + 50
 
 const generateUniqueId = () => {
   return `${Date.now()}-${Math.random()}`
 }
 
 type CalendarProps = {
-  selectedDayPosition: SharedValue<number>
+  bottomSheetTranslationY: SharedValue<number>
 }
 
-export default function Calendar({ selectedDayPosition }: CalendarProps) {
+export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
   const flatListRef = useRef<FlatList>(null);
   const [selectedDay, setSelectedDay] = useState(new Date())
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -23,6 +26,21 @@ export default function Calendar({ selectedDayPosition }: CalendarProps) {
     { id: generateUniqueId(), initialDay: new Date() },
     { id: generateUniqueId(), initialDay: startOfMonth(addMonths(new Date(), 1)) },
   ])
+
+  const selectedDayPosition = useSharedValue(0)
+
+  const rTopSheetStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{
+        translateY: interpolate(
+          bottomSheetTranslationY.value,
+          [0, MAX_TRANSLATE_Y],
+          // [0, (-selectedDayPosition.value) + 33]
+          [0, -190]
+        )
+      }],
+    }
+  })
 
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDay because handleScroll has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
@@ -106,42 +124,46 @@ export default function Calendar({ selectedDayPosition }: CalendarProps) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.month}>{selectedDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
+        <View style={styles.month}>
+          <Text style={styles.monthText}>{selectedDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
+        </View>
+        <View style={styles.weekdayNames}>
+          {daysOfWeek.map((day) => (
+            <Text key={day} style={styles.dayName}>{day}</Text>
+          ))}
+        </View>
       </View>
-      <View style={styles.weekdayNames}>
-        {daysOfWeek.map((day) => (
-          <Text key={day} style={styles.dayName}>{day}</Text>
-        ))}
-      </View>
-      <FlatList
-        ref={flatListRef}
-        data={data}
-        renderItem={({ item }) => <Month initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} />}
-        pagingEnabled
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        onStartReached={fetchPrevious}
-        onStartReachedThreshold={0.2}
-        onEndReached={fetchNext}
-        onEndReachedThreshold={0.2}
-        bounces={false}
-        getItemLayout={(data, index) => (
-          { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
-        )}
-        initialScrollIndex={1}
-        decelerationRate={'normal'}
-        maintainVisibleContentPosition={{
-          minIndexForVisible: 1,
-          autoscrollToTopThreshold: undefined
-        }}
-        viewabilityConfig={viewabilityConfig}
-        onViewableItemsChanged={(info) => {
-          info.viewableItems.forEach(item => {
-            console.log('Fully visible item:', item.item.initialDay);
-            setSelectedDay(item.item.initialDay)
-          });
-        }}
-      />
+      <Animated.View style={[rTopSheetStyle]}>
+        <FlatList
+          ref={flatListRef}
+          data={data}
+          renderItem={({ item }) => <Month initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} />}
+          pagingEnabled
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          onStartReached={fetchPrevious}
+          onStartReachedThreshold={0.2}
+          onEndReached={fetchNext}
+          onEndReachedThreshold={0.2}
+          bounces={false}
+          getItemLayout={(data, index) => (
+            { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
+          )}
+          initialScrollIndex={1}
+          decelerationRate={'normal'}
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 1,
+            autoscrollToTopThreshold: undefined
+          }}
+          viewabilityConfig={viewabilityConfig}
+          onViewableItemsChanged={(info) => {
+            info.viewableItems.forEach(item => {
+              console.log('Fully visible item:', item.item.initialDay);
+              setSelectedDay(item.item.initialDay)
+            });
+          }}
+        />
+      </Animated.View>
       {/* <Text>selectedDay: {JSON.stringify(selectedDay, null, 2)}</Text>
       <Text>{JSON.stringify(data, null, 2)}</Text>
       <Button title="Today" onPress={scrollToToday} />
@@ -157,16 +179,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: 'white',
+    paddingTop: 50
   },
   text: {
     fontSize: 16,
     color: 'black',
   },
   header: {
+    position: 'absolute',
+    zIndex: 1,
+    top: 0,
+    backgroundColor: 'white'
+  },
+  month: {
     flexDirection: 'row',
     justifyContent: 'center'
   },
-  month: {
+  monthText: {
     fontSize: 25,
     textAlign: 'center',
     marginBottom: 5
