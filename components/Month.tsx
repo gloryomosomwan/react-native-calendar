@@ -70,17 +70,15 @@ export default function Month({ initialDay, selectedDay, handlePress, selectedDa
   const weeks = createWeeks(daysArray)
 
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        <View style={styles.weeks}>
-          {weeks.map((week, index) => (
-            <View key={index} style={styles.week}>
-              {week}
-            </View>
-          ))}
-        </View>
+    <View style={styles.container}>
+      <View style={styles.weeks}>
+        {weeks.map((week, index) => (
+          <View key={index} style={styles.week}>
+            {week}
+          </View>
+        ))}
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
 
