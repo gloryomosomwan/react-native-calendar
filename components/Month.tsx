@@ -1,9 +1,58 @@
 import { StyleSheet, Text, View, SafeAreaView, Dimensions, Button } from 'react-native'
-import React from 'react'
+import React, { forwardRef, useEffect } from 'react'
 import { startOfMonth, addDays, subDays, getDay, getDaysInMonth } from 'date-fns'
 import { SharedValue } from 'react-native-reanimated'
 
 import Day from './Day'
+
+type MonthProps = {
+  initialDay: Date
+  selectedDay: Date
+  handlePress: (date: Date) => void
+  selectedDayPosition: SharedValue<number>
+}
+
+// Use forwardRef to allow the parent component to pass a ref to this component
+const Month = forwardRef<View, MonthProps>(({ initialDay, selectedDay, handlePress, selectedDayPosition }: MonthProps, ref) => {
+  const dates = getDates(initialDay)
+  const paddedDates = padDatesArray(dates)
+  const daysArray = createDays(paddedDates, selectedDay, initialDay, handlePress, selectedDayPosition)
+  const weeks = createWeeks(daysArray)
+
+  useEffect(() => {
+    console.log('rendering,', initialDay)
+  })
+  return (
+    <View ref={ref} style={styles.container}>
+      <View style={styles.weeks}>
+        {weeks.map((week, index) => (
+          <View key={index} style={styles.week}>
+            {week}
+          </View>
+        ))}
+      </View>
+    </View>
+  )
+})
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: '100%',
+  },
+  week: {
+    flexDirection: 'row',
+  },
+  weeks: {},
+})
+
+function createDays(dates: Date[], selectedDay: Date, initialDay: Date, handlePress: (date: Date) => void, selectedDayPosition: SharedValue<number>) {
+  let days: JSX.Element[] = []
+  dates.map((date) => {
+    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} firstDayOfMonth={initialDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} />)
+  })
+  return days
+}
 
 function getDates(initialDay: Date) {
   const numDaysInMonth = getDaysInMonth(initialDay)
@@ -35,14 +84,6 @@ function padDatesArray(dates: Date[]) {
   return dates
 }
 
-function createDays(dates: Date[], selectedDay: Date, initialDay: Date, handlePress: (date: Date) => void, selectedDayPosition: SharedValue<number>, topRowPosition: SharedValue<number>) {
-  let days: JSX.Element[] = []
-  dates.map((date) => {
-    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} firstDayOfMonth={initialDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} topRowPosition={topRowPosition} />)
-  })
-  return days
-}
-
 function createWeeks(daysArray: React.ReactNode[]) {
   let weeks = []
   for (let i = 0; i < 6; i++) {
@@ -56,40 +97,4 @@ function createWeeks(daysArray: React.ReactNode[]) {
   return weeks
 }
 
-type MonthProps = {
-  initialDay: Date
-  selectedDay: Date
-  handlePress: (date: Date) => void
-  selectedDayPosition: SharedValue<number>
-  topRowPosition: SharedValue<number>
-}
-
-export default function Month({ initialDay, selectedDay, handlePress, selectedDayPosition, topRowPosition }: MonthProps) {
-  const dates = getDates(initialDay)
-  const paddedDates = padDatesArray(dates)
-  const daysArray = createDays(paddedDates, selectedDay, initialDay, handlePress, selectedDayPosition, topRowPosition)
-  const weeks = createWeeks(daysArray)
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.weeks}>
-        {weeks.map((week, index) => (
-          <View key={index} style={styles.week}>
-            {week}
-          </View>
-        ))}
-      </View>
-    </View>
-  )
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-  },
-  week: {
-    flexDirection: 'row',
-  },
-  weeks: {},
-})
+export default Month

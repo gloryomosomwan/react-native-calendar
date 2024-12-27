@@ -9,25 +9,14 @@ type DayProps = {
   firstDayOfMonth: Date;
   handlePress: (date: Date) => void
   selectedDayPosition: SharedValue<number>
-  topRowPosition: SharedValue<number>
 }
 
-export default function Day({ date, selectedDay, firstDayOfMonth, handlePress, selectedDayPosition, topRowPosition }: DayProps) {
+export default function Day({ date, selectedDay, firstDayOfMonth, handlePress, selectedDayPosition }: DayProps) {
   const elementRef = useRef<View | null>(null)
-  useEffect(() => {
-    if (isSameDay(date, firstDayOfMonth) && isSameDay(date, selectedDay)) {
-      console.log(date)
-      if (elementRef.current)
-        elementRef.current.measure((_, __, ___, ____, _____, pageY) => {
-          console.log(pageY)
-          topRowPosition.value = pageY
-        });
-    }
-  })
 
   const onPress = () => {
     if (elementRef.current)
-      elementRef.current.measure((_, __, ___, ____, _____, pageY) => {
+      elementRef.current.measure((x, y, width, height, pageX, pageY) => {
         selectedDayPosition.value = pageY
       });
     handlePress(date)

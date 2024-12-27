@@ -30,6 +30,15 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
   const selectedDayPosition = useSharedValue(0)
   const topRowPosition = useSharedValue(0)
 
+  const elementRef2 = useRef<View | null>(null)
+
+  useEffect(() => {
+    if (elementRef2.current)
+      elementRef2.current.measure((_, __, ___, ____, _____, pageY) => {
+        topRowPosition.value = pageY
+      });
+  })
+
   const rTopSheetStyle = useAnimatedStyle(() => {
     return {
       transform: [{
@@ -133,14 +142,15 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
           ))}
         </View>
       </View>
-      <View style={{ position: 'absolute', zIndex: 2, top: 0, left: 0 }}>
-        <Button title='Log' onPress={() => { console.log(topRowPosition.value) }}></Button>
+      <View style={{ position: 'absolute', zIndex: 2, top: 0, left: 0, flex: 1, flexDirection: 'row' }}>
+        <Button title='SV' onPress={() => { console.log('SelectedDay Position', selectedDayPosition.value) }}></Button>
+        <Button title='TV' onPress={() => { console.log('Top Row Position:', topRowPosition.value) }}></Button>
       </View>
       <Animated.View style={[rTopSheetStyle]}>
         <FlatList
           ref={flatListRef}
           data={data}
-          renderItem={({ item }) => <Month initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} topRowPosition={topRowPosition} />}
+          renderItem={({ item }) => <Month ref={elementRef2} initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} />}
           pagingEnabled
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -161,7 +171,6 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
           viewabilityConfig={viewabilityConfig}
           onViewableItemsChanged={(info) => {
             info.viewableItems.forEach(item => {
-              console.log('Fully visible item:', item.item.initialDay);
               setSelectedDay(item.item.initialDay)
             });
           }}
