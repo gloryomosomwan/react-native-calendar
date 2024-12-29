@@ -1,12 +1,13 @@
-import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
-import { useState, useRef, useEffect } from "react";
+import { View, StyleSheet, FlatList, Dimensions, Button, Text, Platform, StatusBar } from "react-native";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay } from "date-fns";
 import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 
 import Month from "./Month";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
-const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + 80
+const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + 130
 
 const generateUniqueId = () => {
   return `${Date.now()}-${Math.random()}`
@@ -22,9 +23,9 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
   const [data, setData] = useState([
-    { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
+    // { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
     { id: generateUniqueId(), initialDay: new Date() },
-    { id: generateUniqueId(), initialDay: startOfMonth(addMonths(new Date(), 1)) },
+    // { id: generateUniqueId(), initialDay: startOfMonth(addMonths(new Date(), 1)) },
   ])
 
   const selectedDayPosition = useSharedValue(0)
@@ -45,7 +46,7 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
         translateY: interpolate(
           bottomSheetTranslationY.value,
           [0, MAX_TRANSLATE_Y],
-          [0, -selectedDayPosition.value + topRowPosition.value]
+          [0, -selectedDayPosition.value + topRowPosition.value + 50]
         )
       }],
     }
@@ -130,22 +131,33 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
     // waitForInteraction: true // Wait for scroll to stop before checking
   };
 
+  const insets = useSafeAreaInsets()
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[
+      styles.container,
+      {
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom
+      }
+    ]}>
+      <View style={[styles.header, { paddingTop: insets.top }]}>
+
         <View style={styles.month}>
-          <Text style={styles.monthText}>{selectedDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
+          <Text style={styles.monthName}>{selectedDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
         </View>
+
         <View style={styles.weekdayNames}>
           {daysOfWeek.map((day) => (
             <Text key={day} style={styles.dayName}>{day}</Text>
           ))}
         </View>
+
       </View>
-      <View style={{ position: 'absolute', zIndex: 2, top: 0, left: 0, flex: 1, flexDirection: 'row' }}>
+      {/* <View style={{ position: 'absolute', zIndex: 2, top: 0, left: 0, flex: 1, flexDirection: 'row' }}>
         <Button title='SV' onPress={() => { console.log('SelectedDay Position', selectedDayPosition.value) }}></Button>
         <Button title='TV' onPress={() => { console.log('Top Row Position:', topRowPosition.value) }}></Button>
-      </View>
+      </View> */}
       <Animated.View style={[rTopSheetStyle]}>
         <FlatList
           ref={flatListRef}
@@ -188,22 +200,19 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: 'white',
-    paddingTop: 50
   },
   header: {
+    backgroundColor: 'red',
     position: 'absolute',
-    zIndex: 1,
     top: 0,
-    backgroundColor: 'white'
+    zIndex: 1,
   },
   month: {
     flexDirection: 'row',
     justifyContent: 'center'
   },
-  monthText: {
+  monthName: {
     fontSize: 25,
     textAlign: 'center',
     marginBottom: 5

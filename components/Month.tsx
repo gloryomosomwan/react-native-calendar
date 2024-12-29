@@ -19,9 +19,6 @@ const Month = forwardRef<View, MonthProps>(({ initialDay, selectedDay, handlePre
   const daysArray = createDays(paddedDates, selectedDay, initialDay, handlePress, selectedDayPosition)
   const weeks = createWeeks(daysArray)
 
-  useEffect(() => {
-    console.log('rendering,', initialDay)
-  })
   return (
     <View ref={ref} style={styles.container}>
       <View style={styles.weeks}>
@@ -39,6 +36,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
+    paddingTop: 50,
   },
   week: {
     flexDirection: 'row',

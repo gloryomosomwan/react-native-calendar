@@ -1,24 +1,21 @@
 import { View, StyleSheet, Text, Button, Dimensions, StatusBar } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useRef, useEffect } from "react";
-import Animated, { useSharedValue, interpolate, useAnimatedStyle } from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle } from "react-native-reanimated";
 
 import Calendar from "@/components/Calendar";
+import CalendarV2 from "@/components/CalendarV2";
 import BottomSheet from "@/components/BottomSheet";
-// import TopSheet from "@/components/TopSheet";
-
-// const { height: SCREEN_HEIGHT } = Dimensions.get('window')
-// const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + 50
+import TopSheet from "@/components/TopSheet";
 
 export default function Index() {
   const animationValue = useSharedValue(0)
 
   return (
     <GestureHandlerRootView>
-      {/* <View style={styles.header}></View> */}
       <View style={styles.container}>
-        {/* <TopSheet bottomSheetTranslationY={animationValue} /> */}
         <Calendar bottomSheetTranslationY={animationValue} />
+        {/* <TopSheet /> */}
         <BottomSheet translateY={animationValue} />
       </View>
     </GestureHandlerRootView>
@@ -28,16 +25,6 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: 'white'
+    backgroundColor: 'grey',
   },
-  // header: {
-  //   position: 'absolute',
-  //   zIndex: 1,
-  //   height: SCREEN_HEIGHT / 40,
-  //   top: 0,
-  //   width: '100%',
-  //   backgroundColor: 'grey',
-  // }
 });

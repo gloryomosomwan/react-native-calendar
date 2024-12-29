@@ -1,50 +1,35 @@
-import { StyleSheet, Text, View, Dimensions, Button } from 'react-native'
-import React, { useEffect, useRef } from 'react'
-import Animated, { Extrapolate, interpolate, SharedValue, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
+import { View, StyleSheet, Platform, StatusBar, Text } from "react-native"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import Calendar from "@/components/Calendar";
-
-const { height: SCREEN_HEIGHT } = Dimensions.get('window')
-const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + 50
-
-type TopSheetProps = {
-  bottomSheetTranslationY: SharedValue<number>
-}
-
-export default function TopSheet({ bottomSheetTranslationY }: TopSheetProps) {
-  const selectedDayPosition = useSharedValue(0)
-
-  const rTopSheetStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{
-        translateY: interpolate(
-          bottomSheetTranslationY.value,
-          [0, MAX_TRANSLATE_Y],
-          // [0, (-selectedDayPosition.value) + 33]
-          [0, -190]
-        )
-      }],
-    }
-  })
+export default function TopSheet() {
+  const insets = useSafeAreaInsets()
 
   return (
-    <Animated.View style={[styles.topSheetContainer, rTopSheetStyle]} >
-      {/* <Button title='ref' onPress={() => { console.log(selectedDayPosition.value) }}></Button> */}
-      <Calendar selectedDayPosition={selectedDayPosition} />
-    </Animated.View>
+    <View style={[
+      styles.container,
+      {
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom
+      }
+    ]}
+    >
+      <Text style={{ fontSize: 25 }}>This is top text.</Text>
+      <View
+        style={{ flex: 1 }}
+        onLayout={({ nativeEvent }) => {
+          console.log(nativeEvent.layout.y)
+        }}>
+        <Text>Inside the view...</Text>
+      </View>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
-  topSheetContainer: {
+  container: {
     flex: 1,
     width: '100%',
+    alignItems: 'center',
     backgroundColor: 'powderblue',
-    position: 'absolute',
-    top: 0,
   },
-  text: {
-    alignSelf: 'flex-end',
-    color: 'black',
-  }
 })

@@ -4,7 +4,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, { Extrapolate, interpolate, SharedValue, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
-const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + 80
+const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + 130
 
 type BottomSheetProps = {
   translateY: SharedValue<number>

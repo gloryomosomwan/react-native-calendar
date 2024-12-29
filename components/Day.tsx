@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Pressable, Dimensions } from 'react-native'
-import React, { useEffect, useRef } from 'react'
+import { StyleSheet, Text, View, Pressable, Dimensions, InteractionManager } from 'react-native'
+import React, { useEffect, useRef, useLayoutEffect } from 'react'
 import { isSameMonth, isSameDay } from 'date-fns'
 import { SharedValue } from 'react-native-reanimated';
 
@@ -15,12 +15,23 @@ export default function Day({ date, selectedDay, firstDayOfMonth, handlePress, s
   const elementRef = useRef<View | null>(null)
 
   const onPress = () => {
-    if (elementRef.current)
+    if (elementRef.current) {
       elementRef.current.measure((x, y, width, height, pageX, pageY) => {
         selectedDayPosition.value = pageY
       });
+    }
     handlePress(date)
   }
+
+  useLayoutEffect(() => {
+    if (isSameDay(date, selectedDay) && isSameMonth(date, selectedDay)) {
+      if (elementRef.current) {
+        elementRef.current.measure((x, y, width, height, pageX, pageY) => {
+          selectedDayPosition.value = pageY
+        });
+      }
+    }
+  })
 
   return (
     <Pressable onPress={onPress}>
