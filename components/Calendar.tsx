@@ -7,7 +7,7 @@ import Month from "./Month";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
-const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + 130
+const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + (SCREEN_HEIGHT * 0.145)
 
 const generateUniqueId = () => {
   return `${Date.now()}-${Math.random()}`
