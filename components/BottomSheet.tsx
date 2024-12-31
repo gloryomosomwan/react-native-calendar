@@ -8,9 +8,10 @@ const MAX_TRANSLATE_Y = (-SCREEN_HEIGHT / 2) + (SCREEN_HEIGHT * 0.145)
 
 type BottomSheetProps = {
   translateY: SharedValue<number>
+  calendarBottom: SharedValue<number>
 }
 
-export default function BottomSheet({ translateY }: BottomSheetProps) {
+export default function BottomSheet({ translateY, calendarBottom }: BottomSheetProps) {
   const scrollTo = useCallback((destination: number) => {
     'worklet'
     translateY.value = withSpring(destination, { damping: 50 })
@@ -47,7 +48,7 @@ export default function BottomSheet({ translateY }: BottomSheetProps) {
 
   return (
     <GestureDetector gesture={gesture}>
-      <Animated.View style={[styles.bottomSheetContainer, rBottomSheetStyle]} >
+      <Animated.View style={[styles.bottomSheetContainer, rBottomSheetStyle, { top: calendarBottom }]} >
         <View style={styles.line} />
         <Button title='press me' onPress={() => console.log(translateY.value)}></Button>
       </Animated.View>
@@ -61,7 +62,6 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: 'powderblue',
     position: 'absolute',
-    top: SCREEN_HEIGHT / 2 + 20,
     borderRadius: 25,
   },
   line: {

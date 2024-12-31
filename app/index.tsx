@@ -10,13 +10,14 @@ import TopSheet from "@/components/TopSheet";
 
 export default function Index() {
   const animationValue = useSharedValue(0)
+  const calendarBottom = useSharedValue(0)
 
   return (
     <GestureHandlerRootView>
       <View style={styles.container}>
-        <Calendar bottomSheetTranslationY={animationValue} />
+        <Calendar bottomSheetTranslationY={animationValue} calendarBottom={calendarBottom} />
         {/* <TopSheet /> */}
-        <BottomSheet translateY={animationValue} />
+        <BottomSheet translateY={animationValue} calendarBottom={calendarBottom} />
       </View>
     </GestureHandlerRootView>
   );

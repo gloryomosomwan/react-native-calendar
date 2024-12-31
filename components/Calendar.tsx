@@ -15,9 +15,10 @@ const generateUniqueId = () => {
 
 type CalendarProps = {
   bottomSheetTranslationY: SharedValue<number>
+  calendarBottom: SharedValue<number>
 }
 
-export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
+export default function Calendar({ bottomSheetTranslationY, calendarBottom }: CalendarProps) {
   const flatListRef = useRef<FlatList>(null);
   const [selectedDay, setSelectedDay] = useState(new Date())
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -31,11 +32,11 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
   const selectedDayPosition = useSharedValue(0)
   const topRowPosition = useSharedValue(0)
 
-  const elementRef2 = useRef<View | null>(null)
+  const monthRef = useRef<View | null>(null)
 
   useEffect(() => {
-    if (elementRef2.current)
-      elementRef2.current.measure((_, __, ___, ____, _____, pageY) => {
+    if (monthRef.current)
+      monthRef.current.measure((x, y, width, height, pageX, pageY) => {
         topRowPosition.value = pageY
       });
   })
@@ -52,8 +53,12 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
     }
   })
 
+  const setCalendarBottom = (y: number) => {
+    calendarBottom.value = y
+  }
+
   const handlePress = (date: Date) => {
-    // In here, we just compare date and selectedDay because handleScroll has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
+    // In here, we just compare date and selectedDay because handlePress has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
     setSelectedDay(date)
     if (!isSameDay(date, selectedDay)) {
       if (isInLaterMonth(date, selectedDay)) {
@@ -154,15 +159,15 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
         </View>
 
       </View>
-      {/* <View style={{ position: 'absolute', zIndex: 2, top: 0, left: 0, flex: 1, flexDirection: 'row' }}>
-        <Button title='SV' onPress={() => { console.log('SelectedDay Position', selectedDayPosition.value) }}></Button>
+      {/* <View style={{ position: 'absolute', zIndex: 2, top: 20, left: 0, flex: 1, flexDirection: 'row' }}>
+        <Button title='SV' onPress={() => { console.log('SelectedDay Position', insets.top) }}></Button>
         <Button title='TV' onPress={() => { console.log('Top Row Position:', topRowPosition.value) }}></Button>
       </View> */}
       <Animated.View style={[rTopSheetStyle]}>
         <FlatList
           ref={flatListRef}
           data={data}
-          renderItem={({ item }) => <Month ref={elementRef2} initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} />}
+          renderItem={({ item }) => <Month ref={monthRef} initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} setCalendarBottom={setCalendarBottom} />}
           pagingEnabled
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -200,10 +205,12 @@ export default function Calendar({ bottomSheetTranslationY }: CalendarProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexGrow: 1,
     backgroundColor: 'white',
+    // height: 100
   },
   header: {
-    backgroundColor: 'red',
+    backgroundColor: 'white',
     position: 'absolute',
     top: 0,
     zIndex: 1,

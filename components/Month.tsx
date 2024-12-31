@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, SafeAreaView, Dimensions, Button } from 'react-
 import React, { forwardRef, useEffect } from 'react'
 import { startOfMonth, addDays, subDays, getDay, getDaysInMonth } from 'date-fns'
 import { SharedValue } from 'react-native-reanimated'
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Day from './Day'
 
@@ -10,17 +11,26 @@ type MonthProps = {
   selectedDay: Date
   handlePress: (date: Date) => void
   selectedDayPosition: SharedValue<number>
+  setCalendarBottom: (y: number) => void
 }
 
 // Use forwardRef to allow the parent component to pass a ref to this component
-const Month = forwardRef<View, MonthProps>(({ initialDay, selectedDay, handlePress, selectedDayPosition }: MonthProps, ref) => {
+const Month = forwardRef<View, MonthProps>(({ initialDay, selectedDay, handlePress, selectedDayPosition, setCalendarBottom }: MonthProps, ref) => {
   const dates = getDates(initialDay)
   const paddedDates = padDatesArray(dates)
   const daysArray = createDays(paddedDates, selectedDay, initialDay, handlePress, selectedDayPosition)
   const weeks = createWeeks(daysArray)
 
+  const insets = useSafeAreaInsets()
+
   return (
-    <View ref={ref} style={styles.container}>
+    <View ref={ref} style={styles.container}
+      onLayout={(e) => {
+        let bottom = e.nativeEvent.layout.height + insets.top
+        console.log(bottom)
+        setCalendarBottom(bottom)
+      }}
+    >
       <View style={styles.weeks}>
         {weeks.map((week, index) => (
           <View key={index} style={styles.week}>
