@@ -12,13 +12,14 @@ type MonthProps = {
   handlePress: (date: Date) => void
   selectedDayPosition: SharedValue<number>
   setCalendarBottom: (y: number) => void
+  bottomSheetTranslationY: SharedValue<number>
 }
 
 // Use forwardRef to allow the parent component to pass a ref to this component
-const Month = forwardRef<View, MonthProps>(({ initialDay, selectedDay, handlePress, selectedDayPosition, setCalendarBottom }: MonthProps, ref) => {
+const Month = forwardRef<View, MonthProps>(({ initialDay, selectedDay, handlePress, selectedDayPosition, setCalendarBottom, bottomSheetTranslationY }: MonthProps, ref) => {
   const dates = getDates(initialDay)
   const paddedDates = padDatesArray(dates)
-  const daysArray = createDays(paddedDates, selectedDay, initialDay, handlePress, selectedDayPosition)
+  const daysArray = createDays(paddedDates, selectedDay, initialDay, handlePress, selectedDayPosition, bottomSheetTranslationY)
   const weeks = createWeeks(daysArray)
 
   const insets = useSafeAreaInsets()
@@ -54,10 +55,10 @@ const styles = StyleSheet.create({
   weeks: {},
 })
 
-function createDays(dates: Date[], selectedDay: Date, initialDay: Date, handlePress: (date: Date) => void, selectedDayPosition: SharedValue<number>) {
+function createDays(dates: Date[], selectedDay: Date, initialDay: Date, handlePress: (date: Date) => void, selectedDayPosition: SharedValue<number>, bottomSheetTranslationY: SharedValue<number>) {
   let days: JSX.Element[] = []
   dates.map((date) => {
-    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} firstDayOfMonth={initialDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} />)
+    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} firstDayOfMonth={initialDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} bottomSheetTranslationY={bottomSheetTranslationY} />)
   })
   return days
 }

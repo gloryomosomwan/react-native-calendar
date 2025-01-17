@@ -46,8 +46,8 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
       transform: [{
         translateY: interpolate(
           bottomSheetTranslationY.value,
-          [0, MAX_TRANSLATE_Y],
-          [0, -selectedDayPosition.value + topRowPosition.value + 50]
+          [0, -235],
+          [0, 70 - selectedDayPosition.value]
         )
       }],
     }
@@ -59,6 +59,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
 
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDay because handlePress has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
+    console.log('70 - sdpv =', 70 - selectedDayPosition.value)
     setSelectedDay(date)
     if (!isSameDay(date, selectedDay)) {
       if (isInLaterMonth(date, selectedDay)) {
@@ -167,7 +168,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         <FlatList
           ref={flatListRef}
           data={data}
-          renderItem={({ item }) => <Month ref={monthRef} initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} setCalendarBottom={setCalendarBottom} />}
+          renderItem={({ item }) => <Month ref={monthRef} initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} setCalendarBottom={setCalendarBottom} bottomSheetTranslationY={bottomSheetTranslationY} />}
           pagingEnabled
           horizontal={true}
           showsHorizontalScrollIndicator={false}

@@ -25,7 +25,7 @@ export default function BottomSheet({ translateY, calendarBottom }: BottomSheetP
     })
     .onUpdate((event) => {
       translateY.value = event.translationY + context.value.y
-      translateY.value = Math.max(translateY.value, MAX_TRANSLATE_Y)
+      translateY.value = Math.max(translateY.value, -235)
       translateY.value = Math.min(translateY.value, 0)
     })
     .onEnd(() => {
@@ -33,7 +33,7 @@ export default function BottomSheet({ translateY, calendarBottom }: BottomSheetP
         scrollTo(0)
       }
       else if (translateY.value < -SCREEN_HEIGHT / 4) {
-        scrollTo(MAX_TRANSLATE_Y)
+        scrollTo(-235)
       }
     })
 
