@@ -2,9 +2,9 @@ import { View, StyleSheet, FlatList, Dimensions, Button, Text, Platform, StatusB
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay } from "date-fns";
 import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Month from "./Month";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const generateUniqueId = () => {
   return `${Date.now()}-${Math.random()}`
@@ -19,11 +19,14 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
   const flatListRef = useRef<FlatList>(null);
   const [selectedDay, setSelectedDay] = useState(new Date())
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  // const dateOfDisplayedMonth = useRef<Date>(new Date())
+  // let dateOfDisplayedMonth = new Date()
+  const [dateOfDisplayedMonth, setDateOfDisplayedMonth] = useState(new Date())
 
   const [data, setData] = useState([
-    // { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
+    { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
     { id: generateUniqueId(), initialDay: new Date() },
-    // { id: generateUniqueId(), initialDay: startOfMonth(addMonths(new Date(), 1)) },
+    { id: generateUniqueId(), initialDay: startOfMonth(addMonths(new Date(), 1)) },
   ])
 
   const selectedDayPosition = useSharedValue(0)
@@ -56,7 +59,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
 
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDay because handlePress has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
-    console.log('70 - sdpv =', 70 - selectedDayPosition.value)
+    // console.log('70 - sdpv =', 70 - selectedDayPosition.value)
     setSelectedDay(date)
     if (!isSameDay(date, selectedDay)) {
       if (isInLaterMonth(date, selectedDay)) {
@@ -103,6 +106,10 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
   }
 
   const scrollToPrevious = () => {
+    // if (dateOfDisplayedMonth.current) {
+    //   dateOfDisplayedMonth.current = subMonths(dateOfDisplayedMonth.current, 1)
+    // }
+    // dateOfDisplayedMonth = subMonths(dateOfDisplayedMonth, 1)
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 0,
@@ -112,6 +119,10 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
   };
 
   const scrollToNext = () => {
+    // if (dateOfDisplayedMonth.current) {
+    //   dateOfDisplayedMonth.current = addMonths(dateOfDisplayedMonth.current, 1)
+    // }
+    // dateOfDisplayedMonth = addMonths(dateOfDisplayedMonth, 1)
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 2,
@@ -165,7 +176,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         <FlatList
           ref={flatListRef}
           data={data}
-          renderItem={({ item }) => <Month ref={monthRef} initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} setCalendarBottom={setCalendarBottom} bottomSheetTranslationY={bottomSheetTranslationY} />}
+          renderItem={({ item }) => <Month ref={monthRef} initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} setCalendarBottom={setCalendarBottom} bottomSheetTranslationY={bottomSheetTranslationY} dateOfDisplayedMonth={dateOfDisplayedMonth} />}
           pagingEnabled
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -186,6 +197,12 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
           viewabilityConfig={viewabilityConfig}
           onViewableItemsChanged={(info) => {
             info.viewableItems.forEach(item => {
+              // if (dateOfDisplayedMonth.current) {
+              //   dateOfDisplayedMonth.current = item.item.initialDay
+              // }
+              console.log('from Calendar 1:', dateOfDisplayedMonth)
+              setDateOfDisplayedMonth(item.item.initialDay)
+              console.log('from Calendar 2:', dateOfDisplayedMonth)
               setSelectedDay(item.item.initialDay)
             });
           }}

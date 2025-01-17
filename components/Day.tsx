@@ -10,9 +10,10 @@ type DayProps = {
   handlePress: (date: Date) => void
   selectedDayPosition: SharedValue<number>
   bottomSheetTranslationY: SharedValue<number>
+  dateOfDisplayedMonth: Date
 }
 
-export default function Day({ date, selectedDay, firstDayOfMonth, handlePress, selectedDayPosition, bottomSheetTranslationY }: DayProps) {
+export default function Day({ date, selectedDay, firstDayOfMonth, handlePress, selectedDayPosition, bottomSheetTranslationY, dateOfDisplayedMonth }: DayProps) {
   const elementRef = useRef<View | null>(null)
 
   const onPress = () => {
@@ -30,10 +31,14 @@ export default function Day({ date, selectedDay, firstDayOfMonth, handlePress, s
   }
 
   useLayoutEffect(() => {
-    if (isSameDay(date, selectedDay) && isSameMonth(date, selectedDay)) {
+    // Add a check to see where botttom sheet is?
+    if (isSameDay(date, selectedDay) && isSameMonth(date, selectedDay) && isSameMonth(firstDayOfMonth, dateOfDisplayedMonth)) {
+      console.log('from Day:', dateOfDisplayedMonth)
       if (elementRef.current) {
         elementRef.current.measure((x, y, width, height, pageX, pageY) => {
           console.log('pageY in uLE:', pageY)
+          console.log('selected day:', selectedDay)
+          console.log('month:', firstDayOfMonth)
           if (bottomSheetTranslationY.value > -235) {
             selectedDayPosition.value = pageY
           }

@@ -13,13 +13,14 @@ type MonthProps = {
   selectedDayPosition: SharedValue<number>
   setCalendarBottom: (y: number) => void
   bottomSheetTranslationY: SharedValue<number>
+  dateOfDisplayedMonth: Date
 }
 
 // Use forwardRef to allow the parent component to pass a ref to this component
-const Month = forwardRef<View, MonthProps>(({ initialDay, selectedDay, handlePress, selectedDayPosition, setCalendarBottom, bottomSheetTranslationY }: MonthProps, ref) => {
+const Month = forwardRef<View, MonthProps>(({ initialDay, selectedDay, handlePress, selectedDayPosition, setCalendarBottom, bottomSheetTranslationY, dateOfDisplayedMonth }: MonthProps, ref) => {
   const dates = getDates(initialDay)
   const paddedDates = padDatesArray(dates)
-  const daysArray = createDays(paddedDates, selectedDay, initialDay, handlePress, selectedDayPosition, bottomSheetTranslationY)
+  const daysArray = createDays(paddedDates, selectedDay, initialDay, handlePress, selectedDayPosition, bottomSheetTranslationY, dateOfDisplayedMonth)
   const weeks = createWeeks(daysArray)
 
   const insets = useSafeAreaInsets()
@@ -28,7 +29,6 @@ const Month = forwardRef<View, MonthProps>(({ initialDay, selectedDay, handlePre
     <View ref={ref} style={styles.container}
       onLayout={(e) => {
         let bottom = e.nativeEvent.layout.height + insets.top
-        console.log(bottom)
         setCalendarBottom(bottom)
       }}
     >
@@ -55,10 +55,10 @@ const styles = StyleSheet.create({
   weeks: {},
 })
 
-function createDays(dates: Date[], selectedDay: Date, initialDay: Date, handlePress: (date: Date) => void, selectedDayPosition: SharedValue<number>, bottomSheetTranslationY: SharedValue<number>) {
+function createDays(dates: Date[], selectedDay: Date, initialDay: Date, handlePress: (date: Date) => void, selectedDayPosition: SharedValue<number>, bottomSheetTranslationY: SharedValue<number>, dateOfDisplayedMonth: Date) {
   let days: JSX.Element[] = []
   dates.map((date) => {
-    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} firstDayOfMonth={initialDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} bottomSheetTranslationY={bottomSheetTranslationY} />)
+    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} firstDayOfMonth={initialDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} bottomSheetTranslationY={bottomSheetTranslationY} dateOfDisplayedMonth={dateOfDisplayedMonth} />)
   })
   return days
 }
