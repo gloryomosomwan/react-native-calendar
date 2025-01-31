@@ -37,6 +37,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
   useEffect(() => {
     if (monthRef.current)
       monthRef.current.measure((x, y, width, height, pageX, pageY) => {
+        console.log('topRowPosition', topRowPosition.value)
         topRowPosition.value = pageY
       });
   })
@@ -47,13 +48,14 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         translateY: interpolate(
           bottomSheetTranslationY.value,
           [0, -235],
-          [0, 70 - selectedDayPosition.value]
+          [0, (topRowPosition.value + 50) - selectedDayPosition.value]
         )
       }],
     }
   })
 
   const setCalendarBottom = (y: number) => {
+    console.log('calBotm', calendarBottom.value)
     calendarBottom.value = y
   }
 
