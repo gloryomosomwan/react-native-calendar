@@ -1,5 +1,5 @@
-import { View, StyleSheet, FlatList, Dimensions, Button, Text, Platform, StatusBar } from "react-native";
-import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
+import { useState, useRef, useEffect } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay } from "date-fns";
 import Animated, { SharedValue, interpolate, runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,11 +16,9 @@ type CalendarProps = {
 }
 
 export default function Calendar({ bottomSheetTranslationY, calendarBottom }: CalendarProps) {
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   const flatListRef = useRef<FlatList>(null);
   const [selectedDay, setSelectedDay] = useState(new Date())
-  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-  // const dateOfDisplayedMonth = useRef<Date>(new Date())
-  // let dateOfDisplayedMonth = new Date()
   const [dateOfDisplayedMonth, setDateOfDisplayedMonth] = useState(new Date())
 
   const [data, setData] = useState([
@@ -29,31 +27,20 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     { id: generateUniqueId(), initialDay: startOfMonth(addMonths(new Date(), 1)) },
   ])
 
-  const insets = useSafeAreaInsets()
-
   const selectedDayPosition = useSharedValue(0)
   const topRowPosition = useSharedValue(0)
 
-  const monthRef = useRef<View | null>(null)
-
   const [monthView, setMonthView] = useState(true)
 
+  const insets = useSafeAreaInsets()
+
   useEffect(() => {
-    // if (monthRef.current)
-    //   monthRef.current.measure((x, y, width, height, pageX, pageY) => {
-    //     // console.log('topRowPosition', topRowPosition.value)
-    //     console.log('insets top:', insets.top)
-    //     console.log('pageY:', pageY)
-    //     topRowPosition.value = pageY
-    //   });
-    // console.log(insets.top)
     topRowPosition.value = insets.top
   })
 
   useAnimatedReaction(
     () => { return bottomSheetTranslationY.value },
     (currentValue, previousValue) => {
-      // console.log('topRowPosition:', topRowPosition.value)
       if (currentValue <= -235) {
         runOnJS(setMonthView)(false)
       }
@@ -63,27 +50,19 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     }
   );
 
-  useAnimatedReaction(
-    () => { return selectedDayPosition.value },
-    (currentValue, previousValue) => {
-      // console.log('selectedDayPosition:', selectedDayPosition.value)
-    }
-  );
-
   const rTopSheetStyle = useAnimatedStyle(() => {
     return {
       transform: [{
         translateY: interpolate(
           bottomSheetTranslationY.value,
           [0, -235],
-          [0, (topRowPosition.value + 50) - selectedDayPosition.value]
+          [0, (topRowPosition.value + 50) - selectedDayPosition.value] // 50 is for padding
         )
       }],
     }
   })
 
   const setCalendarBottom = (y: number) => {
-    // console.log('calBotm', calendarBottom.value)
     calendarBottom.value = y
   }
 
@@ -136,10 +115,6 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
   }
 
   const scrollToPrevious = () => {
-    // if (dateOfDisplayedMonth.current) {
-    //   dateOfDisplayedMonth.current = subMonths(dateOfDisplayedMonth.current, 1)
-    // }
-    // dateOfDisplayedMonth = subMonths(dateOfDisplayedMonth, 1)
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 0,
@@ -149,10 +124,6 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
   };
 
   const scrollToNext = () => {
-    // if (dateOfDisplayedMonth.current) {
-    //   dateOfDisplayedMonth.current = addMonths(dateOfDisplayedMonth.current, 1)
-    // }
-    // dateOfDisplayedMonth = addMonths(dateOfDisplayedMonth, 1)
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 2,
@@ -208,7 +179,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
           <FlatList
             ref={flatListRef}
             data={data}
-            renderItem={({ item }) => <Month ref={monthRef} initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} setCalendarBottom={setCalendarBottom} bottomSheetTranslationY={bottomSheetTranslationY} dateOfDisplayedMonth={dateOfDisplayedMonth} />}
+            renderItem={({ item }) => <Month initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} setCalendarBottom={setCalendarBottom} bottomSheetTranslationY={bottomSheetTranslationY} dateOfDisplayedMonth={dateOfDisplayedMonth} />}
             pagingEnabled
             horizontal={true}
             showsHorizontalScrollIndicator={false}
@@ -229,12 +200,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
             viewabilityConfig={viewabilityConfig}
             onViewableItemsChanged={(info) => {
               info.viewableItems.forEach(item => {
-                // if (dateOfDisplayedMonth.current) {
-                //   dateOfDisplayedMonth.current = item.item.initialDay
-                // }
-                // console.log('from Calendar 1:', dateOfDisplayedMonth)
                 setDateOfDisplayedMonth(item.item.initialDay)
-                // console.log('from Calendar 2:', dateOfDisplayedMonth)
                 setSelectedDay(item.item.initialDay)
               });
             }}
@@ -249,7 +215,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexGrow: 1,
     backgroundColor: 'white',
-    // height: 100
   },
   header: {
     backgroundColor: 'white',
