@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View, Pressable, Dimensions, InteractionManager } from 'react-native'
 import React, { useEffect, useRef, useLayoutEffect } from 'react'
-import { isSameMonth, isSameDay } from 'date-fns'
+import { isSameMonth, isSameDay, getWeekOfMonth } from 'date-fns'
 import { SharedValue } from 'react-native-reanimated';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type DayProps = {
   date: Date;
@@ -15,13 +16,15 @@ type DayProps = {
 
 export default function Day({ date, selectedDay, firstDayOfMonth, handlePress, selectedDayPosition, bottomSheetTranslationY, dateOfDisplayedMonth }: DayProps) {
   const elementRef = useRef<View | null>(null)
+  const insets = useSafeAreaInsets()
 
   const onPress = () => {
     if (bottomSheetTranslationY.value === 0 || bottomSheetTranslationY.value === -235) {
       if (elementRef.current) {
         elementRef.current.measure((x, y, width, height, pageX, pageY) => {
-          console.log('pageY in onPress:', pageY)
+          // console.log('pageY in onPress:', pageY)
           if (bottomSheetTranslationY.value > -235) {
+            console.log('onPress:', pageY)
             selectedDayPosition.value = pageY
           }
         });
@@ -33,17 +36,24 @@ export default function Day({ date, selectedDay, firstDayOfMonth, handlePress, s
   useLayoutEffect(() => {
     // Add a check to see where botttom sheet is?
     if (isSameDay(date, selectedDay) && isSameMonth(date, selectedDay) && isSameMonth(firstDayOfMonth, dateOfDisplayedMonth)) {
-      console.log('from Day:', dateOfDisplayedMonth)
-      if (elementRef.current) {
-        elementRef.current.measure((x, y, width, height, pageX, pageY) => {
-          console.log('pageY in uLE:', pageY)
-          console.log('selected day:', selectedDay)
-          console.log('month:', firstDayOfMonth)
-          if (bottomSheetTranslationY.value > -235) {
-            selectedDayPosition.value = pageY
-          }
-        });
-      }
+      // console.log('from Day:', dateOfDisplayedMonth)
+
+      // if (elementRef.current) {
+      //   elementRef.current.measure((x, y, width, height, pageX, pageY) => {
+      //     // console.log('pageY in uLE:', pageY)
+      //     // console.log('selected day:', selectedDay)
+      //     // console.log('month:', firstDayOfMonth)
+      //     if (bottomSheetTranslationY.value > -235) {
+      //       console.log('onLayout:', pageY)
+      //       selectedDayPosition.value = pageY
+      //     }
+      //   });
+      // }
+
+      const weekOfMonth = getWeekOfMonth(date)
+      console.log('weekofmonth:', weekOfMonth)
+      selectedDayPosition.value = (insets.top + 50) + (47 * (weekOfMonth - 1))
+      console.log('selectedDayPosition:', selectedDayPosition.value)
     }
   })
 

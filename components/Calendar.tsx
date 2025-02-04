@@ -1,7 +1,7 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text, Platform, StatusBar } from "react-native";
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay } from "date-fns";
-import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+import Animated, { SharedValue, interpolate, runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Month from "./Month";
@@ -29,18 +29,46 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     { id: generateUniqueId(), initialDay: startOfMonth(addMonths(new Date(), 1)) },
   ])
 
+  const insets = useSafeAreaInsets()
+
   const selectedDayPosition = useSharedValue(0)
   const topRowPosition = useSharedValue(0)
 
   const monthRef = useRef<View | null>(null)
 
+  const [monthView, setMonthView] = useState(true)
+
   useEffect(() => {
-    if (monthRef.current)
-      monthRef.current.measure((x, y, width, height, pageX, pageY) => {
-        console.log('topRowPosition', topRowPosition.value)
-        topRowPosition.value = pageY
-      });
+    // if (monthRef.current)
+    //   monthRef.current.measure((x, y, width, height, pageX, pageY) => {
+    //     // console.log('topRowPosition', topRowPosition.value)
+    //     console.log('insets top:', insets.top)
+    //     console.log('pageY:', pageY)
+    //     topRowPosition.value = pageY
+    //   });
+    // console.log(insets.top)
+    topRowPosition.value = insets.top
   })
+
+  useAnimatedReaction(
+    () => { return bottomSheetTranslationY.value },
+    (currentValue, previousValue) => {
+      // console.log('topRowPosition:', topRowPosition.value)
+      if (currentValue <= -235) {
+        runOnJS(setMonthView)(false)
+      }
+      else {
+        runOnJS(setMonthView)(true)
+      }
+    }
+  );
+
+  useAnimatedReaction(
+    () => { return selectedDayPosition.value },
+    (currentValue, previousValue) => {
+      // console.log('selectedDayPosition:', selectedDayPosition.value)
+    }
+  );
 
   const rTopSheetStyle = useAnimatedStyle(() => {
     return {
@@ -55,7 +83,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
   })
 
   const setCalendarBottom = (y: number) => {
-    console.log('calBotm', calendarBottom.value)
+    // console.log('calBotm', calendarBottom.value)
     calendarBottom.value = y
   }
 
@@ -147,7 +175,6 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     // waitForInteraction: true // Wait for scroll to stop before checking
   };
 
-  const insets = useSafeAreaInsets()
 
   return (
     <View style={[
@@ -170,51 +197,49 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         </View>
 
       </View>
-      {/* <View style={{ position: 'absolute', zIndex: 2, top: 20, left: 0, flex: 1, flexDirection: 'row' }}>
+
+      <View style={{ position: 'absolute', zIndex: 2, top: 20, left: 0, flex: 1, flexDirection: 'row' }}>
         <Button title='SV' onPress={() => { console.log('SelectedDay Position', insets.top) }}></Button>
         <Button title='TV' onPress={() => { console.log('Top Row Position:', topRowPosition.value) }}></Button>
-      </View> */}
+      </View>
+
       <Animated.View style={[rTopSheetStyle]}>
-        <FlatList
-          ref={flatListRef}
-          data={data}
-          renderItem={({ item }) => <Month ref={monthRef} initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} setCalendarBottom={setCalendarBottom} bottomSheetTranslationY={bottomSheetTranslationY} dateOfDisplayedMonth={dateOfDisplayedMonth} />}
-          pagingEnabled
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          onStartReached={fetchPrevious}
-          onStartReachedThreshold={0.2}
-          onEndReached={fetchNext}
-          onEndReachedThreshold={0.2}
-          bounces={false}
-          getItemLayout={(data, index) => (
-            { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
-          )}
-          initialScrollIndex={1}
-          decelerationRate={'normal'}
-          maintainVisibleContentPosition={{
-            minIndexForVisible: 1,
-            autoscrollToTopThreshold: undefined
-          }}
-          viewabilityConfig={viewabilityConfig}
-          onViewableItemsChanged={(info) => {
-            info.viewableItems.forEach(item => {
-              // if (dateOfDisplayedMonth.current) {
-              //   dateOfDisplayedMonth.current = item.item.initialDay
-              // }
-              console.log('from Calendar 1:', dateOfDisplayedMonth)
-              setDateOfDisplayedMonth(item.item.initialDay)
-              console.log('from Calendar 2:', dateOfDisplayedMonth)
-              setSelectedDay(item.item.initialDay)
-            });
-          }}
-        />
+        {monthView &&
+          <FlatList
+            ref={flatListRef}
+            data={data}
+            renderItem={({ item }) => <Month ref={monthRef} initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} setCalendarBottom={setCalendarBottom} bottomSheetTranslationY={bottomSheetTranslationY} dateOfDisplayedMonth={dateOfDisplayedMonth} />}
+            pagingEnabled
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            onStartReached={fetchPrevious}
+            onStartReachedThreshold={0.2}
+            onEndReached={fetchNext}
+            onEndReachedThreshold={0.2}
+            bounces={false}
+            getItemLayout={(data, index) => (
+              { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
+            )}
+            initialScrollIndex={1}
+            decelerationRate={'normal'}
+            maintainVisibleContentPosition={{
+              minIndexForVisible: 1,
+              autoscrollToTopThreshold: undefined
+            }}
+            viewabilityConfig={viewabilityConfig}
+            onViewableItemsChanged={(info) => {
+              info.viewableItems.forEach(item => {
+                // if (dateOfDisplayedMonth.current) {
+                //   dateOfDisplayedMonth.current = item.item.initialDay
+                // }
+                // console.log('from Calendar 1:', dateOfDisplayedMonth)
+                setDateOfDisplayedMonth(item.item.initialDay)
+                // console.log('from Calendar 2:', dateOfDisplayedMonth)
+                setSelectedDay(item.item.initialDay)
+              });
+            }}
+          />}
       </Animated.View>
-      {/* <Text>selectedDay: {JSON.stringify(selectedDay, null, 2)}</Text>
-      <Text>{JSON.stringify(data, null, 2)}</Text>
-      <Button title="Today" onPress={scrollToToday} />
-      <Button title="Previous" onPress={scrollToPrevious} />
-      <Button title="Next" onPress={scrollToNext} /> */}
     </View>
   );
 }
