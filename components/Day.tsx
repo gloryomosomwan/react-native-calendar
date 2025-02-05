@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   },
   selectedDayCircle: {
     position: 'absolute',
-    backgroundColor: 'powderblue',
+    backgroundColor: '#0c75f5',
     zIndex: -1,
     width: 34,
     height: 34,

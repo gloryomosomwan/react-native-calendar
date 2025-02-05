@@ -50,7 +50,7 @@ export default function BottomSheet({ translateY, calendarBottom }: BottomSheetP
     <GestureDetector gesture={gesture}>
       <Animated.View style={[styles.bottomSheetContainer, rBottomSheetStyle, { top: calendarBottom }]} >
         <View style={styles.line} />
-        <Button title='press me' onPress={() => console.log(translateY.value)}></Button>
+        {/* <Button title='press me' onPress={() => console.log(translateY.value)}></Button> */}
       </Animated.View>
     </GestureDetector>
   )
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   bottomSheetContainer: {
     height: SCREEN_HEIGHT,
     width: '100%',
-    backgroundColor: 'powderblue',
+    backgroundColor: '#0c75f5',
     position: 'absolute',
     borderRadius: 25,
   },

@@ -1,10 +1,11 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
 import { useState, useRef, useEffect } from "react";
-import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay } from "date-fns";
+import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks } from "date-fns";
 import Animated, { SharedValue, interpolate, runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Month from "./Month";
+import Week from "./Week"
 
 const generateUniqueId = () => {
   return `${Date.now()}-${Math.random()}`
@@ -25,6 +26,12 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
     { id: generateUniqueId(), initialDay: new Date() },
     { id: generateUniqueId(), initialDay: startOfMonth(addMonths(new Date(), 1)) },
+  ])
+
+  const [weekData, setWeekData] = useState([
+    { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(new Date(), 1)) },
+    { id: generateUniqueId(), initialDay: new Date() },
+    { id: generateUniqueId(), initialDay: startOfWeek(addWeeks(new Date(), 1)) },
   ])
 
   const selectedDayPosition = useSharedValue(0)
@@ -56,7 +63,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         translateY: interpolate(
           bottomSheetTranslationY.value,
           [0, -235],
-          [0, (topRowPosition.value + 50) - selectedDayPosition.value] // 50 is for padding
+          [0, (topRowPosition.value + 50) - selectedDayPosition.value] // 50 is for the padding
         )
       }],
     }
@@ -169,13 +176,13 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
 
       </View>
 
-      <View style={{ position: 'absolute', zIndex: 2, top: 20, left: 0, flex: 1, flexDirection: 'row' }}>
+      {/* <View style={{ position: 'absolute', zIndex: 2, top: 20, left: 0, flex: 1, flexDirection: 'row' }}>
         <Button title='SV' onPress={() => { console.log('SelectedDay Position', insets.top) }}></Button>
         <Button title='TV' onPress={() => { console.log('Top Row Position:', topRowPosition.value) }}></Button>
-      </View>
+      </View> */}
 
       <Animated.View style={[rTopSheetStyle]}>
-        {monthView &&
+        {monthView ?
           <FlatList
             ref={flatListRef}
             data={data}
@@ -204,7 +211,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
                 setSelectedDay(item.item.initialDay)
               });
             }}
-          />}
+          /> : <Week />}
       </Animated.View>
     </View>
   );
