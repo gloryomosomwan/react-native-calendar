@@ -211,7 +211,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
                 setSelectedDay(item.item.initialDay)
               });
             }}
-          /> : <Week />}
+          /> : <Week initialDay={new Date()} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} setCalendarBottom={setCalendarBottom} bottomSheetTranslationY={bottomSheetTranslationY} dateOfDisplayedMonth={dateOfDisplayedMonth} />}
       </Animated.View>
     </View>
   );
