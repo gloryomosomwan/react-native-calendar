@@ -1,7 +1,7 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
 import { useState, useRef, useEffect } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks } from "date-fns";
-import Animated, { SharedValue, interpolate, runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+import Animated, { SharedValue, interpolate, runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, Extrapolate } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Month from "./Month";
@@ -37,25 +37,11 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
   const selectedDayPosition = useSharedValue(0)
   const topRowPosition = useSharedValue(0)
 
-  const [monthView, setMonthView] = useState(true)
-
   const insets = useSafeAreaInsets()
 
   useEffect(() => {
     topRowPosition.value = insets.top
   })
-
-  useAnimatedReaction(
-    () => { return bottomSheetTranslationY.value },
-    (currentValue, previousValue) => {
-      if (currentValue <= -235) {
-        runOnJS(setMonthView)(false)
-      }
-      else {
-        runOnJS(setMonthView)(true)
-      }
-    }
-  );
 
   const rTopSheetStyle = useAnimatedStyle(() => {
     return {
@@ -153,6 +139,29 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     // waitForInteraction: true // Wait for scroll to stop before checking
   };
 
+  const rMonthViewStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(
+        bottomSheetTranslationY.value,
+        [-235, -234],
+        [0, 1],
+        Extrapolate.CLAMP
+      ),
+      pointerEvents: bottomSheetTranslationY.value > -235 ? 'auto' : 'none',
+    };
+  });
+
+  const rWeekViewStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(
+        bottomSheetTranslationY.value,
+        [-235, -234],
+        [1, 0],
+        Extrapolate.CLAMP
+      ),
+      pointerEvents: bottomSheetTranslationY.value <= -235 ? 'auto' : 'none',
+    };
+  });
 
   return (
     <View style={[
@@ -182,11 +191,21 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
       </View> */}
 
       <Animated.View style={[rTopSheetStyle]}>
-        {monthView ?
+        <Animated.View style={[styles.monthContainer, rMonthViewStyle]}>
           <FlatList
             ref={flatListRef}
             data={data}
-            renderItem={({ item }) => <Month initialDay={item.initialDay} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} setCalendarBottom={setCalendarBottom} bottomSheetTranslationY={bottomSheetTranslationY} dateOfDisplayedMonth={dateOfDisplayedMonth} />}
+            renderItem={({ item }) => (
+              <Month
+                initialDay={item.initialDay}
+                selectedDay={selectedDay}
+                handlePress={handlePress}
+                selectedDayPosition={selectedDayPosition}
+                setCalendarBottom={setCalendarBottom}
+                bottomSheetTranslationY={bottomSheetTranslationY}
+                dateOfDisplayedMonth={dateOfDisplayedMonth}
+              />
+            )}
             pagingEnabled
             horizontal={true}
             showsHorizontalScrollIndicator={false}
@@ -211,7 +230,34 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
                 setSelectedDay(item.item.initialDay)
               });
             }}
-          /> : <Week initialDay={new Date()} selectedDay={selectedDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} setCalendarBottom={setCalendarBottom} bottomSheetTranslationY={bottomSheetTranslationY} dateOfDisplayedMonth={dateOfDisplayedMonth} />}
+          />
+        </Animated.View>
+
+        <Animated.View style={[styles.weekContainer, rWeekViewStyle]}>
+          <FlatList
+            data={weekData}
+            renderItem={({ item }) => (
+              <Week
+                initialDay={item.initialDay}
+                selectedDay={selectedDay}
+                handlePress={handlePress}
+                selectedDayPosition={selectedDayPosition}
+                setCalendarBottom={setCalendarBottom}
+                bottomSheetTranslationY={bottomSheetTranslationY}
+                dateOfDisplayedMonth={dateOfDisplayedMonth}
+              />
+            )}
+            pagingEnabled
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            bounces={false}
+            getItemLayout={(data, index) => (
+              { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
+            )}
+            initialScrollIndex={1}
+            decelerationRate={'normal'}
+          />
+        </Animated.View>
       </Animated.View>
     </View>
   );
@@ -245,5 +291,16 @@ const styles = StyleSheet.create({
   dayName: {
     textAlign: 'center',
     width: Dimensions.get('window').width / 7,
+  },
+  monthContainer: {
+    // flex: 1,
+    // width: '100%',
+  },
+  weekContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0
   },
 });
