@@ -42,18 +42,6 @@ export default function Month({ initialDay, selectedDay, handlePress, selectedDa
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    paddingTop: 50,
-  },
-  week: {
-    flexDirection: 'row',
-  },
-  weeks: {},
-})
-
 function createDays(dates: Date[], selectedDay: Date, initialDay: Date, handlePress: (date: Date) => void, selectedDayPosition: SharedValue<number>, bottomSheetTranslationY: SharedValue<number>, dateOfDisplayedMonth: Date) {
   let days: JSX.Element[] = []
   dates.map((date) => {
@@ -104,3 +92,15 @@ function createWeeks(daysArray: React.ReactNode[]) {
   }
   return weeks
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: '100%',
+    paddingTop: 50,
+  },
+  week: {
+    flexDirection: 'row',
+  },
+  weeks: {},
+})
