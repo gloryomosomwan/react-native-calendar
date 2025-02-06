@@ -48,8 +48,4 @@ const styles = StyleSheet.create({
   days: {
     flexDirection: 'row'
   },
-  // text: {
-  //   fontSize: 40,
-  //   paddingTop: 100
-  // }
 })

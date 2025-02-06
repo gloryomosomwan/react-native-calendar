@@ -61,7 +61,6 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
 
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDay because handlePress has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
-    // console.log('70 - sdpv =', 70 - selectedDayPosition.value)
     setSelectedDay(date)
     if (!isSameDay(date, selectedDay)) {
       if (isInLaterMonth(date, selectedDay)) {
@@ -173,9 +172,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     ]}>
       <View style={[styles.header, { paddingTop: insets.top }]}>
 
-        <View style={styles.month}>
-          <Text style={styles.monthName}>{selectedDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
-        </View>
+        <Text style={styles.monthName}>{selectedDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
 
         <View style={styles.weekdayNames}>
           {daysOfWeek.map((day) => (
@@ -275,10 +272,6 @@ const styles = StyleSheet.create({
     top: 0,
     zIndex: 1,
   },
-  month: {
-    flexDirection: 'row',
-    justifyContent: 'center'
-  },
   monthName: {
     fontSize: 25,
     textAlign: 'center',
@@ -286,7 +279,6 @@ const styles = StyleSheet.create({
   },
   weekdayNames: {
     flexDirection: 'row',
-    width: '100%'
   },
   dayName: {
     textAlign: 'center',
@@ -295,6 +287,7 @@ const styles = StyleSheet.create({
   monthContainer: {
     // flex: 1,
     // width: '100%',
+    // paddingTop: 52
   },
   weekContainer: {
     position: 'absolute',
