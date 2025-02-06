@@ -26,7 +26,18 @@ export default function Week({ initialDay, selectedDay, handlePress, selectedDay
 
   let days: JSX.Element[] = []
   dates.map((date) => {
-    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} firstDayOfMonth={initialDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} bottomSheetTranslationY={bottomSheetTranslationY} dateOfDisplayedMonth={dateOfDisplayedMonth} />)
+    days.push(
+      <Day
+        key={date.toDateString()}
+        date={date}
+        selectedDay={selectedDay}
+        firstDayOfMonth={initialDay}
+        handlePress={handlePress}
+        selectedDayPosition={selectedDayPosition}
+        bottomSheetTranslationY={bottomSheetTranslationY}
+        dateOfDisplayedMonth={dateOfDisplayedMonth}
+      />
+    )
   })
 
   return (
@@ -42,7 +53,7 @@ export default function Week({ initialDay, selectedDay, handlePress, selectedDay
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 97,
+    // paddingTop: 97,
     width: '100%',
   },
   days: {
