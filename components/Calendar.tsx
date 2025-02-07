@@ -183,7 +183,6 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         <Button title='SV' onPress={() => { console.log('SelectedDay Position', insets.top) }}></Button>
         <Button title='TV' onPress={() => { console.log('Top Row Position:', topRowPosition.value) }}></Button>
       </View> */}
-
       <Animated.View style={[styles.weekContainer, rWeekViewStyle, { paddingTop: insets.top + 30 + 5 + 17 }]}>
         <FlatList
           data={weekData}
@@ -253,6 +252,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
           />
         </Animated.View>
       </Animated.View>
+
     </View>
   );
 }
@@ -282,5 +282,6 @@ const styles = StyleSheet.create({
   monthContainer: {},
   weekContainer: {
     position: 'absolute',
+    zIndex: 1
   },
 });

@@ -51,7 +51,7 @@ export default function Week({ initialDay, selectedDay, handlePress, selectedDay
 
 const styles = StyleSheet.create({
   container: {
-    // backgroundColor: 'aliceblue'
+    backgroundColor: 'aliceblue'
   },
   days: {
     flexDirection: 'row'
