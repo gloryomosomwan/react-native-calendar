@@ -10,12 +10,11 @@ type WeekProps = {
   selectedDay: Date
   handlePress: (date: Date) => void
   selectedDayPosition: SharedValue<number>
-  setCalendarBottom: (y: number) => void
   bottomSheetTranslationY: SharedValue<number>
   dateOfDisplayedMonth: Date
 }
 
-export default function Week({ initialDay, selectedDay, handlePress, selectedDayPosition, setCalendarBottom, bottomSheetTranslationY, dateOfDisplayedMonth }: WeekProps) {
+export default function Week({ initialDay, selectedDay, handlePress, selectedDayPosition, bottomSheetTranslationY, dateOfDisplayedMonth }: WeekProps) {
   let dates = []
   let firstDayOfWeek = startOfWeek(initialDay)
   let currentDay = firstDayOfWeek

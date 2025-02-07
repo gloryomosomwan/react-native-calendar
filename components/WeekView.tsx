@@ -12,7 +12,6 @@ const generateUniqueId = () => {
 
 type WeekViewProps = {
   bottomSheetTranslationY: SharedValue<number>
-  calendarBottom: SharedValue<number>
   selectedDay: Date
   setSelectedDay: (date: Date) => void
   selectedDayPosition: SharedValue<number>
@@ -20,7 +19,7 @@ type WeekViewProps = {
   setDateOfDisplayedMonth: (date: Date) => void
 }
 
-export default function WeekView({ bottomSheetTranslationY, calendarBottom, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth }: WeekViewProps) {
+export default function WeekView({ bottomSheetTranslationY, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth }: WeekViewProps) {
   const [weekData, setWeekData] = useState([
     { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(new Date(), 1)) },
     { id: generateUniqueId(), initialDay: new Date() },
@@ -28,9 +27,6 @@ export default function WeekView({ bottomSheetTranslationY, calendarBottom, sele
   ])
   const insets = useSafeAreaInsets()
 
-  const setCalendarBottom = (y: number) => {
-    calendarBottom.value = y
-  }
 
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDay because handlePress has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
@@ -69,7 +65,6 @@ export default function WeekView({ bottomSheetTranslationY, calendarBottom, sele
             selectedDay={selectedDay}
             handlePress={handlePress}
             selectedDayPosition={selectedDayPosition}
-            setCalendarBottom={setCalendarBottom}
             bottomSheetTranslationY={bottomSheetTranslationY}
             dateOfDisplayedMonth={dateOfDisplayedMonth}
           />

@@ -35,7 +35,6 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
       />
       <WeekView
         bottomSheetTranslationY={bottomSheetTranslationY}
-        calendarBottom={calendarBottom}
         selectedDay={selectedDay}
         setSelectedDay={setSelectedDay}
         selectedDayPosition={selectedDayPosition}
