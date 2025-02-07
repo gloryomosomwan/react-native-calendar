@@ -45,7 +45,17 @@ export default function Month({ initialDay, selectedDay, handlePress, selectedDa
 function createDays(dates: Date[], selectedDay: Date, initialDay: Date, handlePress: (date: Date) => void, selectedDayPosition: SharedValue<number>, bottomSheetTranslationY: SharedValue<number>, dateOfDisplayedMonth: Date) {
   let days: JSX.Element[] = []
   dates.map((date) => {
-    days.push(<Day key={date.toDateString()} date={date} selectedDay={selectedDay} firstDayOfMonth={initialDay} handlePress={handlePress} selectedDayPosition={selectedDayPosition} bottomSheetTranslationY={bottomSheetTranslationY} dateOfDisplayedMonth={dateOfDisplayedMonth} />)
+    days.push(
+      <Day key={date.toDateString()}
+        date={date}
+        selectedDay={selectedDay}
+        firstDayOfMonth={initialDay}
+        handlePress={handlePress}
+        selectedDayPosition={selectedDayPosition}
+        bottomSheetTranslationY={bottomSheetTranslationY}
+        dateOfDisplayedMonth={dateOfDisplayedMonth}
+      />
+    )
   })
   return days
 }
