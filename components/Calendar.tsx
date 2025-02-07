@@ -1,7 +1,7 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
 import { useState, useRef, useEffect } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks } from "date-fns";
-import Animated, { SharedValue, interpolate, runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, Extrapolate } from "react-native-reanimated";
+import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Month from "./Month";
@@ -43,17 +43,6 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     topRowPosition.value = insets.top
   })
 
-  const rTopSheetStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{
-        translateY: interpolate(
-          bottomSheetTranslationY.value,
-          [0, -235],
-          [0, (topRowPosition.value + 50) - selectedDayPosition.value] // 50 is for the padding
-        )
-      }],
-    }
-  })
 
   const setCalendarBottom = (y: number) => {
     calendarBottom.value = y
@@ -146,6 +135,13 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         [0, 1],
         Extrapolate.CLAMP
       ),
+      transform: [{
+        translateY: interpolate(
+          bottomSheetTranslationY.value,
+          [0, -235],
+          [0, (topRowPosition.value + 50) - selectedDayPosition.value] // 50 is for the padding
+        )
+      }],
       pointerEvents: bottomSheetTranslationY.value > -235 ? 'auto' : 'none',
     };
   });
@@ -209,50 +205,47 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         />
       </Animated.View>
 
-      <Animated.View style={[rTopSheetStyle]}>
-        <Animated.View style={[styles.monthContainer, rMonthViewStyle]}>
-          <FlatList
-            ref={flatListRef}
-            data={data}
-            renderItem={({ item }) => (
-              <Month
-                initialDay={item.initialDay}
-                selectedDay={selectedDay}
-                handlePress={handlePress}
-                selectedDayPosition={selectedDayPosition}
-                setCalendarBottom={setCalendarBottom}
-                bottomSheetTranslationY={bottomSheetTranslationY}
-                dateOfDisplayedMonth={dateOfDisplayedMonth}
-              />
-            )}
-            pagingEnabled
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            onStartReached={fetchPrevious}
-            onStartReachedThreshold={0.2}
-            onEndReached={fetchNext}
-            onEndReachedThreshold={0.2}
-            bounces={false}
-            getItemLayout={(data, index) => (
-              { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
-            )}
-            initialScrollIndex={1}
-            decelerationRate={'normal'}
-            maintainVisibleContentPosition={{
-              minIndexForVisible: 1,
-              autoscrollToTopThreshold: undefined
-            }}
-            viewabilityConfig={viewabilityConfig}
-            onViewableItemsChanged={(info) => {
-              info.viewableItems.forEach(item => {
-                setDateOfDisplayedMonth(item.item.initialDay)
-                setSelectedDay(item.item.initialDay)
-              });
-            }}
-          />
-        </Animated.View>
+      <Animated.View style={[rMonthViewStyle]}>
+        <FlatList
+          ref={flatListRef}
+          data={data}
+          renderItem={({ item }) => (
+            <Month
+              initialDay={item.initialDay}
+              selectedDay={selectedDay}
+              handlePress={handlePress}
+              selectedDayPosition={selectedDayPosition}
+              setCalendarBottom={setCalendarBottom}
+              bottomSheetTranslationY={bottomSheetTranslationY}
+              dateOfDisplayedMonth={dateOfDisplayedMonth}
+            />
+          )}
+          pagingEnabled
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          onStartReached={fetchPrevious}
+          onStartReachedThreshold={0.2}
+          onEndReached={fetchNext}
+          onEndReachedThreshold={0.2}
+          bounces={false}
+          getItemLayout={(data, index) => (
+            { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
+          )}
+          initialScrollIndex={1}
+          decelerationRate={'normal'}
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 1,
+            autoscrollToTopThreshold: undefined
+          }}
+          viewabilityConfig={viewabilityConfig}
+          onViewableItemsChanged={(info) => {
+            info.viewableItems.forEach(item => {
+              setDateOfDisplayedMonth(item.item.initialDay)
+              setSelectedDay(item.item.initialDay)
+            });
+          }}
+        />
       </Animated.View>
-
     </View>
   );
 }
@@ -279,7 +272,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: Dimensions.get('window').width / 7,
   },
-  monthContainer: {},
   weekContainer: {
     position: 'absolute',
     zIndex: 1
