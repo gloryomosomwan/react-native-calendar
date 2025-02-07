@@ -4,12 +4,8 @@ import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, start
 import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import Month from "./Month";
-import Week from "./Week"
-
-const generateUniqueId = () => {
-  return `${Date.now()}-${Math.random()}`
-}
+import MonthView from "./MonthView";
+import WeekView from "./WeekView";
 
 type CalendarProps = {
   bottomSheetTranslationY: SharedValue<number>
@@ -18,145 +14,10 @@ type CalendarProps = {
 
 export default function Calendar({ bottomSheetTranslationY, calendarBottom }: CalendarProps) {
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-  const flatListRef = useRef<FlatList>(null);
   const [selectedDay, setSelectedDay] = useState(new Date())
   const [dateOfDisplayedMonth, setDateOfDisplayedMonth] = useState(new Date())
-
-  const [data, setData] = useState([
-    { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
-    { id: generateUniqueId(), initialDay: new Date() },
-    { id: generateUniqueId(), initialDay: startOfMonth(addMonths(new Date(), 1)) },
-  ])
-
-  const [weekData, setWeekData] = useState([
-    { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(new Date(), 1)) },
-    { id: generateUniqueId(), initialDay: new Date() },
-    { id: generateUniqueId(), initialDay: startOfWeek(addWeeks(new Date(), 1)) },
-  ])
-
   const selectedDayPosition = useSharedValue(0)
-  const topRowPosition = useSharedValue(0)
-
   const insets = useSafeAreaInsets()
-
-  useEffect(() => {
-    topRowPosition.value = insets.top
-  })
-
-
-  const setCalendarBottom = (y: number) => {
-    calendarBottom.value = y
-  }
-
-  const handlePress = (date: Date) => {
-    // In here, we just compare date and selectedDay because handlePress has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
-    setSelectedDay(date)
-    if (!isSameDay(date, selectedDay)) {
-      if (isInLaterMonth(date, selectedDay)) {
-        data[2].initialDay = date
-        scrollToNext()
-      }
-      else if (isInEarlierMonth(date, selectedDay)) {
-        data[0].initialDay = date
-        scrollToPrevious()
-      }
-    }
-  }
-
-  function isInEarlierMonth(dateToCheck: Date, referenceDate: Date) {
-    const monthOfDateToCheck = startOfMonth(dateToCheck);
-    const monthOfReferenceDate = startOfMonth(referenceDate);
-    return isBefore(monthOfDateToCheck, monthOfReferenceDate);
-  }
-
-  function isInLaterMonth(dateToCheck: Date, referenceDate: Date) {
-    const monthOfDateToCheck = startOfMonth(dateToCheck);
-    const monthOfReferenceDate = startOfMonth(referenceDate);
-    return isAfter(monthOfDateToCheck, monthOfReferenceDate);
-  }
-
-  const fetchPrevious = () => {
-    const newDay = startOfMonth(subMonths(data[0].initialDay, 1));
-    setData(prevData => {
-      const newData = [...prevData];
-      newData.unshift({ id: generateUniqueId(), initialDay: newDay });
-      newData.pop();
-      return newData;
-    });
-  }
-
-  const fetchNext = () => {
-    const newDay = startOfMonth(addMonths(data[data.length - 1].initialDay, 1))
-    setData(prevData => {
-      const newData = [...prevData];
-      newData.push({ id: generateUniqueId(), initialDay: newDay });
-      newData.shift();
-      return newData;
-    });
-  }
-
-  const scrollToPrevious = () => {
-    if (flatListRef.current) {
-      flatListRef?.current?.scrollToIndex({
-        index: 0,
-        animated: true
-      });
-    }
-  };
-
-  const scrollToNext = () => {
-    if (flatListRef.current) {
-      flatListRef?.current?.scrollToIndex({
-        index: 2,
-        animated: true
-      });
-    }
-  };
-
-  const scrollToToday = () => {
-    setData([
-      { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
-      { id: generateUniqueId(), initialDay: new Date() },
-      { id: generateUniqueId(), initialDay: startOfMonth(addMonths(new Date(), 1)) },
-    ])
-  }
-
-  const viewabilityConfig = {
-    itemVisiblePercentThreshold: 90, // Percentage of item that needs to be visible
-    minimumViewTime: 5, // Minimum time (ms) an item must be visible to trigger
-    // waitForInteraction: true // Wait for scroll to stop before checking
-  };
-
-  const rMonthViewStyle = useAnimatedStyle(() => {
-    return {
-      opacity: interpolate(
-        bottomSheetTranslationY.value,
-        [-235, -234],
-        [0, 1],
-        Extrapolate.CLAMP
-      ),
-      transform: [{
-        translateY: interpolate(
-          bottomSheetTranslationY.value,
-          [0, -235],
-          [0, (topRowPosition.value + 50) - selectedDayPosition.value] // 50 is for the padding
-        )
-      }],
-      pointerEvents: bottomSheetTranslationY.value > -235 ? 'auto' : 'none',
-    };
-  });
-
-  const rWeekViewStyle = useAnimatedStyle(() => {
-    return {
-      opacity: interpolate(
-        bottomSheetTranslationY.value,
-        [-235, -234],
-        [1, 0],
-        Extrapolate.CLAMP
-      ),
-      pointerEvents: bottomSheetTranslationY.value <= -235 ? 'auto' : 'none',
-    };
-  });
 
   return (
     <View style={[
@@ -179,73 +40,25 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         <Button title='SV' onPress={() => { console.log('SelectedDay Position', insets.top) }}></Button>
         <Button title='TV' onPress={() => { console.log('Top Row Position:', topRowPosition.value) }}></Button>
       </View> */}
-      <Animated.View style={[styles.weekContainer, rWeekViewStyle, { paddingTop: insets.top + 30 + 5 + 17 }]}>
-        <FlatList
-          data={weekData}
-          renderItem={({ item }) => (
-            <Week
-              initialDay={item.initialDay}
-              selectedDay={selectedDay}
-              handlePress={handlePress}
-              selectedDayPosition={selectedDayPosition}
-              setCalendarBottom={setCalendarBottom}
-              bottomSheetTranslationY={bottomSheetTranslationY}
-              dateOfDisplayedMonth={dateOfDisplayedMonth}
-            />
-          )}
-          pagingEnabled
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          bounces={false}
-          getItemLayout={(data, index) => (
-            { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
-          )}
-          initialScrollIndex={1}
-          decelerationRate={'normal'}
-        />
-      </Animated.View>
 
-      <Animated.View style={[rMonthViewStyle]}>
-        <FlatList
-          ref={flatListRef}
-          data={data}
-          renderItem={({ item }) => (
-            <Month
-              initialDay={item.initialDay}
-              selectedDay={selectedDay}
-              handlePress={handlePress}
-              selectedDayPosition={selectedDayPosition}
-              setCalendarBottom={setCalendarBottom}
-              bottomSheetTranslationY={bottomSheetTranslationY}
-              dateOfDisplayedMonth={dateOfDisplayedMonth}
-            />
-          )}
-          pagingEnabled
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          onStartReached={fetchPrevious}
-          onStartReachedThreshold={0.2}
-          onEndReached={fetchNext}
-          onEndReachedThreshold={0.2}
-          bounces={false}
-          getItemLayout={(data, index) => (
-            { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
-          )}
-          initialScrollIndex={1}
-          decelerationRate={'normal'}
-          maintainVisibleContentPosition={{
-            minIndexForVisible: 1,
-            autoscrollToTopThreshold: undefined
-          }}
-          viewabilityConfig={viewabilityConfig}
-          onViewableItemsChanged={(info) => {
-            info.viewableItems.forEach(item => {
-              setDateOfDisplayedMonth(item.item.initialDay)
-              setSelectedDay(item.item.initialDay)
-            });
-          }}
-        />
-      </Animated.View>
+      <WeekView
+        bottomSheetTranslationY={bottomSheetTranslationY}
+        calendarBottom={calendarBottom}
+        selectedDay={selectedDay}
+        setSelectedDay={setSelectedDay}
+        selectedDayPosition={selectedDayPosition}
+        dateOfDisplayedMonth={dateOfDisplayedMonth}
+        setDateOfDisplayedMonth={setDateOfDisplayedMonth}
+      />
+      <MonthView
+        bottomSheetTranslationY={bottomSheetTranslationY}
+        calendarBottom={calendarBottom}
+        selectedDay={selectedDay}
+        setSelectedDay={setSelectedDay}
+        selectedDayPosition={selectedDayPosition}
+        dateOfDisplayedMonth={dateOfDisplayedMonth}
+        setDateOfDisplayedMonth={setDateOfDisplayedMonth}
+      />
     </View>
   );
 }
@@ -271,9 +84,5 @@ const styles = StyleSheet.create({
   dayName: {
     textAlign: 'center',
     width: Dimensions.get('window').width / 7,
-  },
-  weekContainer: {
-    position: 'absolute',
-    zIndex: 1
   },
 });
