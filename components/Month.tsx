@@ -21,7 +21,6 @@ export default function Month({ initialDay, selectedDay, handlePress, selectedDa
   const paddedDates = padDatesArray(dates)
   const daysArray = createDays(paddedDates, selectedDay, initialDay, handlePress, selectedDayPosition, bottomSheetTranslationY, dateOfDisplayedMonth)
   const weeks = createWeeks(daysArray)
-
   const insets = useSafeAreaInsets()
 
   return (
