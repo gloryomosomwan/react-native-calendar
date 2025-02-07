@@ -41,6 +41,18 @@ export default function Month({ initialDay, selectedDay, handlePress, selectedDa
   )
 }
 
+function getDates(initialDay: Date) {
+  const numDaysInMonth = getDaysInMonth(initialDay)
+  let firstDay = startOfMonth(initialDay)
+  let dates = []
+  let currentDay = firstDay
+  for (let i = 0; i < numDaysInMonth; i++) {
+    dates.push(currentDay)
+    currentDay = addDays(currentDay, 1)
+  }
+  return dates
+}
+
 function createDays(dates: Date[], selectedDay: Date, initialDay: Date, handlePress: (date: Date) => void, selectedDayPosition: SharedValue<number>, bottomSheetTranslationY: SharedValue<number>, dateOfDisplayedMonth: Date) {
   let days: JSX.Element[] = []
   dates.map((date) => {
@@ -57,18 +69,6 @@ function createDays(dates: Date[], selectedDay: Date, initialDay: Date, handlePr
     )
   })
   return days
-}
-
-function getDates(initialDay: Date) {
-  const numDaysInMonth = getDaysInMonth(initialDay)
-  let firstDay = startOfMonth(initialDay)
-  let dates = []
-  let currentDay = firstDay
-  for (let i = 0; i < numDaysInMonth; i++) {
-    dates.push(currentDay)
-    currentDay = addDays(currentDay, 1)
-  }
-  return dates
 }
 
 function padDatesArray(dates: Date[]) {

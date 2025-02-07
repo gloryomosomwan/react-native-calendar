@@ -20,13 +20,33 @@ type WeekViewProps = {
 }
 
 export default function WeekView({ bottomSheetTranslationY, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth }: WeekViewProps) {
-  const [weekData, setWeekData] = useState([
+  const [data, setData] = useState([
     { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(new Date(), 1)) },
     { id: generateUniqueId(), initialDay: new Date() },
     { id: generateUniqueId(), initialDay: startOfWeek(addWeeks(new Date(), 1)) },
   ])
+  const flatListRef = useRef<FlatList>(null);
   const insets = useSafeAreaInsets()
 
+  const fetchPrevious = () => {
+    const newDay = startOfWeek(subWeeks(data[0].initialDay, 1))
+    setData(prevData => {
+      const newData = [...prevData]
+      newData.unshift({ id: generateUniqueId(), initialDay: newDay })
+      newData.pop()
+      return newData
+    })
+  }
+
+  const fetchNext = () => {
+    const newDay = startOfWeek(addWeeks(data[data.length - 1].initialDay, 1))
+    setData(prevData => {
+      const newData = [...prevData]
+      newData.push({ id: generateUniqueId(), initialDay: newDay })
+      newData.shift()
+      return newData
+    })
+  }
 
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDay because handlePress has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
@@ -55,29 +75,53 @@ export default function WeekView({ bottomSheetTranslationY, selectedDay, setSele
     };
   });
 
+  const viewabilityConfig = {
+    itemVisiblePercentThreshold: 90, // Percentage of item that needs to be visible
+    minimumViewTime: 5, // Minimum time (ms) an item must be visible to trigger
+    // waitForInteraction: true // Wait for scroll to stop before checking
+  };
+
   return (
     <Animated.View style={[styles.weekContainer, rWeekViewStyle, { paddingTop: insets.top + 30 + 5 + 17 }]}>
       <FlatList
-        data={weekData}
+        ref={flatListRef}
+        data={data}
         renderItem={({ item }) => (
           <Week
             initialDay={item.initialDay}
             selectedDay={selectedDay}
-            handlePress={handlePress}
             selectedDayPosition={selectedDayPosition}
-            bottomSheetTranslationY={bottomSheetTranslationY}
             dateOfDisplayedMonth={dateOfDisplayedMonth}
+            handlePress={handlePress}
+            bottomSheetTranslationY={bottomSheetTranslationY}
           />
         )}
         pagingEnabled
         horizontal={true}
         showsHorizontalScrollIndicator={false}
+        onStartReached={fetchPrevious}
+        onStartReachedThreshold={0.2}
+        onEndReached={fetchNext}
+        onEndReachedThreshold={0.2}
         bounces={false}
         getItemLayout={(data, index) => (
           { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
         )}
         initialScrollIndex={1}
         decelerationRate={'normal'}
+        maintainVisibleContentPosition={{
+          minIndexForVisible: 1,
+          autoscrollToTopThreshold: undefined
+        }}
+        viewabilityConfig={viewabilityConfig}
+        onViewableItemsChanged={(info) => {
+          info.viewableItems.forEach(item => {
+            setDateOfDisplayedMonth(item.item.initialDay)
+            setSelectedDay(item.item.initialDay)
+            // If month of the new day is previous to the current day, scroll the Month back
+            // Likewise for in the forward direction
+          });
+        }}
       />
     </Animated.View>
   )

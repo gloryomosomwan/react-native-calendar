@@ -148,8 +148,8 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
             selectedDayPosition={selectedDayPosition}
             dateOfDisplayedMonth={dateOfDisplayedMonth}
             handlePress={handlePress}
-            setCalendarBottom={setCalendarBottom}
             bottomSheetTranslationY={bottomSheetTranslationY}
+            setCalendarBottom={setCalendarBottom}
           />
         )}
         pagingEnabled
