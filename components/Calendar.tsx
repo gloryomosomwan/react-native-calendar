@@ -171,21 +171,44 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
       }
     ]}>
       <View style={[styles.header, { paddingTop: insets.top }]}>
-
         <Text style={styles.monthName}>{selectedDay.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
-
         <View style={styles.weekdayNames}>
           {daysOfWeek.map((day) => (
             <Text key={day} style={styles.dayName}>{day}</Text>
           ))}
         </View>
-
       </View>
 
       {/* <View style={{ position: 'absolute', zIndex: 2, top: 20, left: 0, flex: 1, flexDirection: 'row' }}>
         <Button title='SV' onPress={() => { console.log('SelectedDay Position', insets.top) }}></Button>
         <Button title='TV' onPress={() => { console.log('Top Row Position:', topRowPosition.value) }}></Button>
       </View> */}
+
+      <Animated.View style={[styles.weekContainer, rWeekViewStyle, { paddingTop: insets.top + 30 + 5 + 17 }]}>
+        <FlatList
+          data={weekData}
+          renderItem={({ item }) => (
+            <Week
+              initialDay={item.initialDay}
+              selectedDay={selectedDay}
+              handlePress={handlePress}
+              selectedDayPosition={selectedDayPosition}
+              setCalendarBottom={setCalendarBottom}
+              bottomSheetTranslationY={bottomSheetTranslationY}
+              dateOfDisplayedMonth={dateOfDisplayedMonth}
+            />
+          )}
+          pagingEnabled
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          bounces={false}
+          getItemLayout={(data, index) => (
+            { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
+          )}
+          initialScrollIndex={1}
+          decelerationRate={'normal'}
+        />
+      </Animated.View>
 
       <Animated.View style={[rTopSheetStyle]}>
         <Animated.View style={[styles.monthContainer, rMonthViewStyle]}>
@@ -229,32 +252,6 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
             }}
           />
         </Animated.View>
-
-        <Animated.View style={[styles.weekContainer, rWeekViewStyle]}>
-          <FlatList
-            data={weekData}
-            renderItem={({ item }) => (
-              <Week
-                initialDay={item.initialDay}
-                selectedDay={selectedDay}
-                handlePress={handlePress}
-                selectedDayPosition={selectedDayPosition}
-                setCalendarBottom={setCalendarBottom}
-                bottomSheetTranslationY={bottomSheetTranslationY}
-                dateOfDisplayedMonth={dateOfDisplayedMonth}
-              />
-            )}
-            pagingEnabled
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            bounces={false}
-            getItemLayout={(data, index) => (
-              { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
-            )}
-            initialScrollIndex={1}
-            decelerationRate={'normal'}
-          />
-        </Animated.View>
       </Animated.View>
     </View>
   );
@@ -263,13 +260,11 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexGrow: 1,
     backgroundColor: 'white',
   },
   header: {
     backgroundColor: 'white',
     position: 'absolute',
-    top: 0,
     zIndex: 1,
   },
   monthName: {
@@ -284,13 +279,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: Dimensions.get('window').width / 7,
   },
-  monthContainer: {
-    // flex: 1,
-    // width: '100%',
-    // paddingTop: 52
-  },
+  monthContainer: {},
   weekContainer: {
     position: 'absolute',
-    top: 99,
   },
 });

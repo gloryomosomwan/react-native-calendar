@@ -42,7 +42,6 @@ export default function Week({ initialDay, selectedDay, handlePress, selectedDay
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.text}>WeekView</Text> */}
       <View style={styles.days}>
         {days}
       </View>
@@ -52,9 +51,7 @@ export default function Week({ initialDay, selectedDay, handlePress, selectedDay
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    // paddingTop: 97,
-    width: '100%',
+    // backgroundColor: 'aliceblue'
   },
   days: {
     flexDirection: 'row'
