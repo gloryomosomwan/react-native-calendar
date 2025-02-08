@@ -17,9 +17,11 @@ type WeekViewProps = {
   selectedDayPosition: SharedValue<number>
   dateOfDisplayedMonth: Date
   setDateOfDisplayedMonth: (date: Date) => void
+  scrollToPreviousMonth: () => void
+  scrollToNextMonth: () => void
 }
 
-export default function WeekView({ bottomSheetTranslationY, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth }: WeekViewProps) {
+export default function WeekView({ bottomSheetTranslationY, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth }: WeekViewProps) {
   const [data, setData] = useState([
     { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(new Date(), 1)) },
     { id: generateUniqueId(), initialDay: new Date() },
@@ -81,6 +83,18 @@ export default function WeekView({ bottomSheetTranslationY, selectedDay, setSele
     // waitForInteraction: true // Wait for scroll to stop before checking
   };
 
+  function isInEarlierMonth(dateToCheck: Date, referenceDate: Date) {
+    const monthOfDateToCheck = startOfMonth(dateToCheck);
+    const monthOfReferenceDate = startOfMonth(referenceDate);
+    return isBefore(monthOfDateToCheck, monthOfReferenceDate);
+  }
+
+  function isInLaterMonth(dateToCheck: Date, referenceDate: Date) {
+    const monthOfDateToCheck = startOfMonth(dateToCheck);
+    const monthOfReferenceDate = startOfMonth(referenceDate);
+    return isAfter(monthOfDateToCheck, monthOfReferenceDate);
+  }
+
   return (
     <Animated.View style={[styles.weekContainer, rWeekViewStyle, { paddingTop: insets.top + 30 + 5 + 17 }]}>
       <FlatList
@@ -120,6 +134,12 @@ export default function WeekView({ bottomSheetTranslationY, selectedDay, setSele
             setSelectedDay(item.item.initialDay)
             // If month of the new day is previous to the current day, scroll the Month back
             // Likewise for in the forward direction
+
+            if (isInEarlierMonth(item.item.initialDay, selectedDay)) {
+              scrollToPreviousMonth();
+            } else if (isInLaterMonth(item.item.initialDay, selectedDay)) {
+              scrollToNextMonth();
+            }
           });
         }}
       />

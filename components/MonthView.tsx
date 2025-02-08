@@ -1,5 +1,5 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks } from "date-fns";
 import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -20,7 +20,7 @@ type MonthViewProps = {
   setDateOfDisplayedMonth: (date: Date) => void
 }
 
-export default function MonthView({ bottomSheetTranslationY, calendarBottom, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth }: MonthViewProps) {
+const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth }: MonthViewProps, ref) => {
   const [data, setData] = useState([
     { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
     { id: generateUniqueId(), initialDay: new Date() },
@@ -33,6 +33,11 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   const setCalendarBottom = (y: number) => {
     calendarBottom.value = y
   }
+
+  useImperativeHandle(ref, () => ({
+    scrollToPrevious,
+    scrollToNext
+  }));
 
   useEffect(() => {
     topRowPosition.value = insets.top
@@ -179,6 +184,8 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
       />
     </Animated.View>
   )
-}
+})
 
 const styles = StyleSheet.create({})
+
+export default MonthView

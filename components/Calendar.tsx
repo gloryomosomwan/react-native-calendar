@@ -18,6 +18,8 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
   const selectedDayPosition = useSharedValue(0)
   const insets = useSafeAreaInsets()
 
+  const monthViewRef = useRef<{ scrollToPrevious: () => void; scrollToNext: () => void } | null>(null)
+
   return (
     <View style={[
       styles.container,
@@ -40,8 +42,11 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         selectedDayPosition={selectedDayPosition}
         dateOfDisplayedMonth={dateOfDisplayedMonth}
         setDateOfDisplayedMonth={setDateOfDisplayedMonth}
+        scrollToPreviousMonth={() => monthViewRef?.current?.scrollToPrevious()}
+        scrollToNextMonth={() => monthViewRef?.current?.scrollToNext()}
       />
       <MonthView
+        ref={monthViewRef}
         bottomSheetTranslationY={bottomSheetTranslationY}
         calendarBottom={calendarBottom}
         selectedDay={selectedDay}
