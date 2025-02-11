@@ -1,5 +1,5 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks } from "date-fns";
 import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -21,7 +21,7 @@ type WeekViewProps = {
   scrollToNextMonth: () => void
 }
 
-export default function WeekView({ bottomSheetTranslationY, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth }: WeekViewProps) {
+const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth }: WeekViewProps, ref) => {
   const [data, setData] = useState([
     { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(new Date(), 1)) },
     { id: generateUniqueId(), initialDay: new Date() },
@@ -29,6 +29,11 @@ export default function WeekView({ bottomSheetTranslationY, selectedDay, setSele
   ])
   const flatListRef = useRef<FlatList>(null);
   const insets = useSafeAreaInsets()
+
+  useImperativeHandle(ref, () => ({
+    scrollToPrevious,
+    scrollToNext
+  }));
 
   const fetchPrevious = () => {
     const newDay = startOfWeek(subWeeks(data[0].initialDay, 1))
@@ -49,6 +54,26 @@ export default function WeekView({ bottomSheetTranslationY, selectedDay, setSele
       return newData
     })
   }
+
+  const scrollToPrevious = () => {
+    console.log('polo')
+    if (flatListRef.current) {
+      flatListRef?.current?.scrollToIndex({
+        index: 0,
+        animated: true
+      });
+    }
+  };
+
+  const scrollToNext = () => {
+    if (flatListRef.current) {
+      flatListRef?.current?.scrollToIndex({
+        index: 2,
+        animated: true
+      });
+    }
+  };
+
 
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDay because handlePress has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
@@ -96,6 +121,7 @@ export default function WeekView({ bottomSheetTranslationY, selectedDay, setSele
   }
 
   return (
+    // 30 (size of header) + 5 (header margin) + 17 (weekday name text height)
     <Animated.View style={[styles.weekContainer, rWeekViewStyle, { paddingTop: insets.top + 30 + 5 + 17 }]}>
       <FlatList
         ref={flatListRef}
@@ -137,7 +163,8 @@ export default function WeekView({ bottomSheetTranslationY, selectedDay, setSele
 
             if (isInEarlierMonth(item.item.initialDay, selectedDay)) {
               scrollToPreviousMonth();
-            } else if (isInLaterMonth(item.item.initialDay, selectedDay)) {
+            }
+            else if (isInLaterMonth(item.item.initialDay, selectedDay)) {
               scrollToNextMonth();
             }
           });
@@ -145,7 +172,7 @@ export default function WeekView({ bottomSheetTranslationY, selectedDay, setSele
       />
     </Animated.View>
   )
-}
+})
 
 const styles = StyleSheet.create({
   weekContainer: {
@@ -153,3 +180,5 @@ const styles = StyleSheet.create({
     zIndex: 1
   },
 })
+
+export default WeekView

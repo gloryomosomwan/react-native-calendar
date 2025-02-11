@@ -1,6 +1,6 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
-import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks } from "date-fns";
+import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks, differenceInCalendarWeeks } from "date-fns";
 import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -18,9 +18,11 @@ type MonthViewProps = {
   selectedDayPosition: SharedValue<number>
   dateOfDisplayedMonth: Date
   setDateOfDisplayedMonth: (date: Date) => void
+  scrollToPreviousWeek: () => void
+  scrollToNextWeek: () => void
 }
 
-const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth }: MonthViewProps, ref) => {
+const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousWeek, scrollToNextWeek }: MonthViewProps, ref) => {
   const [data, setData] = useState([
     { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
     { id: generateUniqueId(), initialDay: new Date() },
@@ -41,7 +43,8 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
 
   useEffect(() => {
     topRowPosition.value = insets.top
-  })
+    scrollToPreviousWeek()
+  }, [])
 
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDay because handlePress has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
@@ -179,6 +182,19 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
           info.viewableItems.forEach(item => {
             setDateOfDisplayedMonth(item.item.initialDay)
             setSelectedDay(item.item.initialDay)
+
+            if (isInEarlierMonth(item.item.initialDay, selectedDay)) {
+              const difference = differenceInCalendarWeeks(selectedDay, item.item.initialDay)
+              for (let i = 0; i < difference; i++) {
+                scrollToPreviousWeek();
+              }
+            }
+            else if (isInLaterMonth(item.item.initialDay, selectedDay)) {
+              const difference = differenceInCalendarWeeks(selectedDay, item.item.initialDay)
+              for (let i = 0; i < difference; i++) {
+                scrollToNextWeek();
+              }
+            }
           });
         }}
       />

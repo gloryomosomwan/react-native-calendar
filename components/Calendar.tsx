@@ -19,6 +19,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
   const insets = useSafeAreaInsets()
 
   const monthViewRef = useRef<{ scrollToPrevious: () => void; scrollToNext: () => void } | null>(null)
+  const weekViewRef = useRef<{ scrollToPrevious: () => void; scrollToNext: () => void } | null>(null)
 
   return (
     <View style={[
@@ -54,6 +55,8 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         selectedDayPosition={selectedDayPosition}
         dateOfDisplayedMonth={dateOfDisplayedMonth}
         setDateOfDisplayedMonth={setDateOfDisplayedMonth}
+        scrollToPreviousWeek={() => weekViewRef?.current?.scrollToPrevious()}
+        scrollToNextWeek={() => weekViewRef?.current?.scrollToNext()}
       />
     </View>
   );
