@@ -183,7 +183,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
           info.viewableItems.forEach(item => {
             setDateOfDisplayedMonth(item.item.initialDay)
             setSelectedDay(item.item.initialDay)
-            // setInitialData(item.item.initialDay)
+            setInitialData(item.item.initialDay)
 
             // if (isInEarlierMonth(item.item.initialDay, selectedDay)) {
             //   const difference = differenceInCalendarWeeks(selectedDay, item.item.initialDay)

@@ -37,24 +37,21 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     setInitialData
   }));
 
-  useEffect(() => {
-    setInitialData(new Date())
-  }, [])
 
   const setInitialData = (day: Date) => {
-    console.log('setting initial data')
-    // setData([
-    //   { id: "$" + startOfWeek(subWeeks(day, 1)), initialDay: startOfWeek(subWeeks(day, 1)) },
-    //   { id: "$" + day, initialDay: day },
-    //   { id: "$" + startOfWeek(addWeeks(day, 1)), initialDay: startOfWeek(addWeeks(day, 1)) },
-    // ])
-
-    let testDay = new Date(2021, 0, 1)
+    console.log('day:', day)
     setData([
-      { id: "$" + startOfWeek(subWeeks(testDay, 1)), initialDay: startOfWeek(subWeeks(testDay, 1)) },
-      { id: "$" + testDay, initialDay: testDay },
-      { id: "$" + startOfWeek(addWeeks(testDay, 1)), initialDay: startOfWeek(addWeeks(testDay, 1)) },
+      { id: "$" + startOfWeek(subWeeks(day, 1)), initialDay: startOfWeek(subWeeks(day, 1)) },
+      { id: "$" + day, initialDay: day },
+      { id: "$" + startOfWeek(addWeeks(day, 1)), initialDay: startOfWeek(addWeeks(day, 1)) },
     ])
+
+    // let testDay = new Date(2021, 0, 1)
+    // setData([
+    //   { id: "$" + startOfWeek(subWeeks(testDay, 1)), initialDay: startOfWeek(subWeeks(testDay, 1)) },
+    //   { id: "$" + testDay, initialDay: testDay },
+    //   { id: "$" + startOfWeek(addWeeks(testDay, 1)), initialDay: startOfWeek(addWeeks(testDay, 1)) },
+    // ])
   }
 
   const fetchPrevious = () => {
@@ -69,6 +66,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
   }
 
   const fetchNext = () => {
+    console.log('fetching next!')
     const newDay = startOfWeek(addWeeks(data[data.length - 1].initialDay, 1))
     setData(prevData => {
       const newData = [...prevData]
@@ -112,12 +110,12 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
 
   const rWeekViewStyle = useAnimatedStyle(() => {
     return {
-      // opacity: interpolate(
-      //   bottomSheetTranslationY.value,
-      //   [-235, -234],
-      //   [1, 0],
-      //   Extrapolate.CLAMP
-      // ),
+      opacity: interpolate(
+        bottomSheetTranslationY.value,
+        [-235, -234],
+        [1, 0],
+        Extrapolate.CLAMP
+      ),
       pointerEvents: bottomSheetTranslationY.value <= -235 ? 'auto' : 'none',
     };
   });
