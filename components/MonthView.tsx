@@ -43,7 +43,6 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
 
   useEffect(() => {
     topRowPosition.value = insets.top
-    scrollToPreviousWeek()
   }, [])
 
   const handlePress = (date: Date) => {
@@ -183,18 +182,18 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
             setDateOfDisplayedMonth(item.item.initialDay)
             setSelectedDay(item.item.initialDay)
 
-            if (isInEarlierMonth(item.item.initialDay, selectedDay)) {
-              const difference = differenceInCalendarWeeks(selectedDay, item.item.initialDay)
-              for (let i = 0; i < difference; i++) {
-                scrollToPreviousWeek();
-              }
-            }
-            else if (isInLaterMonth(item.item.initialDay, selectedDay)) {
-              const difference = differenceInCalendarWeeks(selectedDay, item.item.initialDay)
-              for (let i = 0; i < difference; i++) {
-                scrollToNextWeek();
-              }
-            }
+            // if (isInEarlierMonth(item.item.initialDay, selectedDay)) {
+            //   const difference = differenceInCalendarWeeks(selectedDay, item.item.initialDay)
+            //   for (let i = 0; i < difference; i++) {
+            //     scrollToPreviousWeek();
+            //   }
+            // }
+            // else if (isInLaterMonth(item.item.initialDay, selectedDay)) {
+            //   const difference = differenceInCalendarWeeks(selectedDay, item.item.initialDay)
+            //   for (let i = 0; i < difference; i++) {
+            //     scrollToNextWeek();
+            //   }
+            // }
           });
         }}
       />
