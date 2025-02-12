@@ -13,13 +13,14 @@ type CalendarProps = {
 }
 
 export default function Calendar({ bottomSheetTranslationY, calendarBottom }: CalendarProps) {
-  const [selectedDay, setSelectedDay] = useState(new Date())
-  const [dateOfDisplayedMonth, setDateOfDisplayedMonth] = useState(new Date())
+  let startOfToday = new Date(new Date().toDateString())
+  const [selectedDay, setSelectedDay] = useState(startOfToday)
+  const [dateOfDisplayedMonth, setDateOfDisplayedMonth] = useState(startOfToday)
   const selectedDayPosition = useSharedValue(0)
   const insets = useSafeAreaInsets()
 
   const monthViewRef = useRef<{ scrollToPrevious: () => void; scrollToNext: () => void } | null>(null)
-  const weekViewRef = useRef<{ scrollToPrevious: () => void; scrollToNext: () => void } | null>(null)
+  const weekViewRef = useRef<{ scrollToPrevious: () => void; scrollToNext: () => void; setInitialData: () => void } | null>(null)
 
   return (
     <View style={[
@@ -58,6 +59,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         setDateOfDisplayedMonth={setDateOfDisplayedMonth}
         scrollToPreviousWeek={() => weekViewRef?.current?.scrollToPrevious()}
         scrollToNextWeek={() => weekViewRef?.current?.scrollToNext()}
+        setInitialData={() => weekViewRef?.current?.setInitialData()}
       />
     </View>
   );

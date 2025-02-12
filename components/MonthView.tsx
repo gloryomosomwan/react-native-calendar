@@ -20,13 +20,15 @@ type MonthViewProps = {
   setDateOfDisplayedMonth: (date: Date) => void
   scrollToPreviousWeek: () => void
   scrollToNextWeek: () => void
+  setInitialData: (day: Date) => void
 }
 
-const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousWeek, scrollToNextWeek }: MonthViewProps, ref) => {
+const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousWeek, scrollToNextWeek, setInitialData }: MonthViewProps, ref) => {
+  let startOfToday = new Date(new Date().toDateString())
   const [data, setData] = useState([
-    { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
-    { id: generateUniqueId(), initialDay: new Date() },
-    { id: generateUniqueId(), initialDay: startOfMonth(addMonths(new Date(), 1)) },
+    { id: generateUniqueId(), initialDay: startOfMonth(subMonths(startOfToday, 1)) },
+    { id: generateUniqueId(), initialDay: startOfToday },
+    { id: generateUniqueId(), initialDay: startOfMonth(addMonths(startOfToday, 1)) },
   ])
   const flatListRef = useRef<FlatList>(null);
   const topRowPosition = useSharedValue(0)
@@ -181,6 +183,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
           info.viewableItems.forEach(item => {
             setDateOfDisplayedMonth(item.item.initialDay)
             setSelectedDay(item.item.initialDay)
+            // setInitialData(item.item.initialDay)
 
             // if (isInEarlierMonth(item.item.initialDay, selectedDay)) {
             //   const difference = differenceInCalendarWeeks(selectedDay, item.item.initialDay)

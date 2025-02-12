@@ -21,22 +21,44 @@ type WeekViewProps = {
   scrollToNextMonth: () => void
 }
 
-const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth }: WeekViewProps, ref) => {
+const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void; setInitialData: (day: Date) => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth }: WeekViewProps, ref) => {
+  let startOfToday = new Date(new Date().toDateString())
   const [data, setData] = useState([
-    { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(new Date(), 1)) },
-    { id: generateUniqueId(), initialDay: new Date() },
-    { id: generateUniqueId(), initialDay: startOfWeek(addWeeks(new Date(), 1)) },
+    { id: "$" + startOfWeek(subWeeks(startOfToday, 1)), initialDay: startOfWeek(subWeeks(startOfToday, 1)) },
+    { id: "$" + startOfToday, initialDay: startOfToday },
+    { id: "$" + startOfWeek(addWeeks(startOfToday, 1)), initialDay: startOfWeek(addWeeks(startOfToday, 1)) },
   ])
   const flatListRef = useRef<FlatList>(null);
   const insets = useSafeAreaInsets()
 
   useImperativeHandle(ref, () => ({
     scrollToPrevious,
-    scrollToNext
+    scrollToNext,
+    setInitialData
   }));
 
+  useEffect(() => {
+    setInitialData(new Date())
+  }, [])
+
+  const setInitialData = (day: Date) => {
+    console.log('setting initial data')
+    // setData([
+    //   { id: "$" + startOfWeek(subWeeks(day, 1)), initialDay: startOfWeek(subWeeks(day, 1)) },
+    //   { id: "$" + day, initialDay: day },
+    //   { id: "$" + startOfWeek(addWeeks(day, 1)), initialDay: startOfWeek(addWeeks(day, 1)) },
+    // ])
+
+    let testDay = new Date(2021, 0, 1)
+    setData([
+      { id: "$" + startOfWeek(subWeeks(testDay, 1)), initialDay: startOfWeek(subWeeks(testDay, 1)) },
+      { id: "$" + testDay, initialDay: testDay },
+      { id: "$" + startOfWeek(addWeeks(testDay, 1)), initialDay: startOfWeek(addWeeks(testDay, 1)) },
+    ])
+  }
+
   const fetchPrevious = () => {
-    console.log('hello!')
+    console.log('fetching previous!')
     const newDay = startOfWeek(subWeeks(data[0].initialDay, 1))
     setData(prevData => {
       const newData = [...prevData]
@@ -57,11 +79,9 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
   }
 
   const scrollToPrevious = () => {
-    console.log('polo')
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 0,
-        animated: true
       });
     }
   };
@@ -70,7 +90,6 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 2,
-        animated: true
       });
     }
   };
@@ -78,7 +97,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
 
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDay because handlePress has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
-    setSelectedDay(date)
+    // setSelectedDay(date)
     // if (!isSameDay(date, selectedDay)) {
     //   if (isInLaterMonth(date, selectedDay)) {
     //     data[2].initialDay = date
@@ -150,10 +169,10 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
         )}
         initialScrollIndex={1}
         decelerationRate={'normal'}
-        maintainVisibleContentPosition={{
-          minIndexForVisible: 1,
-          autoscrollToTopThreshold: undefined
-        }}
+        // maintainVisibleContentPosition={{
+        //   minIndexForVisible: 1,
+        //   autoscrollToTopThreshold: undefined
+        // }}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
