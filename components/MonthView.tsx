@@ -184,19 +184,6 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
             setDateOfDisplayedMonth(item.item.initialDay)
             setSelectedDay(item.item.initialDay)
             setInitialData(item.item.initialDay)
-
-            // if (isInEarlierMonth(item.item.initialDay, selectedDay)) {
-            //   const difference = differenceInCalendarWeeks(selectedDay, item.item.initialDay)
-            //   for (let i = 0; i < difference; i++) {
-            //     scrollToPreviousWeek();
-            //   }
-            // }
-            // else if (isInLaterMonth(item.item.initialDay, selectedDay)) {
-            //   const difference = differenceInCalendarWeeks(selectedDay, item.item.initialDay)
-            //   for (let i = 0; i < difference; i++) {
-            //     scrollToNextWeek();
-            //   }
-            // }
           });
         }}
       />

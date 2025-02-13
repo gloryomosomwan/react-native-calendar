@@ -23,11 +23,17 @@ type WeekViewProps = {
 
 const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void; setInitialData: (day: Date) => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth }: WeekViewProps, ref) => {
   let startOfToday = new Date(new Date().toDateString())
-  const [data, setData] = useState([
-    { id: "$" + startOfWeek(subWeeks(startOfToday, 1)), initialDay: startOfWeek(subWeeks(startOfToday, 1)) },
-    { id: "$" + startOfToday, initialDay: startOfToday },
-    { id: "$" + startOfWeek(addWeeks(startOfToday, 1)), initialDay: startOfWeek(addWeeks(startOfToday, 1)) },
-  ])
+  const [data, setData] = useState(() => {
+    const initialWeeks = [];
+    for (let i = -208; i <= 208; i++) {
+      const weekDate = startOfWeek(addWeeks(startOfToday, i));
+      initialWeeks.push({
+        id: `$${weekDate.getTime()}`,
+        initialDay: weekDate
+      });
+    }
+    return initialWeeks;
+  });
   const flatListRef = useRef<FlatList>(null);
   const insets = useSafeAreaInsets()
 
@@ -39,41 +45,15 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
 
 
   const setInitialData = (day: Date) => {
-    console.log('day:', day)
-    setData([
-      { id: "$" + startOfWeek(subWeeks(day, 1)), initialDay: startOfWeek(subWeeks(day, 1)) },
-      { id: "$" + day, initialDay: day },
-      { id: "$" + startOfWeek(addWeeks(day, 1)), initialDay: startOfWeek(addWeeks(day, 1)) },
-    ])
-
-    // let testDay = new Date(2021, 0, 1)
-    // setData([
-    //   { id: "$" + startOfWeek(subWeeks(testDay, 1)), initialDay: startOfWeek(subWeeks(testDay, 1)) },
-    //   { id: "$" + testDay, initialDay: testDay },
-    //   { id: "$" + startOfWeek(addWeeks(testDay, 1)), initialDay: startOfWeek(addWeeks(testDay, 1)) },
-    // ])
-  }
-
-  const fetchPrevious = () => {
-    console.log('fetching previous!')
-    const newDay = startOfWeek(subWeeks(data[0].initialDay, 1))
-    setData(prevData => {
-      const newData = [...prevData]
-      newData.unshift({ id: generateUniqueId(), initialDay: newDay })
-      newData.pop()
-      return newData
-    })
-  }
-
-  const fetchNext = () => {
-    console.log('fetching next!')
-    const newDay = startOfWeek(addWeeks(data[data.length - 1].initialDay, 1))
-    setData(prevData => {
-      const newData = [...prevData]
-      newData.push({ id: generateUniqueId(), initialDay: newDay })
-      newData.shift()
-      return newData
-    })
+    const newData = [];
+    for (let i = -208; i <= 208; i++) {
+      const weekDate = startOfWeek(addWeeks(day, i));
+      newData.push({
+        id: `$${weekDate.getTime()}`,
+        initialDay: weekDate
+      });
+    }
+    setData(newData);
   }
 
   const scrollToPrevious = () => {
@@ -92,7 +72,6 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     }
   };
 
-
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDay because handlePress has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
     // setSelectedDay(date)
@@ -110,12 +89,12 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
 
   const rWeekViewStyle = useAnimatedStyle(() => {
     return {
-      opacity: interpolate(
-        bottomSheetTranslationY.value,
-        [-235, -234],
-        [1, 0],
-        Extrapolate.CLAMP
-      ),
+      // opacity: interpolate(
+      //   bottomSheetTranslationY.value,
+      //   [-235, -234],
+      //   [1, 0],
+      //   Extrapolate.CLAMP
+      // ),
       pointerEvents: bottomSheetTranslationY.value <= -235 ? 'auto' : 'none',
     };
   });
@@ -157,20 +136,12 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
         pagingEnabled
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        onStartReached={fetchPrevious}
-        onStartReachedThreshold={0.2}
-        onEndReached={fetchNext}
-        onEndReachedThreshold={0.2}
         bounces={false}
         getItemLayout={(data, index) => (
           { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
         )}
-        initialScrollIndex={1}
+        initialScrollIndex={208}
         decelerationRate={'normal'}
-        // maintainVisibleContentPosition={{
-        //   minIndexForVisible: 1,
-        //   autoscrollToTopThreshold: undefined
-        // }}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
