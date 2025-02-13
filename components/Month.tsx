@@ -65,6 +65,7 @@ function createDays(dates: Date[], selectedDate: Date, initialDay: Date, handleP
         selectedDatePosition={selectedDatePosition}
         bottomSheetTranslationY={bottomSheetTranslationY}
         dateOfDisplayedMonth={dateOfDisplayedMonth}
+        dayType='month'
       />
     )
   })

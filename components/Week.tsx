@@ -35,6 +35,7 @@ export default function Week({ initialDay, selectedDate, handlePress, selectedDa
         selectedDatePosition={selectedDatePosition}
         bottomSheetTranslationY={bottomSheetTranslationY}
         dateOfDisplayedMonth={dateOfDisplayedMonth}
+        dayType='week'
       />
     )
   })

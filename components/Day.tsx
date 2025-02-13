@@ -4,6 +4,8 @@ import { isSameMonth, isSameDay, getWeekOfMonth } from 'date-fns'
 import { SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+type DayType = 'week' | 'month'
+
 type DayProps = {
   date: Date;
   selectedDate: Date;
@@ -12,9 +14,10 @@ type DayProps = {
   selectedDatePosition: SharedValue<number>
   bottomSheetTranslationY: SharedValue<number>
   dateOfDisplayedMonth: Date
+  dayType: DayType
 }
 
-export default function Day({ date, selectedDate, firstDayOfMonth, handlePress, selectedDatePosition, bottomSheetTranslationY, dateOfDisplayedMonth }: DayProps) {
+export default function Day({ date, selectedDate, firstDayOfMonth, handlePress, selectedDatePosition, bottomSheetTranslationY, dateOfDisplayedMonth, dayType }: DayProps) {
   const elementRef = useRef<View | null>(null)
   const insets = useSafeAreaInsets()
 
@@ -22,9 +25,9 @@ export default function Day({ date, selectedDate, firstDayOfMonth, handlePress, 
     if (bottomSheetTranslationY.value === 0 || bottomSheetTranslationY.value === -235) {
       if (elementRef.current) {
         elementRef.current.measure((x, y, width, height, pageX, pageY) => {
-          if (bottomSheetTranslationY.value > -235) {
-            selectedDatePosition.value = pageY
-          }
+          // if (bottomSheetTranslationY.value > -235) {
+          selectedDatePosition.value = pageY
+          // }
         });
       }
       handlePress(date)
@@ -45,8 +48,19 @@ export default function Day({ date, selectedDate, firstDayOfMonth, handlePress, 
   return (
     <Pressable onPress={onPress}>
       <View style={styles.container} ref={elementRef}>
-        {isSameDay(date, selectedDate) && isSameMonth(date, firstDayOfMonth) && <View style={styles.selectedDateCircle} />}
-        <Text style={[styles.text, !isSameMonth(date, firstDayOfMonth) && styles.notInCurrentMonth]}>{date.getDate()}</Text>
+        {
+          dayType === 'month' ? (
+            <>
+              {isSameDay(date, selectedDate) && isSameMonth(date, firstDayOfMonth) && <View style={styles.selectedDateCircle} />}
+              <Text style={[styles.text, !isSameMonth(date, firstDayOfMonth) && styles.notInCurrentMonth]}>{date.getDate()}</Text>
+            </>
+          ) : (
+            <>
+              {isSameDay(date, selectedDate) && <View style={styles.selectedDateCircle} />}
+              <Text style={[styles.text, !isSameMonth(date, selectedDate) && styles.notInCurrentMonth]}>{date.getDate()}</Text>
+            </>
+          )
+        }
       </View>
     </Pressable>
   )
