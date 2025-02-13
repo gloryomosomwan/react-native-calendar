@@ -14,9 +14,9 @@ type CalendarProps = {
 
 export default function Calendar({ bottomSheetTranslationY, calendarBottom }: CalendarProps) {
   let startOfToday = new Date(new Date().toDateString())
-  const [selectedDay, setSelectedDay] = useState(startOfToday)
+  const [selectedDate, setSelectedDate] = useState(startOfToday)
   const [dateOfDisplayedMonth, setDateOfDisplayedMonth] = useState(startOfToday)
-  const selectedDayPosition = useSharedValue(0)
+  const selectedDatePosition = useSharedValue(0)
   const insets = useSafeAreaInsets()
 
   const monthViewRef = useRef<{ scrollToPrevious: () => void; scrollToNext: () => void } | null>(null)
@@ -31,18 +31,18 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
       }
     ]}>
       {/* <View style={{ position: 'absolute', zIndex: 2, top: 20, left: 0, flex: 1, flexDirection: 'row' }}>
-        <Button title='SV' onPress={() => { console.log('SelectedDay Position', insets.top) }}></Button>
+        <Button title='SV' onPress={() => { console.log('selectedDate Position', insets.top) }}></Button>
         <Button title='TV' onPress={() => { console.log('Top Row Position:', topRowPosition.value) }}></Button>
       </View> */}
       <Header
-        selectedDay={selectedDay}
+        selectedDate={selectedDate}
       />
       <WeekView
         ref={weekViewRef}
         bottomSheetTranslationY={bottomSheetTranslationY}
-        selectedDay={selectedDay}
-        setSelectedDay={setSelectedDay}
-        selectedDayPosition={selectedDayPosition}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        selectedDatePosition={selectedDatePosition}
         dateOfDisplayedMonth={dateOfDisplayedMonth}
         setDateOfDisplayedMonth={setDateOfDisplayedMonth}
         scrollToPreviousMonth={() => monthViewRef?.current?.scrollToPrevious()}
@@ -52,9 +52,9 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         ref={monthViewRef}
         bottomSheetTranslationY={bottomSheetTranslationY}
         calendarBottom={calendarBottom}
-        selectedDay={selectedDay}
-        setSelectedDay={setSelectedDay}
-        selectedDayPosition={selectedDayPosition}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        selectedDatePosition={selectedDatePosition}
         dateOfDisplayedMonth={dateOfDisplayedMonth}
         setDateOfDisplayedMonth={setDateOfDisplayedMonth}
         scrollToPreviousWeek={() => weekViewRef?.current?.scrollToPrevious()}

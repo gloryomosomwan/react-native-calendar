@@ -6,15 +6,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type DayProps = {
   date: Date;
-  selectedDay: Date;
+  selectedDate: Date;
   firstDayOfMonth: Date;
   handlePress: (date: Date) => void
-  selectedDayPosition: SharedValue<number>
+  selectedDatePosition: SharedValue<number>
   bottomSheetTranslationY: SharedValue<number>
   dateOfDisplayedMonth: Date
 }
 
-export default function Day({ date, selectedDay, firstDayOfMonth, handlePress, selectedDayPosition, bottomSheetTranslationY, dateOfDisplayedMonth }: DayProps) {
+export default function Day({ date, selectedDate, firstDayOfMonth, handlePress, selectedDatePosition, bottomSheetTranslationY, dateOfDisplayedMonth }: DayProps) {
   const elementRef = useRef<View | null>(null)
   const insets = useSafeAreaInsets()
 
@@ -23,7 +23,7 @@ export default function Day({ date, selectedDay, firstDayOfMonth, handlePress, s
       if (elementRef.current) {
         elementRef.current.measure((x, y, width, height, pageX, pageY) => {
           if (bottomSheetTranslationY.value > -235) {
-            selectedDayPosition.value = pageY
+            selectedDatePosition.value = pageY
           }
         });
       }
@@ -33,19 +33,19 @@ export default function Day({ date, selectedDay, firstDayOfMonth, handlePress, s
 
   useLayoutEffect(() => {
     // Add a check to see where botttom sheet is?
-    if (isSameDay(date, selectedDay) && isSameMonth(date, selectedDay) && isSameMonth(firstDayOfMonth, dateOfDisplayedMonth)) {
+    if (isSameDay(date, selectedDate) && isSameMonth(date, selectedDate) && isSameMonth(firstDayOfMonth, dateOfDisplayedMonth)) {
       //     if (bottomSheetTranslationY.value > -235) {
-      //       selectedDayPosition.value = pageY
+      //       selectedDatePosition.value = pageY
       //     }
       const weekOfMonth = getWeekOfMonth(date)
-      selectedDayPosition.value = (insets.top + 50) + (47 * (weekOfMonth - 1))
+      selectedDatePosition.value = (insets.top + 50) + (47 * (weekOfMonth - 1))
     }
   })
 
   return (
     <Pressable onPress={onPress}>
       <View style={styles.container} ref={elementRef}>
-        {isSameDay(date, selectedDay) && isSameMonth(date, firstDayOfMonth) && <View style={styles.selectedDayCircle} />}
+        {isSameDay(date, selectedDate) && isSameMonth(date, firstDayOfMonth) && <View style={styles.selectedDateCircle} />}
         <Text style={[styles.text, !isSameMonth(date, firstDayOfMonth) && styles.notInCurrentMonth]}>{date.getDate()}</Text>
       </View>
     </Pressable>
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   notInCurrentMonth: {
     color: 'grey',
   },
-  selectedDayCircle: {
+  selectedDateCircle: {
     position: 'absolute',
     backgroundColor: 'powderblue',
     zIndex: -1,

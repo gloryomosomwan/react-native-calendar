@@ -8,18 +8,18 @@ import Day from './Day'
 
 type MonthProps = {
   initialDay: Date
-  selectedDay: Date
+  selectedDate: Date
   handlePress: (date: Date) => void
-  selectedDayPosition: SharedValue<number>
+  selectedDatePosition: SharedValue<number>
   setCalendarBottom: (y: number) => void
   bottomSheetTranslationY: SharedValue<number>
   dateOfDisplayedMonth: Date
 }
 
-export default function Month({ initialDay, selectedDay, handlePress, selectedDayPosition, setCalendarBottom, bottomSheetTranslationY, dateOfDisplayedMonth }: MonthProps) {
+export default function Month({ initialDay, selectedDate, handlePress, selectedDatePosition, setCalendarBottom, bottomSheetTranslationY, dateOfDisplayedMonth }: MonthProps) {
   const dates = getDates(initialDay)
   const paddedDates = padDatesArray(dates)
-  const daysArray = createDays(paddedDates, selectedDay, initialDay, handlePress, selectedDayPosition, bottomSheetTranslationY, dateOfDisplayedMonth)
+  const daysArray = createDays(paddedDates, selectedDate, initialDay, handlePress, selectedDatePosition, bottomSheetTranslationY, dateOfDisplayedMonth)
   const weeks = createWeeks(daysArray)
   const insets = useSafeAreaInsets()
 
@@ -53,16 +53,16 @@ function getDates(initialDay: Date) {
   return dates
 }
 
-function createDays(dates: Date[], selectedDay: Date, initialDay: Date, handlePress: (date: Date) => void, selectedDayPosition: SharedValue<number>, bottomSheetTranslationY: SharedValue<number>, dateOfDisplayedMonth: Date) {
+function createDays(dates: Date[], selectedDate: Date, initialDay: Date, handlePress: (date: Date) => void, selectedDatePosition: SharedValue<number>, bottomSheetTranslationY: SharedValue<number>, dateOfDisplayedMonth: Date) {
   let days: JSX.Element[] = []
   dates.map((date) => {
     days.push(
       <Day key={date.toDateString()}
         date={date}
-        selectedDay={selectedDay}
+        selectedDate={selectedDate}
         firstDayOfMonth={initialDay}
         handlePress={handlePress}
-        selectedDayPosition={selectedDayPosition}
+        selectedDatePosition={selectedDatePosition}
         bottomSheetTranslationY={bottomSheetTranslationY}
         dateOfDisplayedMonth={dateOfDisplayedMonth}
       />

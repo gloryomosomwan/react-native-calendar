@@ -7,14 +7,14 @@ import Day from './Day'
 
 type WeekProps = {
   initialDay: Date
-  selectedDay: Date
+  selectedDate: Date
   handlePress: (date: Date) => void
-  selectedDayPosition: SharedValue<number>
+  selectedDatePosition: SharedValue<number>
   bottomSheetTranslationY: SharedValue<number>
   dateOfDisplayedMonth: Date
 }
 
-export default function Week({ initialDay, selectedDay, handlePress, selectedDayPosition, bottomSheetTranslationY, dateOfDisplayedMonth }: WeekProps) {
+export default function Week({ initialDay, selectedDate, handlePress, selectedDatePosition, bottomSheetTranslationY, dateOfDisplayedMonth }: WeekProps) {
   let dates = []
   let firstDayOfWeek = startOfWeek(initialDay)
   let currentDay = firstDayOfWeek
@@ -29,10 +29,10 @@ export default function Week({ initialDay, selectedDay, handlePress, selectedDay
       <Day
         key={date.toDateString()}
         date={date}
-        selectedDay={selectedDay}
+        selectedDate={selectedDate}
         firstDayOfMonth={initialDay}
         handlePress={handlePress}
-        selectedDayPosition={selectedDayPosition}
+        selectedDatePosition={selectedDatePosition}
         bottomSheetTranslationY={bottomSheetTranslationY}
         dateOfDisplayedMonth={dateOfDisplayedMonth}
       />

@@ -12,16 +12,16 @@ const generateUniqueId = () => {
 
 type WeekViewProps = {
   bottomSheetTranslationY: SharedValue<number>
-  selectedDay: Date
-  setSelectedDay: (date: Date) => void
-  selectedDayPosition: SharedValue<number>
+  selectedDate: Date
+  setSelectedDate: (date: Date) => void
+  selectedDatePosition: SharedValue<number>
   dateOfDisplayedMonth: Date
   setDateOfDisplayedMonth: (date: Date) => void
   scrollToPreviousMonth: () => void
   scrollToNextMonth: () => void
 }
 
-const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void; setInitialData: (day: Date) => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth }: WeekViewProps, ref) => {
+const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void; setInitialData: (day: Date) => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth }: WeekViewProps, ref) => {
   let startOfToday = new Date(new Date().toDateString())
   const [data, setData] = useState(() => {
     const initialWeeks = [];
@@ -73,14 +73,14 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
   };
 
   const handlePress = (date: Date) => {
-    // In here, we just compare date and selectedDay because handlePress has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
-    // setSelectedDay(date)
-    // if (!isSameDay(date, selectedDay)) {
-    //   if (isInLaterMonth(date, selectedDay)) {
+    // In here, we just compare date and selectedDate because handlePress has a stale closure. In other words, even if we set selectedDate to date (which we do below) it won't update for us in here
+    // setSelectedDate(date)
+    // if (!isSameDay(date, selectedDate)) {
+    //   if (isInLaterMonth(date, selectedDate)) {
     //     data[2].initialDay = date
     //     scrollToNext()
     //   }
-    //   else if (isInEarlierMonth(date, selectedDay)) {
+    //   else if (isInEarlierMonth(date, selectedDate)) {
     //     data[0].initialDay = date
     //     scrollToPrevious()
     //   }
@@ -126,8 +126,8 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
         renderItem={({ item }) => (
           <Week
             initialDay={item.initialDay}
-            selectedDay={selectedDay}
-            selectedDayPosition={selectedDayPosition}
+            selectedDate={selectedDate}
+            selectedDatePosition={selectedDatePosition}
             dateOfDisplayedMonth={dateOfDisplayedMonth}
             handlePress={handlePress}
             bottomSheetTranslationY={bottomSheetTranslationY}
@@ -146,14 +146,14 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
             // setDateOfDisplayedMonth(item.item.initialDay)
-            // setSelectedDay(item.item.initialDay)
+            // setSelectedDate(item.item.initialDay)
             // // If month of the new day is previous to the current day, scroll the Month back
             // // Likewise for in the forward direction
 
-            // if (isInEarlierMonth(item.item.initialDay, selectedDay)) {
+            // if (isInEarlierMonth(item.item.initialDay, selectedDate)) {
             //   scrollToPreviousMonth();
             // }
-            // else if (isInLaterMonth(item.item.initialDay, selectedDay)) {
+            // else if (isInLaterMonth(item.item.initialDay, selectedDate)) {
             //   scrollToNextMonth();
             // }
           });

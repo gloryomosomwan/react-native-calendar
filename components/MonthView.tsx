@@ -13,9 +13,9 @@ const generateUniqueId = () => {
 type MonthViewProps = {
   bottomSheetTranslationY: SharedValue<number>
   calendarBottom: SharedValue<number>
-  selectedDay: Date
-  setSelectedDay: (date: Date) => void
-  selectedDayPosition: SharedValue<number>
+  selectedDate: Date
+  setSelectedDate: (date: Date) => void
+  selectedDatePosition: SharedValue<number>
   dateOfDisplayedMonth: Date
   setDateOfDisplayedMonth: (date: Date) => void
   scrollToPreviousWeek: () => void
@@ -23,7 +23,7 @@ type MonthViewProps = {
   setInitialData: (day: Date) => void
 }
 
-const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDay, setSelectedDay, selectedDayPosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousWeek, scrollToNextWeek, setInitialData }: MonthViewProps, ref) => {
+const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousWeek, scrollToNextWeek, setInitialData }: MonthViewProps, ref) => {
   let startOfToday = new Date(new Date().toDateString())
   const [data, setData] = useState([
     { id: generateUniqueId(), initialDay: startOfMonth(subMonths(startOfToday, 1)) },
@@ -48,14 +48,14 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
   }, [])
 
   const handlePress = (date: Date) => {
-    // In here, we just compare date and selectedDay because handlePress has a stale closure. In other words, even if we set selectedDay to date (which we do below) it won't update for us in here
-    setSelectedDay(date)
-    if (!isSameDay(date, selectedDay)) {
-      if (isInLaterMonth(date, selectedDay)) {
+    // In here, we just compare date and selectedDate because handlePress has a stale closure. In other words, even if we set selectedDate to date (which we do below) it won't update for us in here
+    setSelectedDate(date)
+    if (!isSameDay(date, selectedDate)) {
+      if (isInLaterMonth(date, selectedDate)) {
         data[2].initialDay = date
         scrollToNext()
       }
-      else if (isInEarlierMonth(date, selectedDay)) {
+      else if (isInEarlierMonth(date, selectedDate)) {
         data[0].initialDay = date
         scrollToPrevious()
       }
@@ -138,7 +138,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
         translateY: interpolate(
           bottomSheetTranslationY.value,
           [0, -235],
-          [0, (topRowPosition.value + 50) - selectedDayPosition.value] // 50 is for the padding
+          [0, (topRowPosition.value + 50) - selectedDatePosition.value] // 50 is for the padding
         )
       }],
       pointerEvents: bottomSheetTranslationY.value > -235 ? 'auto' : 'none',
@@ -153,8 +153,8 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
         renderItem={({ item }) => (
           <Month
             initialDay={item.initialDay}
-            selectedDay={selectedDay}
-            selectedDayPosition={selectedDayPosition}
+            selectedDate={selectedDate}
+            selectedDatePosition={selectedDatePosition}
             dateOfDisplayedMonth={dateOfDisplayedMonth}
             handlePress={handlePress}
             bottomSheetTranslationY={bottomSheetTranslationY}
@@ -182,7 +182,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
             setDateOfDisplayedMonth(item.item.initialDay)
-            setSelectedDay(item.item.initialDay)
+            setSelectedDate(item.item.initialDay)
             setInitialData(item.item.initialDay)
           });
         }}
