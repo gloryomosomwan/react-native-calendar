@@ -1,10 +1,12 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks, differenceInCalendarWeeks } from "date-fns";
-import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate } from "react-native-reanimated";
+import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate, useDerivedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Month from "./Month";
+
+const EXPANDED_MODE_THRESHOLD = -235
 
 const generateUniqueId = () => {
   return `${Date.now()}-${Math.random()}`
@@ -33,6 +35,12 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
   const flatListRef = useRef<FlatList>(null);
   const topRowPosition = useSharedValue(0)
   const insets = useSafeAreaInsets()
+
+  const currentMode = useDerivedValue(() => {
+    return bottomSheetTranslationY.value > EXPANDED_MODE_THRESHOLD
+      ? 'expanded'
+      : 'collapsed'
+  })
 
   const setCalendarBottom = (y: number) => {
     calendarBottom.value = y
@@ -181,9 +189,11 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
-            setDateOfDisplayedMonth(item.item.initialDay)
-            setSelectedDate(item.item.initialDay)
-            setInitialData(item.item.initialDay)
+            if (currentMode.value === 'expanded') {
+              setDateOfDisplayedMonth(item.item.initialDay)
+              setSelectedDate(item.item.initialDay)
+              setInitialData(item.item.initialDay)
+            }
           });
         }}
       />

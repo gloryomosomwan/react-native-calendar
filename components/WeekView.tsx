@@ -74,17 +74,15 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
 
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDate because handlePress has a stale closure. In other words, even if we set selectedDate to date (which we do below) it won't update for us in here
-    // setSelectedDate(date)
-    // if (!isSameDay(date, selectedDate)) {
-    //   if (isInLaterMonth(date, selectedDate)) {
-    //     data[2].initialDay = date
-    //     scrollToNext()
-    //   }
-    //   else if (isInEarlierMonth(date, selectedDate)) {
-    //     data[0].initialDay = date
-    //     scrollToPrevious()
-    //   }
-    // }
+    setSelectedDate(date)
+    if (!isSameDay(date, selectedDate)) {
+      if (isInLaterMonth(date, selectedDate)) {
+        scrollToNextMonth()
+      }
+      else if (isInEarlierMonth(date, selectedDate)) {
+        scrollToPreviousMonth()
+      }
+    }
   }
 
   const rWeekViewStyle = useAnimatedStyle(() => {
