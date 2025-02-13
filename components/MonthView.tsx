@@ -68,6 +68,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
         scrollToPrevious()
       }
     }
+    setInitialData(date)
   }
 
   function isInEarlierMonth(dateToCheck: Date, referenceDate: Date) {
@@ -106,7 +107,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 0,
-        animated: true
+        // animated: false
       });
     }
   };
@@ -115,7 +116,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 2,
-        animated: true
+        // animated: false
       });
     }
   };

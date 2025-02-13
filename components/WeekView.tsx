@@ -1,10 +1,12 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks } from "date-fns";
-import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate } from "react-native-reanimated";
+import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate, useDerivedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Week from "./Week"
+
+const EXPANDED_MODE_THRESHOLD = -235
 
 const generateUniqueId = () => {
   return `${Date.now()}-${Math.random()}`
@@ -43,6 +45,11 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     setInitialData
   }));
 
+  const currentMode = useDerivedValue(() => {
+    return bottomSheetTranslationY.value > EXPANDED_MODE_THRESHOLD
+      ? 'expanded'
+      : 'collapsed'
+  })
 
   const setInitialData = (day: Date) => {
     const newData = [];
@@ -54,6 +61,10 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
       });
     }
     setData(newData);
+    flatListRef.current?.scrollToIndex({
+      index: 208,
+      animated: false
+    })
   }
 
   const scrollToPrevious = () => {
@@ -87,12 +98,12 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
 
   const rWeekViewStyle = useAnimatedStyle(() => {
     return {
-      // opacity: interpolate(
-      //   bottomSheetTranslationY.value,
-      //   [-235, -234],
-      //   [1, 0],
-      //   Extrapolate.CLAMP
-      // ),
+      opacity: interpolate(
+        bottomSheetTranslationY.value,
+        [-235, -234],
+        [1, 0],
+        Extrapolate.CLAMP
+      ),
       pointerEvents: bottomSheetTranslationY.value <= -235 ? 'auto' : 'none',
     };
   });
@@ -143,17 +154,16 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
-            // setDateOfDisplayedMonth(item.item.initialDay)
-            // setSelectedDate(item.item.initialDay)
-            // // If month of the new day is previous to the current day, scroll the Month back
-            // // Likewise for in the forward direction
-
-            // if (isInEarlierMonth(item.item.initialDay, selectedDate)) {
-            //   scrollToPreviousMonth();
-            // }
-            // else if (isInLaterMonth(item.item.initialDay, selectedDate)) {
-            //   scrollToNextMonth();
-            // }
+            if (currentMode.value === 'collapsed') {
+              setDateOfDisplayedMonth(item.item.initialDay)
+              setSelectedDate(item.item.initialDay)
+              if (isInEarlierMonth(item.item.initialDay, selectedDate)) {
+                scrollToPreviousMonth();
+              }
+              else if (isInLaterMonth(item.item.initialDay, selectedDate)) {
+                scrollToNextMonth();
+              }
+            }
           });
         }}
       />
