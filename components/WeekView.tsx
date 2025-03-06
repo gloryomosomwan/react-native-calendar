@@ -150,6 +150,8 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
           { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
         )}
         initialScrollIndex={208}
+        windowSize={3}
+        initialNumToRender={3}
         decelerationRate={'normal'}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {

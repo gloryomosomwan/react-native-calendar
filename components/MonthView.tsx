@@ -27,11 +27,29 @@ type MonthViewProps = {
 
 const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousWeek, scrollToNextWeek, setInitialData }: MonthViewProps, ref) => {
   let startOfToday = new Date(new Date().toDateString())
-  const [data, setData] = useState([
-    { id: generateUniqueId(), initialDay: startOfMonth(subMonths(startOfToday, 1)) },
-    { id: generateUniqueId(), initialDay: startOfToday },
-    { id: generateUniqueId(), initialDay: startOfMonth(addMonths(startOfToday, 1)) },
-  ])
+  // const [data, setData] = useState([
+  //   { id: generateUniqueId(), initialDay: startOfMonth(subMonths(startOfToday, 1)) },
+  //   { id: generateUniqueId(), initialDay: startOfToday },
+  //   { id: generateUniqueId(), initialDay: startOfMonth(addMonths(startOfToday, 1)) },
+  // ])
+  const [index, setIndex] = useState(50)
+
+  const [data, setData] = useState(() => {
+    const initialMonths = []
+    for (let i = -50; i <= 50; i++) {
+      const monthDate = startOfMonth(addMonths(startOfToday, i))
+      initialMonths.push({
+        id: `$${monthDate.getTime()}`,
+        initialDay: monthDate
+      })
+    }
+    return initialMonths
+  })
+
+  // useEffect(() => {
+  //   console.log('Rendering MonthView...')
+  // })
+
   const flatListRef = useRef<FlatList>(null);
   const topRowPosition = useSharedValue(0)
   const insets = useSafeAreaInsets()
@@ -60,11 +78,11 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
     setSelectedDate(date)
     if (!isSameDay(date, selectedDate)) {
       if (isInLaterMonth(date, selectedDate)) {
-        data[2].initialDay = date
+        // data[2].initialDay = date
         scrollToNext()
       }
       else if (isInEarlierMonth(date, selectedDate)) {
-        data[0].initialDay = date
+        // data[0].initialDay = date
         scrollToPrevious()
       }
     }
@@ -106,18 +124,18 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
   const scrollToPrevious = () => {
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
-        index: 0,
-        // animated: false
+        index: index - 1,
       });
+      setIndex(index - 1)
     }
   };
 
   const scrollToNext = () => {
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
-        index: 2,
-        // animated: false
+        index: index + 1,
       });
+      setIndex(index + 1)
     }
   };
 
@@ -173,20 +191,22 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
         pagingEnabled
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        onStartReached={fetchPrevious}
-        onStartReachedThreshold={0.2}
-        onEndReached={fetchNext}
-        onEndReachedThreshold={0.2}
+        // onStartReached={fetchPrevious}
+        // onStartReachedThreshold={0.2}
+        // onEndReached={fetchNext}
+        // onEndReachedThreshold={0.2}
         bounces={false}
         getItemLayout={(data, index) => (
           { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
         )}
-        initialScrollIndex={1}
+        initialScrollIndex={50}
+        windowSize={3}
+        initialNumToRender={3}
         decelerationRate={'normal'}
-        maintainVisibleContentPosition={{
-          minIndexForVisible: 1,
-          autoscrollToTopThreshold: undefined
-        }}
+        // maintainVisibleContentPosition={{
+        //   minIndexForVisible: 1,
+        //   autoscrollToTopThreshold: undefined
+        // }}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
