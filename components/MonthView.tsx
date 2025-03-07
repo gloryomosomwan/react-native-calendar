@@ -1,6 +1,6 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
-import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks, differenceInCalendarWeeks } from "date-fns";
+import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks, differenceInCalendarWeeks, isSameMonth } from "date-fns";
 import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate, useDerivedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -27,19 +27,12 @@ type MonthViewProps = {
 
 const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousWeek, scrollToNextWeek, setInitialData }: MonthViewProps, ref) => {
   let startOfToday = new Date(new Date().toDateString())
-  const [index, setIndex] = useState(50)
 
-  const [data, setData] = useState(() => {
-    const initialMonths = []
-    for (let i = -50; i <= 50; i++) {
-      const monthDate = startOfMonth(addMonths(startOfToday, i))
-      initialMonths.push({
-        id: `$${monthDate.getTime()}`,
-        initialDay: monthDate
-      })
-    }
-    return initialMonths
-  })
+  const [data, setData] = useState([
+    { id: generateUniqueId(), initialDay: startOfMonth(subMonths(startOfToday, 1)) },
+    { id: generateUniqueId(), initialDay: startOfToday },
+    { id: generateUniqueId(), initialDay: startOfMonth(addMonths(startOfToday, 1)) },
+  ])
 
   const flatListRef = useRef<FlatList>(null);
   const topRowPosition = useSharedValue(0)
@@ -69,9 +62,11 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
     setSelectedDate(date)
     if (!isSameDay(date, selectedDate)) {
       if (isInLaterMonth(date, selectedDate)) {
+        data[2].initialDay = date
         scrollToNext()
       }
       else if (isInEarlierMonth(date, selectedDate)) {
+        data[0].initialDay = date
         scrollToPrevious()
       }
     }
@@ -90,30 +85,77 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
     return isAfter(monthOfDateToCheck, monthOfReferenceDate);
   }
 
+  const fetchPrevious = () => {
+    const newDay = startOfMonth(subMonths(data[0].initialDay, 1));
+    setData(prevData => {
+      const newData = [...prevData];
+      newData.unshift({ id: generateUniqueId(), initialDay: newDay });
+      newData.pop();
+      return newData;
+    });
+  }
+
+  const fetchNext = () => {
+    console.log('fetching next')
+    const newDay = startOfMonth(addMonths(data[data.length - 1].initialDay, 1))
+    setData(prevData => {
+      const newData = [...prevData];
+      newData.push({ id: generateUniqueId(), initialDay: newDay });
+      newData.shift();
+      return newData;
+    });
+  }
+
+
   const scrollToPrevious = () => {
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
-        index: index - 1,
+        index: 0
       });
-      setIndex(index - 1)
     }
   };
 
   const scrollToNext = () => {
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
-        index: index + 1,
+        index: 2,
       });
-      setIndex(index + 1)
     }
   };
 
   const scrollToToday = () => {
-    setData([
-      { id: generateUniqueId(), initialDay: startOfMonth(subMonths(new Date(), 1)) },
-      { id: generateUniqueId(), initialDay: new Date() },
-      { id: generateUniqueId(), initialDay: startOfMonth(addMonths(new Date(), 1)) },
-    ])
+    if (!isSameDay(startOfToday, selectedDate)) {
+      if (isInLaterMonth(startOfToday, selectedDate)) {
+        setSelectedDate(startOfToday)
+        setData(prevData => {
+          const newData = [...prevData];
+          newData.pop();
+          newData.push({ id: generateUniqueId(), initialDay: startOfToday });
+          return newData;
+        });
+        scrollToNext()
+        setData(prevData => {
+          const newData = [...prevData];
+          newData[1].initialDay = startOfMonth(subMonths(startOfToday, 1))
+          return newData;
+        });
+      }
+      else if (isInEarlierMonth(startOfToday, selectedDate)) {
+        setSelectedDate(startOfToday)
+        setData(prevData => {
+          const newData = [...prevData];
+          newData.shift();
+          newData.unshift({ id: generateUniqueId(), initialDay: startOfToday });
+          return newData;
+        });
+        scrollToPrevious()
+        setData(prevData => {
+          const newData = [...prevData];
+          newData[1].initialDay = startOfMonth(addMonths(startOfToday, 1))
+          return newData;
+        });
+      }
+    }
   }
 
   const viewabilityConfig = {
@@ -143,6 +185,12 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
 
   return (
     <Animated.View style={[rMonthViewStyle]}>
+      <View style={{ position: 'absolute', top: 40, zIndex: 2 }}>
+        <Button title='today' onPress={scrollToToday} />
+      </View>
+      <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 60 }}>
+        <Button title='data' onPress={() => console.log(data)} />
+      </View>
       <FlatList
         ref={flatListRef}
         data={data}
@@ -164,10 +212,18 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
         getItemLayout={(data, index) => (
           { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
         )}
-        initialScrollIndex={50}
-        windowSize={3}
+        onStartReached={fetchPrevious}
+        onStartReachedThreshold={0.2}
+        onEndReached={fetchNext}
+        onEndReachedThreshold={0.2}
+        initialScrollIndex={1}
         initialNumToRender={3}
         decelerationRate={'normal'}
+        windowSize={3}
+        maintainVisibleContentPosition={{
+          minIndexForVisible: 1,
+          autoscrollToTopThreshold: undefined
+        }}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {

@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native'
-import React from 'react'
-import { startOfMonth, addDays, subDays, getDay, getDaysInMonth } from 'date-fns'
+import React, { memo } from 'react'
+import { startOfMonth, addDays, subDays, getDay, getDaysInMonth, isSameMonth } from 'date-fns'
 import { SharedValue } from 'react-native-reanimated'
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -16,7 +16,7 @@ type MonthProps = {
   dateOfDisplayedMonth: Date
 }
 
-export default function Month({ initialDay, selectedDate, handlePress, selectedDatePosition, setCalendarBottom, bottomSheetTranslationY, dateOfDisplayedMonth }: MonthProps) {
+export default memo(function Month({ initialDay, selectedDate, handlePress, selectedDatePosition, setCalendarBottom, bottomSheetTranslationY, dateOfDisplayedMonth }: MonthProps) {
   const dates = getDates(initialDay)
   const paddedDates = padDatesArray(dates)
   const daysArray = createDays(paddedDates, selectedDate, initialDay, handlePress, selectedDatePosition, bottomSheetTranslationY, dateOfDisplayedMonth)
@@ -39,6 +39,16 @@ export default function Month({ initialDay, selectedDate, handlePress, selectedD
       </View>
     </View>
   )
+}, arePropsEqual)
+
+function arePropsEqual(oldProps: MonthProps, newProps: MonthProps): boolean {
+  if (!isSameMonth(newProps.selectedDate, newProps.initialDay)) {
+    return true
+  }
+  else {
+    return false
+  }
+  // return true
 }
 
 function getDates(initialDay: Date) {
