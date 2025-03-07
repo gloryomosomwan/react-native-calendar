@@ -124,7 +124,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
   };
 
   const scrollToToday = () => {
-    if (!isSameDay(startOfToday, selectedDate)) {
+    if (!isSameMonth(startOfToday, selectedDate)) {
       if (isInLaterMonth(startOfToday, selectedDate)) {
         setSelectedDate(startOfToday)
         setData(prevData => {
@@ -155,6 +155,9 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
           return newData;
         });
       }
+    }
+    else if (isSameMonth(startOfToday, selectedDate)) {
+      setSelectedDate(startOfToday)
     }
   }
 
