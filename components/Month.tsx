@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native'
+import { Platform, StyleSheet, View } from 'react-native'
 import React, { memo } from 'react'
 import { startOfMonth, addDays, subDays, getDay, getDaysInMonth, isSameMonth } from 'date-fns'
 import { SharedValue } from 'react-native-reanimated'
@@ -23,10 +23,19 @@ export default memo(function Month({ initialDay, selectedDate, handlePress, sele
   const weeks = createWeeks(daysArray)
   const insets = useSafeAreaInsets()
 
+  let topPadding = 0;
+
+  if (Platform.OS === 'android') {
+    topPadding = 0
+  }
+  else if (Platform.OS === 'ios') {
+    topPadding = insets.top
+  }
+
   return (
     <View style={styles.container}
       onLayout={(e) => {
-        let bottom = e.nativeEvent.layout.height + insets.top
+        let bottom = e.nativeEvent.layout.height + topPadding
         setCalendarBottom(bottom)
       }}
     >

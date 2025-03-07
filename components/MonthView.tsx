@@ -1,4 +1,4 @@
-import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
+import { View, StyleSheet, FlatList, Dimensions, Button, Text, Platform, StatusBar } from "react-native";
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks, differenceInCalendarWeeks, isSameMonth } from "date-fns";
 import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate, useDerivedValue } from "react-native-reanimated";
@@ -54,8 +54,14 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
   }));
 
   useEffect(() => {
-    topRowPosition.value = insets.top
-  }, [])
+    if (Platform.OS === 'ios') {
+      topRowPosition.value = insets.top
+    }
+    else if (Platform.OS === 'android') {
+      topRowPosition.value = 0
+    }
+  })
+
 
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDate because handlePress has a stale closure. In other words, even if we set selectedDate to date (which we do below) it won't update for us in here
@@ -96,7 +102,6 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
   }
 
   const fetchNext = () => {
-    console.log('fetching next')
     const newDay = startOfMonth(addMonths(data[data.length - 1].initialDay, 1))
     setData(prevData => {
       const newData = [...prevData];
@@ -105,7 +110,6 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
       return newData;
     });
   }
-
 
   const scrollToPrevious = () => {
     if (flatListRef.current) {
@@ -171,18 +175,18 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
     return {
       opacity: interpolate(
         bottomSheetTranslationY.value,
-        [-235, -234],
+        [EXPANDED_MODE_THRESHOLD, EXPANDED_MODE_THRESHOLD + 1],
         [0, 1],
         Extrapolate.CLAMP
       ),
       transform: [{
         translateY: interpolate(
           bottomSheetTranslationY.value,
-          [0, -235],
+          [0, EXPANDED_MODE_THRESHOLD],
           [0, (topRowPosition.value + 50) - selectedDatePosition.value] // 50 is for the padding
         )
       }],
-      pointerEvents: bottomSheetTranslationY.value > -235 ? 'auto' : 'none',
+      pointerEvents: bottomSheetTranslationY.value > EXPANDED_MODE_THRESHOLD ? 'auto' : 'none',
     };
   });
 
@@ -191,9 +195,12 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
       <View style={{ position: 'absolute', top: 40, zIndex: 2 }}>
         <Button title='today' onPress={scrollToToday} />
       </View>
-      <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 60 }}>
+      {/* <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 60 }}>
         <Button title='data' onPress={() => console.log(data)} />
-      </View>
+      </View> */}
+      {/* <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 60 }}>
+        <Button title='tRP' onPress={() => console.log('tRaP:', topRowPosition.value)} />
+      </View> */}
       <FlatList
         ref={flatListRef}
         data={data}

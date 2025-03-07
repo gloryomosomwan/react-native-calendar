@@ -1,4 +1,4 @@
-import { View, StyleSheet, FlatList, Dimensions, Button, Text } from "react-native";
+import { View, StyleSheet, FlatList, Dimensions, Button, Text, Platform } from "react-native";
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks } from "date-fns";
 import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate, useDerivedValue } from "react-native-reanimated";
@@ -38,6 +38,13 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
   });
   const flatListRef = useRef<FlatList>(null);
   const insets = useSafeAreaInsets()
+  let topPadding = 0;
+  if (Platform.OS === 'android') {
+    topPadding = 0
+  }
+  else if (Platform.OS === 'ios') {
+    topPadding = insets.top
+  }
 
   useImperativeHandle(ref, () => ({
     scrollToPrevious,
@@ -128,7 +135,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
 
   return (
     // 30 (size of header) + 5 (header margin) + 17 (weekday name text height)
-    <Animated.View style={[styles.weekContainer, rWeekViewStyle, { paddingTop: insets.top + 30 + 5 + 17 }]}>
+    <Animated.View style={[styles.weekContainer, rWeekViewStyle, { paddingTop: topPadding + 30 + 5 + 17 }]}>
       <FlatList
         ref={flatListRef}
         data={data}

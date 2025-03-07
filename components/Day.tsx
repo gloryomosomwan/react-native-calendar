@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, Pressable, Dimensions, Platform } from 'react-native'
 import React, { useRef, useLayoutEffect } from 'react'
 import { isSameMonth, isSameDay, getWeekOfMonth } from 'date-fns'
 import { SharedValue } from 'react-native-reanimated';
@@ -20,6 +20,13 @@ type DayProps = {
 export default function Day({ date, selectedDate, firstDayOfMonth, handlePress, selectedDatePosition, bottomSheetTranslationY, dateOfDisplayedMonth, dayType }: DayProps) {
   const elementRef = useRef<View | null>(null)
   const insets = useSafeAreaInsets()
+  let topPadding = 0;
+  if (Platform.OS === 'android') {
+    topPadding = 0
+  }
+  else if (Platform.OS === 'ios') {
+    topPadding = insets.top
+  }
 
   const onPress = () => {
     if (bottomSheetTranslationY.value === 0 || bottomSheetTranslationY.value === -235) {
@@ -41,7 +48,7 @@ export default function Day({ date, selectedDate, firstDayOfMonth, handlePress, 
       //       selectedDatePosition.value = pageY
       //     }
       const weekOfMonth = getWeekOfMonth(date)
-      selectedDatePosition.value = (insets.top + 50) + (47 * (weekOfMonth - 1))
+      selectedDatePosition.value = (topPadding + 50) + (47 * (weekOfMonth - 1))
     }
   })
 

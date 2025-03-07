@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, Platform } from 'react-native'
 import React from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
@@ -9,9 +9,16 @@ type HeaderProps = {
 export default function Header({ selectedDate }: HeaderProps) {
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   const insets = useSafeAreaInsets()
+  let topPadding = 0;
+  if (Platform.OS === 'android') {
+    topPadding = 0
+  }
+  else if (Platform.OS === 'ios') {
+    topPadding = insets.top
+  }
 
   return (
-    <View style={[styles.header, { paddingTop: insets.top }]}>
+    <View style={[styles.header, { paddingTop: topPadding }]}>
       <Text style={styles.monthName}>{selectedDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
       <View style={styles.weekdayNames}>
         {daysOfWeek.map((day) => (

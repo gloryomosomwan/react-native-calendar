@@ -1,4 +1,4 @@
-import { View, StyleSheet, Button, Text } from "react-native";
+import { View, StyleSheet, Button, Text, Platform } from "react-native";
 import { useState, useRef, useEffect } from "react";
 import { SharedValue, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -18,6 +18,13 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
   const [dateOfDisplayedMonth, setDateOfDisplayedMonth] = useState(startOfToday)
   const selectedDatePosition = useSharedValue(0)
   const insets = useSafeAreaInsets()
+  let topPadding = 0;
+  if (Platform.OS === 'android') {
+    topPadding = 0
+  }
+  else if (Platform.OS === 'ios') {
+    topPadding = insets.top
+  }
 
   const monthViewRef = useRef<{ scrollToPrevious: () => void; scrollToNext: () => void } | null>(null)
   const weekViewRef = useRef<{ scrollToPrevious: () => void; scrollToNext: () => void; setInitialData: (day: Date) => void } | null>(null)
@@ -26,7 +33,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     <View style={[
       styles.container,
       {
-        paddingTop: insets.top,
+        paddingTop: topPadding,
         paddingBottom: insets.bottom
       }
     ]}>
