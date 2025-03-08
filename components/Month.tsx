@@ -16,7 +16,7 @@ type MonthProps = {
   dateOfDisplayedMonth: Date
 }
 
-export default memo(function Month({ initialDay, selectedDate, handlePress, selectedDatePosition, setCalendarBottom, bottomSheetTranslationY, dateOfDisplayedMonth }: MonthProps) {
+export default function Month({ initialDay, selectedDate, handlePress, selectedDatePosition, setCalendarBottom, bottomSheetTranslationY, dateOfDisplayedMonth }: MonthProps) {
   const dates = getDates(initialDay)
   const paddedDates = padDatesArray(dates)
   const daysArray = createDays(paddedDates, selectedDate, initialDay, handlePress, selectedDatePosition, bottomSheetTranslationY, dateOfDisplayedMonth)
@@ -48,16 +48,6 @@ export default memo(function Month({ initialDay, selectedDate, handlePress, sele
       </View>
     </View>
   )
-}, arePropsEqual)
-
-function arePropsEqual(oldProps: MonthProps, newProps: MonthProps): boolean {
-  if (!isSameMonth(newProps.selectedDate, newProps.initialDay)) {
-    return true
-  }
-  else {
-    return false
-  }
-  // return true
 }
 
 function getDates(initialDay: Date) {

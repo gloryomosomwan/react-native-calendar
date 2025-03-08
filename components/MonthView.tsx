@@ -195,9 +195,9 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
       <View style={{ position: 'absolute', top: 40, zIndex: 2 }}>
         <Button title='today' onPress={scrollToToday} />
       </View>
-      {/* <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 60 }}>
+      <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 60 }}>
         <Button title='data' onPress={() => console.log(data)} />
-      </View> */}
+      </View>
       {/* <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 60 }}>
         <Button title='tRP' onPress={() => console.log('tRaP:', topRowPosition.value)} />
       </View> */}
@@ -227,7 +227,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
         onEndReached={fetchNext}
         onEndReachedThreshold={0.2}
         initialScrollIndex={1}
-        initialNumToRender={3}
+        // initialNumToRender={3}
         decelerationRate={'normal'}
         windowSize={3}
         maintainVisibleContentPosition={{
