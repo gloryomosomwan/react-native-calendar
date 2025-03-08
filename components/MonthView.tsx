@@ -167,7 +167,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
 
   const viewabilityConfig = {
     itemVisiblePercentThreshold: 90, // Percentage of item that needs to be visible
-    minimumViewTime: 5, // Minimum time (ms) an item must be visible to trigger
+    minimumViewTime: 50, // Minimum time (ms) an item must be visible to trigger
     // waitForInteraction: true // Wait for scroll to stop before checking
   };
 
