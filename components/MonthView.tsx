@@ -240,7 +240,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
             if (currentMode.value === 'expanded') {
               setDateOfDisplayedMonth(item.item.initialDay)
               setSelectedDate(item.item.initialDay)
-              // setInitialData(item.item.initialDay)
+              setInitialData(item.item.initialDay)
             }
           });
         }}
