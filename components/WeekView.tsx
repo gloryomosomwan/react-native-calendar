@@ -65,36 +65,6 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
   })
 
   const setInitialData = (day: Date) => {
-    // console.log(day)
-    // const newData = [];
-    // for (let i = -208; i <= 208; i++) {
-    //   const weekDate = startOfWeek(addWeeks(day, i));
-    //   newData.push({
-    //     id: `$${weekDate.getTime()}`,
-    //     initialDay: weekDate
-    //   });
-    // }
-    // setData(newData);
-    // flatListRef.current?.scrollToIndex({
-    //   index: 208,
-    //   animated: false
-    // })
-
-    // setData([
-    //   { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(day, 1)) },
-    //   { id: generateUniqueId(), initialDay: startOfWeek(day) },
-    //   { id: generateUniqueId(), initialDay: startOfWeek(addWeeks(day, 1)) },
-    // ])
-
-    // const newDay = startOfWeek(day);
-    // setData(prevData => {
-    //   const newData = [...prevData];
-    //   newData.unshift({ id: generateUniqueId(), initialDay: newDay });
-    //   newData.pop();
-    //   return newData;
-    // });
-    // scrollToPrevious()
-
     const newDay = startOfWeek(day)
     if (!isSameWeek(selectedDate, day)) {
       if (isBefore(day, selectedDate)) {
@@ -106,16 +76,28 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
           return newData;
         });
         scrollToPrevious()
+        setTimeout(() => {
+          setData(prevData => {
+            const newData = [...prevData];
+            newData[2] = { id: generateUniqueId(), initialDay: startOfWeek(addWeeks(newDay, 1)) }
+            return newData;
+          });
+        }, 100);
       }
       else if (isAfter(day, selectedDate)) {
         setData(prevData => {
           const newData = [...prevData];
-          // newData.push({ id: generateUniqueId(), initialDay: newDay });
-          // newData.shift();
           newData[2] = { id: generateUniqueId(), initialDay: newDay }
           return newData;
         });
         scrollToNext()
+        setTimeout(() => {
+          setData(prevData => {
+            const newData = [...prevData];
+            newData[0] = { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(newDay, 1)) }
+            return newData;
+          });
+        }, 300);
       }
     }
   }
@@ -243,9 +225,9 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
       {/* <View style={{ position: 'absolute', top: 300, zIndex: 2 }}>
         <Button title='today' onPress={scrollToToday} />
       </View> */}
-      {/* <View style={{ position: 'absolute', top: 340, zIndex: 2 }}>
+      <View style={{ position: 'absolute', top: 340, zIndex: 2 }}>
         <Button title='DATA' onPress={() => console.log(data)} />
-      </View> */}
+      </View>
       <FlatList
         ref={flatListRef}
         data={data}
