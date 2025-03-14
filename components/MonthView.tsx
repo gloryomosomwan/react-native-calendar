@@ -192,12 +192,12 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
 
   return (
     <Animated.View style={[rMonthViewStyle]}>
-      <View style={{ position: 'absolute', top: 40, zIndex: 2 }}>
+      {/* <View style={{ position: 'absolute', top: 100, zIndex: 2 }}>
         <Button title='today' onPress={scrollToToday} />
-      </View>
-      <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 60 }}>
+      </View> */}
+      {/* <View style={{ position: 'absolute', top: 100, zIndex: 2, left: 60 }}>
         <Button title='data' onPress={() => console.log(data)} />
-      </View>
+      </View> */}
       {/* <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 60 }}>
         <Button title='tRP' onPress={() => console.log('tRaP:', topRowPosition.value)} />
       </View> */}
@@ -240,7 +240,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
             if (currentMode.value === 'expanded') {
               setDateOfDisplayedMonth(item.item.initialDay)
               setSelectedDate(item.item.initialDay)
-              setInitialData(item.item.initialDay)
+              // setInitialData(item.item.initialDay)
             }
           });
         }}
