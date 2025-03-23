@@ -1,8 +1,9 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text, Platform, StatusBar } from "react-native";
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks, differenceInCalendarWeeks, isSameMonth } from "date-fns";
-import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate, useDerivedValue } from "react-native-reanimated";
+import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate, useDerivedValue, runOnJS } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 
 import Month from "./Month";
 
@@ -190,62 +191,80 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
     };
   });
 
+  let initialTranslationX = useSharedValue(-1)
+
+  const panGesture = Gesture.Pan()
+    .onTouchesMove((e, stateManager) => {
+      if (initialTranslationX.value === -1) {
+        initialTranslationX.value = e.allTouches[0].absoluteX
+      }
+      if (Math.abs(initialTranslationX.value - e.allTouches[0].absoluteX) > 50) {
+        console.log('swipe')
+        initialTranslationX.value = -1
+        runOnJS(scrollToNext)()
+        stateManager.end()
+      }
+    })
+
   return (
-    <Animated.View style={[rMonthViewStyle]}>
-      {/* <View style={{ position: 'absolute', top: 100, zIndex: 2 }}>
+    <GestureDetector gesture={panGesture}>
+      <Animated.View style={[rMonthViewStyle]}>
+        {/* <View style={{ position: 'absolute', top: 100, zIndex: 2 }}>
         <Button title='today' onPress={scrollToToday} />
       </View> */}
-      {/* <View style={{ position: 'absolute', top: 100, zIndex: 2, left: 60 }}>
+        {/* <View style={{ position: 'absolute', top: 100, zIndex: 2, left: 60 }}>
         <Button title='data' onPress={() => console.log(data)} />
       </View> */}
-      {/* <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 60 }}>
+        {/* <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 60 }}>
         <Button title='tRP' onPress={() => console.log('tRaP:', topRowPosition.value)} />
       </View> */}
-      <FlatList
-        ref={flatListRef}
-        data={data}
-        renderItem={({ item }) => (
-          <Month
-            initialDay={item.initialDay}
-            selectedDate={selectedDate}
-            selectedDatePosition={selectedDatePosition}
-            dateOfDisplayedMonth={dateOfDisplayedMonth}
-            handlePress={handlePress}
-            bottomSheetTranslationY={bottomSheetTranslationY}
-            setCalendarBottom={setCalendarBottom}
-          />
-        )}
-        pagingEnabled
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        bounces={false}
-        getItemLayout={(data, index) => (
-          { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
-        )}
-        onStartReached={fetchPrevious}
-        onStartReachedThreshold={0.2}
-        onEndReached={fetchNext}
-        onEndReachedThreshold={0.2}
-        initialScrollIndex={1}
-        // initialNumToRender={3}
-        decelerationRate={'normal'}
-        windowSize={3}
-        maintainVisibleContentPosition={{
-          minIndexForVisible: 1,
-          autoscrollToTopThreshold: undefined
-        }}
-        viewabilityConfig={viewabilityConfig}
-        onViewableItemsChanged={(info) => {
-          info.viewableItems.forEach(item => {
-            if (currentMode.value === 'expanded') {
-              setDateOfDisplayedMonth(item.item.initialDay)
-              setSelectedDate(item.item.initialDay)
-              setInitialData(item.item.initialDay)
-            }
-          });
-        }}
-      />
-    </Animated.View>
+        <FlatList
+          ref={flatListRef}
+          data={data}
+          renderItem={({ item }) => (
+            <Month
+              initialDay={item.initialDay}
+              selectedDate={selectedDate}
+              selectedDatePosition={selectedDatePosition}
+              dateOfDisplayedMonth={dateOfDisplayedMonth}
+              handlePress={handlePress}
+              bottomSheetTranslationY={bottomSheetTranslationY}
+              setCalendarBottom={setCalendarBottom}
+            />
+          )}
+          pagingEnabled
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          bounces={false}
+          getItemLayout={(data, index) => (
+            { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
+          )}
+          onStartReached={fetchPrevious}
+          onStartReachedThreshold={0.2}
+          onEndReached={fetchNext}
+          onEndReachedThreshold={0.2}
+          initialScrollIndex={1}
+          // initialNumToRender={3}
+          decelerationRate={'normal'}
+          windowSize={3}
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 1,
+            autoscrollToTopThreshold: undefined
+          }}
+          viewabilityConfig={viewabilityConfig}
+          onViewableItemsChanged={(info) => {
+            info.viewableItems.forEach(item => {
+              if (currentMode.value === 'expanded') {
+                setDateOfDisplayedMonth(item.item.initialDay)
+                setSelectedDate(item.item.initialDay)
+                setInitialData(item.item.initialDay)
+              }
+            });
+          }}
+          scrollEnabled={false}
+        />
+      </Animated.View>
+    </GestureDetector>
   )
 })
 
