@@ -25,17 +25,6 @@ type WeekViewProps = {
 
 const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void; setInitialData: (day: Date, selectedDate: Date) => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth }: WeekViewProps, ref) => {
   let startOfToday = new Date(new Date().toDateString())
-  // const [data, setData] = useState(() => {
-  //   const initialWeeks = [];
-  //   for (let i = -208; i <= 208; i++) {
-  //     const weekDate = startOfWeek(addWeeks(startOfToday, i));
-  //     initialWeeks.push({
-  //       id: `$${weekDate.getTime()}`,
-  //       initialDay: weekDate
-  //     });
-  //   }
-  //   return initialWeeks;
-  // });
 
   const [data, setData] = useState([
     { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(startOfToday, 1)) },
@@ -66,7 +55,6 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
 
   const setInitialData = (day: Date, selectedDate: Date) => {
     console.log('day', day)
-    // console.log(selectedDate)
     console.log('setting initial data...')
     const newDay = startOfWeek(day)
     if (!isSameWeek(selectedDate, day)) {
@@ -264,16 +252,6 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
         maintainVisibleContentPosition={{
           minIndexForVisible: 1,
           autoscrollToTopThreshold: undefined
-        }}
-        onMomentumScrollEnd={(event) => {
-          // flatListRef.current?.scrollToIndex({
-          //   index: 1,
-          //   animated: false
-          // });
-          // flatListRef.current?.scrollToOffset({
-          //   offset: Dimensions.get('window').width,
-          //   animated: false
-          // })
         }}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
