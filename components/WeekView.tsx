@@ -1,6 +1,6 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text, Platform } from "react-native";
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
-import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks, isSameWeek } from "date-fns";
+import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks, isSameWeek, getWeek } from "date-fns";
 import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate, useDerivedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -117,7 +117,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 0,
-        animated: false
+        animated: true
       });
     }
   };
@@ -126,47 +126,47 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 2,
-        animated: false
+        animated: true
       });
     }
   };
 
   const scrollToToday = () => {
-    // if (!isSameMonth(startOfToday, selectedDate)) {
-    //   if (isInLaterMonth(startOfToday, selectedDate)) {
-    //     setSelectedDate(startOfToday)
-    //     setData(prevData => {
-    //       const newData = [...prevData];
-    //       newData.pop();
-    //       newData.push({ id: generateUniqueId(), initialDay: startOfToday });
-    //       return newData;
-    //     });
-    //     scrollToNext()
-    //     setData(prevData => {
-    //       const newData = [...prevData];
-    //       newData[1].initialDay = startOfMonth(subMonths(startOfToday, 1))
-    //       return newData;
-    //     });
-    //   }
-    //   else if (isInEarlierMonth(startOfToday, selectedDate)) {
-    //     setSelectedDate(startOfToday)
-    //     setData(prevData => {
-    //       const newData = [...prevData];
-    //       newData.shift();
-    //       newData.unshift({ id: generateUniqueId(), initialDay: startOfToday });
-    //       return newData;
-    //     });
-    //     scrollToPrevious()
-    //     setData(prevData => {
-    //       const newData = [...prevData];
-    //       newData[1].initialDay = startOfMonth(addMonths(startOfToday, 1))
-    //       return newData;
-    //     });
-    //   }
-    // }
-    // else if (isSameMonth(startOfToday, selectedDate)) {
-    //   setSelectedDate(startOfToday)
-    // }
+    if (!isSameWeek(startOfToday, selectedDate)) {
+      if (isInLaterWeek(startOfToday, selectedDate)) {
+        setSelectedDate(startOfToday)
+        setData(prevData => {
+          const newData = [...prevData];
+          newData.pop();
+          newData.push({ id: generateUniqueId(), initialDay: startOfToday });
+          return newData;
+        });
+        scrollToNext()
+        setData(prevData => {
+          const newData = [...prevData];
+          newData[1].initialDay = startOfWeek(subWeeks(startOfToday, 1))
+          return newData;
+        });
+      }
+      else if (isInEarlierWeek(startOfToday, selectedDate)) {
+        setSelectedDate(startOfToday)
+        setData(prevData => {
+          const newData = [...prevData];
+          newData.shift();
+          newData.unshift({ id: generateUniqueId(), initialDay: startOfToday });
+          return newData;
+        });
+        scrollToPrevious()
+        setData(prevData => {
+          const newData = [...prevData];
+          newData[1].initialDay = startOfWeek(addWeeks(startOfToday, 1))
+          return newData;
+        });
+      }
+    }
+    else if (isSameWeek(startOfToday, selectedDate)) {
+      setSelectedDate(startOfToday)
+    }
   }
 
   const handlePress = (date: Date) => {
@@ -212,12 +212,24 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     return isAfter(monthOfDateToCheck, monthOfReferenceDate);
   }
 
+  function isInEarlierWeek(dateToCheck: Date, referenceDate: Date) {
+    const weekOfDateToCheck = startOfWeek(dateToCheck)
+    const weekOfReferenceDate = startOfWeek(referenceDate)
+    return isBefore(weekOfDateToCheck, weekOfReferenceDate)
+  }
+
+  function isInLaterWeek(dateToCheck: Date, referenceDate: Date) {
+    const weekOfDateToCheck = startOfWeek(dateToCheck)
+    const weekOfReferenceDate = startOfWeek(referenceDate)
+    return isAfter(weekOfDateToCheck, weekOfReferenceDate)
+  }
+
   return (
     // 30 (size of header) + 5 (header margin) + 17 (weekday name text height)
     <Animated.View style={[styles.weekContainer, rWeekViewStyle, { paddingTop: topPadding + 30 + 5 + 17 }]}>
-      {/* <View style={{ position: 'absolute', top: 300, zIndex: 2 }}>
+      <View style={{ position: 'absolute', top: 300, zIndex: 2 }}>
         <Button title='today' onPress={scrollToToday} />
-      </View> */}
+      </View>
       <View style={{ position: 'absolute', top: 340, zIndex: 2 }}>
         <Button title='DATA' onPress={() => console.log(data)} />
       </View>
