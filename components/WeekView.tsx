@@ -54,8 +54,9 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
   })
 
   const setInitialData = (day: Date, selectedDate: Date) => {
-    console.log('day', day)
-    console.log('setting initial data...')
+    // console.log('day:', day)
+    // console.log('selectedDay:', selectedDate)
+    // console.log('setting initial data...')
     const newDay = startOfWeek(day)
     if (!isSameWeek(selectedDate, day)) {
       if (isBefore(day, selectedDate)) {
@@ -73,7 +74,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
             newData[2] = { id: generateUniqueId(), initialDay: startOfWeek(addWeeks(newDay, 1)) }
             return newData;
           });
-        }, 25);
+        }, 250);
       }
       else if (isAfter(day, selectedDate)) {
         setData(prevData => {
@@ -88,7 +89,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
             newData[0] = { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(newDay, 1)) }
             return newData;
           });
-        }, 25);
+        }, 250);
       }
     }
   }
@@ -190,7 +191,8 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
       //   [1, 0],
       //   Extrapolate.CLAMP
       // ),
-      pointerEvents: bottomSheetTranslationY.value <= -235 ? 'auto' : 'none',
+      // pointerEvents: bottomSheetTranslationY.value <= -235 ? 'auto' : 'none',
+      pointerEvents: 'auto'
     };
   });
 
@@ -227,9 +229,9 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
   return (
     // 30 (size of header) + 5 (header margin) + 17 (weekday name text height)
     <Animated.View style={[styles.weekContainer, rWeekViewStyle, { paddingTop: topPadding + 30 + 5 + 17 }]}>
-      <View style={{ position: 'absolute', top: 300, zIndex: 2 }}>
+      {/* <View style={{ position: 'absolute', top: 300, zIndex: 2 }}>
         <Button title='today' onPress={scrollToToday} />
-      </View>
+      </View> */}
       <View style={{ position: 'absolute', top: 340, zIndex: 2 }}>
         <Button title='DATA' onPress={() => console.log(data)} />
       </View>

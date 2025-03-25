@@ -187,7 +187,6 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
           [0, (topRowPosition.value + 50) - selectedDatePosition.value] // 50 is for the padding
         )
       }],
-      pointerEvents: bottomSheetTranslationY.value > EXPANDED_MODE_THRESHOLD ? 'auto' : 'none',
     };
   });
 
@@ -212,9 +211,9 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={[rMonthViewStyle]}>
-        {/* <View style={{ position: 'absolute', top: 100, zIndex: 2 }}>
-        <Button title='today' onPress={scrollToToday} />
-      </View> */}
+        <View style={{ position: 'absolute', top: 100, zIndex: 2 }}>
+          <Button title='today' onPress={scrollToToday} />
+        </View>
         {/* <View style={{ position: 'absolute', top: 100, zIndex: 2, left: 60 }}>
         <Button title='data' onPress={() => console.log(data)} />
       </View> */}
@@ -260,11 +259,11 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
               if (currentMode.value === 'expanded') {
                 setDateOfDisplayedMonth(item.item.initialDay)
                 setSelectedDate(item.item.initialDay)
-                console.log(timeoutRef)
+                // console.log(timeoutRef)
 
                 if (timeoutRef.current !== undefined) {
                   console.log('clearing timeoutRef')
-                  clearTimeout(timeoutRef.current)
+                  // clearTimeout(timeoutRef.current)
                 }
                 timeoutRef.current = setTimeout(() => {
                   setInitialData(item.item.initialDay, selectedDate)

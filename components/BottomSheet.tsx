@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     height: SCREEN_HEIGHT,
     width: '100%',
     backgroundColor: 'powderblue',
+    // opacity: 0.1,
     position: 'absolute',
     borderRadius: 25,
   },
