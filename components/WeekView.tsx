@@ -23,7 +23,7 @@ type WeekViewProps = {
   scrollToNextMonth: () => void
 }
 
-const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void; setInitialData: (day: Date) => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth }: WeekViewProps, ref) => {
+const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void; setInitialData: (day: Date, selectedDate: Date) => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth }: WeekViewProps, ref) => {
   let startOfToday = new Date(new Date().toDateString())
   // const [data, setData] = useState(() => {
   //   const initialWeeks = [];
@@ -64,7 +64,10 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
       : 'collapsed'
   })
 
-  const setInitialData = (day: Date) => {
+  const setInitialData = (day: Date, selectedDate: Date) => {
+    console.log('day', day)
+    // console.log(selectedDate)
+    console.log('setting initial data...')
     const newDay = startOfWeek(day)
     if (!isSameWeek(selectedDate, day)) {
       if (isBefore(day, selectedDate)) {
@@ -82,7 +85,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
             newData[2] = { id: generateUniqueId(), initialDay: startOfWeek(addWeeks(newDay, 1)) }
             return newData;
           });
-        }, 100);
+        }, 25);
       }
       else if (isAfter(day, selectedDate)) {
         setData(prevData => {
@@ -97,7 +100,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
             newData[0] = { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(newDay, 1)) }
             return newData;
           });
-        }, 300);
+        }, 25);
       }
     }
   }
@@ -126,6 +129,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 0,
+        animated: false
       });
     }
   };
@@ -134,6 +138,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 2,
+        animated: false
       });
     }
   };
@@ -255,16 +260,20 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
         initialScrollIndex={1}
         initialNumToRender={3}
         decelerationRate={'normal'}
-        windowSize={3}
+        windowSize={5}
         maintainVisibleContentPosition={{
           minIndexForVisible: 1,
           autoscrollToTopThreshold: undefined
         }}
         onMomentumScrollEnd={(event) => {
-          flatListRef.current?.scrollToIndex({
-            index: 1,
-            animated: true
-          });
+          // flatListRef.current?.scrollToIndex({
+          //   index: 1,
+          //   animated: false
+          // });
+          // flatListRef.current?.scrollToOffset({
+          //   offset: Dimensions.get('window').width,
+          //   animated: false
+          // })
         }}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {

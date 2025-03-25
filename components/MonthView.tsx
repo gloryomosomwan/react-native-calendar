@@ -23,7 +23,7 @@ type MonthViewProps = {
   setDateOfDisplayedMonth: (date: Date) => void
   scrollToPreviousWeek: () => void
   scrollToNextWeek: () => void
-  setInitialData: (day: Date) => void
+  setInitialData: (day: Date, selectedDate: Date) => void
 }
 
 const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousWeek, scrollToNextWeek, setInitialData }: MonthViewProps, ref) => {
@@ -77,7 +77,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
         scrollToPrevious()
       }
     }
-    setInitialData(date)
+    setInitialData(date, selectedDate)
   }
 
   function isInEarlierMonth(dateToCheck: Date, referenceDate: Date) {
@@ -199,12 +199,15 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
         initialTranslationX.value = e.allTouches[0].absoluteX
       }
       if (Math.abs(initialTranslationX.value - e.allTouches[0].absoluteX) > 50) {
-        console.log('swipe')
         initialTranslationX.value = -1
         runOnJS(scrollToNext)()
         stateManager.end()
       }
     })
+
+  // let timeoutRef: any = null
+  // const timeoutRef = useRef<number | undefined>(undefined)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   return (
     <GestureDetector gesture={panGesture}>
@@ -257,7 +260,17 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
               if (currentMode.value === 'expanded') {
                 setDateOfDisplayedMonth(item.item.initialDay)
                 setSelectedDate(item.item.initialDay)
-                setInitialData(item.item.initialDay)
+                console.log(timeoutRef)
+
+                if (timeoutRef.current !== undefined) {
+                  console.log('clearing timeoutRef')
+                  clearTimeout(timeoutRef.current)
+                }
+                timeoutRef.current = setTimeout(() => {
+                  setInitialData(item.item.initialDay, selectedDate)
+                  timeoutRef.current = undefined
+                }, 250);
+
               }
             });
           }}
