@@ -115,21 +115,35 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
     });
   }
 
-  const scrollToPreviousWeek = () => {
+  const scrollToPreviousWeek = (mode?: string) => {
     if (flatListRef.current) {
-      flatListRef?.current?.scrollToIndex({
-        index: 0,
-        // animated: false
-      });
+      if (mode === 'animated') {
+        flatListRef?.current?.scrollToIndex({
+          index: 0,
+        });
+      }
+      else {
+        flatListRef?.current?.scrollToIndex({
+          index: 0,
+          animated: false
+        })
+      }
     }
   };
 
-  const scrollToNextWeek = () => {
+  const scrollToNextWeek = (mode?: string) => {
     if (flatListRef.current) {
-      flatListRef?.current?.scrollToIndex({
-        index: 2,
-        // animated: false
-      });
+      if (mode === 'animated') {
+        flatListRef?.current?.scrollToIndex({
+          index: 2,
+        });
+      }
+      else {
+        flatListRef?.current?.scrollToIndex({
+          index: 2,
+          animated: false
+        })
+      }
     }
   };
 
@@ -143,7 +157,7 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
           newData.push({ id: generateUniqueId(), initialDay: startOfToday });
           return newData;
         });
-        scrollToNextWeek()
+        scrollToNextWeek('animated')
         setData(prevData => {
           const newData = [...prevData];
           newData[1].initialDay = startOfWeek(subWeeks(startOfToday, 1))
@@ -158,7 +172,7 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
           newData.unshift({ id: generateUniqueId(), initialDay: startOfToday });
           return newData;
         });
-        scrollToPreviousWeek()
+        scrollToPreviousWeek('animated')
         setData(prevData => {
           const newData = [...prevData];
           newData[1].initialDay = startOfWeek(addWeeks(startOfToday, 1))

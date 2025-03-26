@@ -64,7 +64,6 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
     }
   })
 
-
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDate because handlePress has a stale closure. In other words, even if we set selectedDate to date (which we do below) it won't update for us in here
     setSelectedDate(date)
