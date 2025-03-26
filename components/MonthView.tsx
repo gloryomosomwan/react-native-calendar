@@ -299,14 +299,10 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
             info.viewableItems.forEach(item => {
               if (currentMode.value === 'expanded') {
                 setDateOfDisplayedMonth(item.item.initialDay)
-                // console.log('initialDay:', item.item.initialDay)
-                // console.log('selectedDate:', selectedDate)
                 setSelectedDate(item.item.initialDay)
-                // console.log(timeoutRef)
 
                 if (!isSameDay(item.item.initialDay, selectedDate)) {
                   if (timeoutRef.current !== undefined) {
-                    // console.log('clearing timeoutRef')
                     clearTimeout(timeoutRef.current)
                   }
                   timeoutRef.current = setTimeout(() => {
