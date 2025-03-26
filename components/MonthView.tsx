@@ -21,8 +21,6 @@ type MonthViewProps = {
   selectedDatePosition: SharedValue<number>
   dateOfDisplayedMonth: Date
   setDateOfDisplayedMonth: (date: Date) => void
-  // scrollToPreviousWeek: () => void
-  // scrollToNextWeek: () => void
   setInitialWeekData: (day: Date, selectedDate: Date) => void
   scrollWeekToToday: () => void
 }
@@ -211,8 +209,6 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
       }
     })
 
-  // let timeoutRef: any = null
-  // const timeoutRef = useRef<number | undefined>(undefined)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const setInitialMonthData = (day: Date, selectedDate: Date) => {

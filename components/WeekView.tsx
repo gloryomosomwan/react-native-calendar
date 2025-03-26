@@ -43,8 +43,6 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
   }
 
   useImperativeHandle(ref, () => ({
-    // scrollToPreviousWeek,
-    // scrollToNextWeek,
     setInitialWeekData,
     scrollToToday
   }));
@@ -56,16 +54,11 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
   })
 
   const setInitialWeekData = (day: Date, selectedDate: Date) => {
-    // console.log('day:', day)
-    // console.log('selectedDay:', selectedDate)
-    // console.log('setting initial data...')
     const newDay = startOfWeek(day)
     if (!isSameWeek(selectedDate, day)) {
       if (isBefore(day, selectedDate)) {
         setData(prevData => {
           const newData = [...prevData];
-          // newData.push({ id: generateUniqueId(), initialDay: newDay });
-          // newData.shift();
           newData[0] = { id: generateUniqueId(), initialDay: newDay }
           return newData;
         });
@@ -149,8 +142,6 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
   };
 
   const scrollToToday = () => {
-    console.log('scrolling to today in the week...')
-    // console.log(selectedDate)
     let selectedDate = new Date(2024, 10, 2)
     if (!isSameWeek(startOfToday, selectedDate)) {
       if (isInEarlierWeek(startOfToday, selectedDate)) {
@@ -181,7 +172,6 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
           setData(prevData => {
             const newData = [...prevData]
             newData[0] = { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(startOfToday, 1)) }
-            // newData[1].initialDay = startOfWeek(subWeeks(startOfToday, 1))
             return newData
           })
         }, 250);
