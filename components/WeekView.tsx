@@ -174,7 +174,7 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
       }
     }
     else if (isSameWeek(startOfToday, selectedDate)) {
-      // setSelectedDate(startOfToday)
+      setSelectedDate(startOfToday)
     }
   }
 
