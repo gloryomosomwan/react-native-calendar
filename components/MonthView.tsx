@@ -212,7 +212,7 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
   const setInitialMonthData = (day: Date, selectedDate: Date) => {
     if (!isSameMonth(day, selectedDate)) {
       if (isInLaterMonth(day, selectedDate)) {
-        setSelectedDate(day)
+        // setSelectedDate(day)
         setData(prevData => {
           const newData = [...prevData];
           newData.pop();
@@ -227,7 +227,7 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
         });
       }
       else if (isInEarlierMonth(day, selectedDate)) {
-        setSelectedDate(day)
+        // setSelectedDate(day)
         setData(prevData => {
           const newData = [...prevData];
           newData.shift();

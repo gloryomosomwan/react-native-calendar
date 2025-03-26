@@ -144,7 +144,7 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
     let selectedDate = new Date(2024, 10, 2)
     if (!isSameWeek(startOfToday, selectedDate)) {
       if (isInEarlierWeek(startOfToday, selectedDate)) {
-        setSelectedDate(startOfToday)
+        // setSelectedDate(startOfToday)
         setData(prevData => {
           const newData = [...prevData];
           newData[0] = { id: generateUniqueId(), initialDay: startOfToday }
@@ -160,7 +160,7 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
         }, 250);
       }
       else if (isInLaterWeek(startOfToday, selectedDate)) {
-        setSelectedDate(startOfToday)
+        // setSelectedDate(startOfToday)
         setData(prevData => {
           const newData = [...prevData];
           newData[2] = { id: generateUniqueId(), initialDay: startOfToday }
@@ -179,7 +179,6 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
     else if (isSameWeek(startOfToday, selectedDate)) {
       // setSelectedDate(startOfToday)
     }
-    // setInitialMonthData(startOfToday, selectedDate)
   }
 
   const handlePress = (date: Date) => {
@@ -238,6 +237,8 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
     return isAfter(weekOfDateToCheck, weekOfReferenceDate)
   }
 
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
   return (
     // 30 (size of header) + 5 (header margin) + 17 (weekday name text height)
     <Animated.View style={[styles.weekContainer, rWeekViewStyle, { paddingTop: topPadding + 30 + 5 + 17 }]}>
@@ -285,12 +286,19 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
             if (currentMode.value === 'collapsed') {
               setDateOfDisplayedMonth(item.item.initialDay)
               setSelectedDate(item.item.initialDay)
-              if (isInEarlierMonth(item.item.initialDay, selectedDate)) {
-                scrollToPreviousMonth();
+
+              if (!isSameDay(item.item.initialDay, selectedDate)) {
+                if (timeoutRef.current !== undefined) {
+                  console.log('timeout cleared')
+                  clearTimeout(timeoutRef.current)
+                }
+                timeoutRef.current = setTimeout(() => {
+                  console.log('timing out')
+                  setInitialMonthData(item.item.initialDay, selectedDate)
+                  timeoutRef.current = undefined
+                }, 250)
               }
-              else if (isInLaterMonth(item.item.initialDay, selectedDate)) {
-                scrollToNextMonth();
-              }
+
             }
           });
         }}
