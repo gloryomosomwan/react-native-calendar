@@ -198,9 +198,14 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
       if (initialTranslationX.value === -1) {
         initialTranslationX.value = e.allTouches[0].absoluteX
       }
-      if (Math.abs(initialTranslationX.value - e.allTouches[0].absoluteX) > 50) {
+      if ((initialTranslationX.value - e.allTouches[0].absoluteX) > 50) {
         initialTranslationX.value = -1
         runOnJS(scrollToNextMonth)()
+        stateManager.end()
+      }
+      else if ((initialTranslationX.value - e.allTouches[0].absoluteX < -50)) {
+        initialTranslationX.value = -1
+        runOnJS(scrollToPreviousMonth)()
         stateManager.end()
       }
     })
