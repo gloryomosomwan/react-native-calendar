@@ -129,7 +129,6 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
   const scrollToToday = () => {
     if (!isSameMonth(startOfToday, selectedDate)) {
       if (isInLaterMonth(startOfToday, selectedDate)) {
-        // setSelectedDate(startOfToday)
         setData(prevData => {
           const newData = [...prevData];
           newData.pop();
@@ -144,7 +143,6 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
         });
       }
       else if (isInEarlierMonth(startOfToday, selectedDate)) {
-        // setSelectedDate(startOfToday)
         setData(prevData => {
           const newData = [...prevData];
           newData.shift();
@@ -212,7 +210,6 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
   const setInitialMonthData = (day: Date, selectedDate: Date) => {
     if (!isSameMonth(day, selectedDate)) {
       if (isInLaterMonth(day, selectedDate)) {
-        // setSelectedDate(day)
         setData(prevData => {
           const newData = [...prevData];
           newData.pop();
@@ -227,7 +224,6 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
         });
       }
       else if (isInEarlierMonth(day, selectedDate)) {
-        // setSelectedDate(day)
         setData(prevData => {
           const newData = [...prevData];
           newData.shift();
