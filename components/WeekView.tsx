@@ -23,7 +23,7 @@ type WeekViewProps = {
   scrollToNextMonth: () => void
 }
 
-const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void; setInitialData: (day: Date, selectedDate: Date) => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth }: WeekViewProps, ref) => {
+const WeekView = forwardRef<{ setInitialData: (day: Date, selectedDate: Date) => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth }: WeekViewProps, ref) => {
   let startOfToday = new Date(new Date().toDateString())
 
   const [data, setData] = useState([
@@ -42,8 +42,8 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
   }
 
   useImperativeHandle(ref, () => ({
-    scrollToPrevious,
-    scrollToNext,
+    // scrollToPreviousWeek,
+    // scrollToNextWeek,
     setInitialData
   }));
 
@@ -67,7 +67,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
           newData[0] = { id: generateUniqueId(), initialDay: newDay }
           return newData;
         });
-        scrollToPrevious()
+        scrollToPreviousWeek()
         setTimeout(() => {
           setData(prevData => {
             const newData = [...prevData];
@@ -82,7 +82,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
           newData[2] = { id: generateUniqueId(), initialDay: newDay }
           return newData;
         });
-        scrollToNext()
+        scrollToNextWeek()
         setTimeout(() => {
           setData(prevData => {
             const newData = [...prevData];
@@ -94,7 +94,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     }
   }
 
-  const fetchPrevious = () => {
+  const fetchPreviousWeek = () => {
     const newDay = startOfWeek(subWeeks(data[0].initialDay, 1));
     setData(prevData => {
       const newData = [...prevData];
@@ -104,7 +104,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     });
   }
 
-  const fetchNext = () => {
+  const fetchNextWeek = () => {
     const newDay = startOfWeek(addWeeks(data[data.length - 1].initialDay, 1))
     setData(prevData => {
       const newData = [...prevData];
@@ -114,7 +114,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     });
   }
 
-  const scrollToPrevious = () => {
+  const scrollToPreviousWeek = () => {
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 0,
@@ -123,7 +123,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     }
   };
 
-  const scrollToNext = () => {
+  const scrollToNextWeek = () => {
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 2,
@@ -142,7 +142,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
           newData.push({ id: generateUniqueId(), initialDay: startOfToday });
           return newData;
         });
-        scrollToNext()
+        scrollToNextWeek()
         setData(prevData => {
           const newData = [...prevData];
           newData[1].initialDay = startOfWeek(subWeeks(startOfToday, 1))
@@ -157,7 +157,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
           newData.unshift({ id: generateUniqueId(), initialDay: startOfToday });
           return newData;
         });
-        scrollToPrevious()
+        scrollToPreviousWeek()
         setData(prevData => {
           const newData = [...prevData];
           newData[1].initialDay = startOfWeek(addWeeks(startOfToday, 1))
@@ -255,9 +255,9 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
         getItemLayout={(data, index) => (
           { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
         )}
-        onStartReached={fetchPrevious}
+        onStartReached={fetchPreviousWeek}
         onStartReachedThreshold={0.2}
-        onEndReached={fetchNext}
+        onEndReached={fetchNextWeek}
         onEndReachedThreshold={0.2}
         initialScrollIndex={1}
         initialNumToRender={3}

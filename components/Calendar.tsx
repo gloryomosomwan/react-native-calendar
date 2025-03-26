@@ -26,8 +26,9 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     topPadding = insets.top
   }
 
-  const monthViewRef = useRef<{ scrollToPrevious: () => void; scrollToNext: () => void } | null>(null)
-  const weekViewRef = useRef<{ scrollToPrevious: () => void; scrollToNext: () => void; setInitialData: (day: Date, selectedDate: Date) => void } | null>(null)
+  const monthViewRef = useRef<{ scrollToPreviousMonth: () => void; scrollToNextMonth: () => void } | null>(null)
+  // const weekViewRef = useRef<{ scrollToPreviousWeek: () => void; scrollToNextWeek: () => void; setInitialData: (day: Date, selectedDate: Date) => void } | null>(null)
+  const weekViewRef = useRef<{ setInitialData: (day: Date, selectedDate: Date) => void } | null>(null)
 
   return (
     <View style={[
@@ -52,8 +53,8 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         selectedDatePosition={selectedDatePosition}
         dateOfDisplayedMonth={dateOfDisplayedMonth}
         setDateOfDisplayedMonth={setDateOfDisplayedMonth}
-        scrollToPreviousMonth={() => monthViewRef?.current?.scrollToPrevious()}
-        scrollToNextMonth={() => monthViewRef?.current?.scrollToNext()}
+        scrollToPreviousMonth={() => monthViewRef?.current?.scrollToPreviousMonth()}
+        scrollToNextMonth={() => monthViewRef?.current?.scrollToNextMonth()}
       />
       <MonthView
         ref={monthViewRef}
@@ -64,8 +65,8 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         selectedDatePosition={selectedDatePosition}
         dateOfDisplayedMonth={dateOfDisplayedMonth}
         setDateOfDisplayedMonth={setDateOfDisplayedMonth}
-        scrollToPreviousWeek={() => weekViewRef?.current?.scrollToPrevious()}
-        scrollToNextWeek={() => weekViewRef?.current?.scrollToNext()}
+        // scrollToPreviousWeek={() => weekViewRef?.current?.scrollToPreviousWeek()}
+        // scrollToNextWeek={() => weekViewRef?.current?.scrollToNextWeek()}
         setInitialData={(day: Date, selectedDate: Date) => weekViewRef?.current?.setInitialData(day, selectedDate)}
       />
     </View>

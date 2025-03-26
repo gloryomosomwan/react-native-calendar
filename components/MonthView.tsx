@@ -21,12 +21,12 @@ type MonthViewProps = {
   selectedDatePosition: SharedValue<number>
   dateOfDisplayedMonth: Date
   setDateOfDisplayedMonth: (date: Date) => void
-  scrollToPreviousWeek: () => void
-  scrollToNextWeek: () => void
+  // scrollToPreviousWeek: () => void
+  // scrollToNextWeek: () => void
   setInitialData: (day: Date, selectedDate: Date) => void
 }
 
-const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => void }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousWeek, scrollToNextWeek, setInitialData }: MonthViewProps, ref) => {
+const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMonth: () => void }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, setInitialData }: MonthViewProps, ref) => {
   let startOfToday = new Date(new Date().toDateString())
 
   const [data, setData] = useState([
@@ -50,8 +50,8 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
   }
 
   useImperativeHandle(ref, () => ({
-    scrollToPrevious,
-    scrollToNext
+    scrollToPreviousMonth,
+    scrollToNextMonth
   }));
 
   useEffect(() => {
@@ -70,11 +70,11 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
     if (!isSameDay(date, selectedDate)) {
       if (isInLaterMonth(date, selectedDate)) {
         data[2].initialDay = date
-        scrollToNext()
+        scrollToNextMonth()
       }
       else if (isInEarlierMonth(date, selectedDate)) {
         data[0].initialDay = date
-        scrollToPrevious()
+        scrollToPreviousMonth()
       }
     }
     setInitialData(date, selectedDate)
@@ -92,7 +92,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
     return isAfter(monthOfDateToCheck, monthOfReferenceDate);
   }
 
-  const fetchPrevious = () => {
+  const fetchPreviousMonth = () => {
     const newDay = startOfMonth(subMonths(data[0].initialDay, 1));
     setData(prevData => {
       const newData = [...prevData];
@@ -102,7 +102,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
     });
   }
 
-  const fetchNext = () => {
+  const fetchNextMonth = () => {
     const newDay = startOfMonth(addMonths(data[data.length - 1].initialDay, 1))
     setData(prevData => {
       const newData = [...prevData];
@@ -112,7 +112,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
     });
   }
 
-  const scrollToPrevious = () => {
+  const scrollToPreviousMonth = () => {
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 0
@@ -120,7 +120,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
     }
   };
 
-  const scrollToNext = () => {
+  const scrollToNextMonth = () => {
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 2,
@@ -138,7 +138,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
           newData.push({ id: generateUniqueId(), initialDay: startOfToday });
           return newData;
         });
-        scrollToNext()
+        scrollToNextMonth()
         setData(prevData => {
           const newData = [...prevData];
           newData[1].initialDay = startOfMonth(subMonths(startOfToday, 1))
@@ -153,7 +153,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
           newData.unshift({ id: generateUniqueId(), initialDay: startOfToday });
           return newData;
         });
-        scrollToPrevious()
+        scrollToPreviousMonth()
         setData(prevData => {
           const newData = [...prevData];
           newData[1].initialDay = startOfMonth(addMonths(startOfToday, 1))
@@ -200,7 +200,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
       }
       if (Math.abs(initialTranslationX.value - e.allTouches[0].absoluteX) > 50) {
         initialTranslationX.value = -1
-        runOnJS(scrollToNext)()
+        runOnJS(scrollToNextMonth)()
         stateManager.end()
       }
     })
@@ -242,9 +242,9 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
           getItemLayout={(data, index) => (
             { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
           )}
-          onStartReached={fetchPrevious}
+          onStartReached={fetchPreviousMonth}
           onStartReachedThreshold={0.2}
-          onEndReached={fetchNext}
+          onEndReached={fetchNextMonth}
           onEndReachedThreshold={0.2}
           initialScrollIndex={1}
           // initialNumToRender={3}
