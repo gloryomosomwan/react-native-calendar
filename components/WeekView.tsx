@@ -29,7 +29,7 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
 
   const [data, setData] = useState([
     { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(startOfToday, 1)) },
-    { id: generateUniqueId(), initialDay: startOfWeek(startOfToday) },
+    { id: generateUniqueId(), initialDay: startOfToday },
     { id: generateUniqueId(), initialDay: startOfWeek(addWeeks(startOfToday, 1)) },
   ])
   const flatListRef = useRef<FlatList>(null);
@@ -141,10 +141,8 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
   };
 
   const scrollToToday = () => {
-    let selectedDate = new Date(2024, 10, 2)
     if (!isSameWeek(startOfToday, selectedDate)) {
       if (isInEarlierWeek(startOfToday, selectedDate)) {
-        // setSelectedDate(startOfToday)
         setData(prevData => {
           const newData = [...prevData];
           newData[0] = { id: generateUniqueId(), initialDay: startOfToday }
@@ -160,7 +158,6 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
         }, 250);
       }
       else if (isInLaterWeek(startOfToday, selectedDate)) {
-        // setSelectedDate(startOfToday)
         setData(prevData => {
           const newData = [...prevData];
           newData[2] = { id: generateUniqueId(), initialDay: startOfToday }
@@ -293,7 +290,6 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
                   clearTimeout(timeoutRef.current)
                 }
                 timeoutRef.current = setTimeout(() => {
-                  console.log('timing out')
                   setInitialMonthData(item.item.initialDay, selectedDate)
                   timeoutRef.current = undefined
                 }, 250)
