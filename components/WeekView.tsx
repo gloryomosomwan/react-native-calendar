@@ -24,7 +24,7 @@ type WeekViewProps = {
   setInitialMonthData: (day: Date, selectedDate: Date) => void
 }
 
-const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date) => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth, setInitialMonthData }: WeekViewProps, ref) => {
+const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date) => void; scrollToToday: () => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth, setInitialMonthData }: WeekViewProps, ref) => {
   let startOfToday = new Date(new Date().toDateString())
 
   const [data, setData] = useState([
@@ -45,7 +45,8 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
   useImperativeHandle(ref, () => ({
     // scrollToPreviousWeek,
     // scrollToNextWeek,
-    setInitialWeekData
+    setInitialWeekData,
+    scrollToToday
   }));
 
   const currentMode = useDerivedValue(() => {
@@ -148,42 +149,48 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
   };
 
   const scrollToToday = () => {
+    console.log('scrolling to today in the week...')
+    // console.log(selectedDate)
+    let selectedDate = new Date(2024, 10, 2)
     if (!isSameWeek(startOfToday, selectedDate)) {
-      if (isInLaterWeek(startOfToday, selectedDate)) {
+      if (isInEarlierWeek(startOfToday, selectedDate)) {
         setSelectedDate(startOfToday)
         setData(prevData => {
           const newData = [...prevData];
-          newData.pop();
-          newData.push({ id: generateUniqueId(), initialDay: startOfToday });
-          return newData;
-        });
-        scrollToNextWeek('animated')
-        setData(prevData => {
-          const newData = [...prevData];
-          newData[1].initialDay = startOfWeek(subWeeks(startOfToday, 1))
-          return newData;
-        });
-      }
-      else if (isInEarlierWeek(startOfToday, selectedDate)) {
-        setSelectedDate(startOfToday)
-        setData(prevData => {
-          const newData = [...prevData];
-          newData.shift();
-          newData.unshift({ id: generateUniqueId(), initialDay: startOfToday });
+          newData[0] = { id: generateUniqueId(), initialDay: startOfToday }
           return newData;
         });
         scrollToPreviousWeek('animated')
+        setTimeout(() => {
+          setData(prevData => {
+            const newData = [...prevData]
+            newData[2] = { id: generateUniqueId(), initialDay: startOfWeek(addWeeks(startOfToday, 1)) }
+            return newData
+          })
+        }, 250);
+      }
+      else if (isInLaterWeek(startOfToday, selectedDate)) {
+        setSelectedDate(startOfToday)
         setData(prevData => {
           const newData = [...prevData];
-          newData[1].initialDay = startOfWeek(addWeeks(startOfToday, 1))
+          newData[2] = { id: generateUniqueId(), initialDay: startOfToday }
           return newData;
         });
+        scrollToNextWeek('animated')
+        setTimeout(() => {
+          setData(prevData => {
+            const newData = [...prevData]
+            newData[0] = { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(startOfToday, 1)) }
+            // newData[1].initialDay = startOfWeek(subWeeks(startOfToday, 1))
+            return newData
+          })
+        }, 250);
       }
     }
     else if (isSameWeek(startOfToday, selectedDate)) {
-      setSelectedDate(startOfToday)
+      // setSelectedDate(startOfToday)
     }
-    setInitialMonthData(startOfToday, selectedDate)
+    // setInitialMonthData(startOfToday, selectedDate)
   }
 
   const handlePress = (date: Date) => {
@@ -208,7 +215,7 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
       //   Extrapolate.CLAMP
       // ),
       // pointerEvents: bottomSheetTranslationY.value <= -235 ? 'auto' : 'none',
-      pointerEvents: 'auto'
+      // pointerEvents: 'auto'
     };
   });
 
@@ -245,10 +252,10 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
   return (
     // 30 (size of header) + 5 (header margin) + 17 (weekday name text height)
     <Animated.View style={[styles.weekContainer, rWeekViewStyle, { paddingTop: topPadding + 30 + 5 + 17 }]}>
-      <View style={{ position: 'absolute', top: 20, zIndex: 2 }}>
+      <View style={{ position: 'absolute', top: 40, zIndex: 2 }}>
         <Button title='Today (Week)' onPress={scrollToToday} />
       </View>
-      <View style={{ position: 'absolute', top: 20, left: 250, zIndex: 2 }}>
+      <View style={{ position: 'absolute', top: 40, left: 250, zIndex: 2 }}>
         <Button title='Data (Week)' onPress={() => console.log(data)} />
       </View>
       <FlatList

@@ -24,9 +24,10 @@ type MonthViewProps = {
   // scrollToPreviousWeek: () => void
   // scrollToNextWeek: () => void
   setInitialWeekData: (day: Date, selectedDate: Date) => void
+  scrollWeekToToday: () => void
 }
 
-const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMonth: () => void; setInitialMonthData: (day: Date, selectedDate: Date) => void; }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, setInitialWeekData }: MonthViewProps, ref) => {
+const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMonth: () => void; setInitialMonthData: (day: Date, selectedDate: Date) => void; }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, setInitialWeekData, scrollWeekToToday }: MonthViewProps, ref) => {
   let startOfToday = new Date(new Date().toDateString())
 
   const [data, setData] = useState([
@@ -164,7 +165,7 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
     else if (isSameMonth(startOfToday, selectedDate)) {
       setSelectedDate(startOfToday)
     }
-    setInitialWeekData(startOfToday, selectedDate)
+    scrollWeekToToday()
   }
 
   const viewabilityConfig = {
