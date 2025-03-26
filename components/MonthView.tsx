@@ -310,8 +310,8 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
 
                 if (!isSameDay(item.item.initialDay, selectedDate)) {
                   if (timeoutRef.current !== undefined) {
-                    console.log('clearing timeoutRef')
-                    // clearTimeout(timeoutRef.current)
+                    // console.log('clearing timeoutRef')
+                    clearTimeout(timeoutRef.current)
                   }
                   timeoutRef.current = setTimeout(() => {
                     setInitialWeekData(item.item.initialDay, selectedDate)
