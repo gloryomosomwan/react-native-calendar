@@ -89,7 +89,10 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
   }
 
   const fetchPreviousWeek = () => {
-    const newDay = startOfWeek(subWeeks(data[0].initialDay, 1));
+    let newDay = startOfWeek(subWeeks(data[0].initialDay, 1));
+    if (isSameWeek(newDay, startOfToday)) {
+      newDay = startOfToday
+    }
     setData(prevData => {
       const newData = [...prevData];
       newData.unshift({ id: generateUniqueId(), initialDay: newDay });
@@ -99,7 +102,10 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
   }
 
   const fetchNextWeek = () => {
-    const newDay = startOfWeek(addWeeks(data[data.length - 1].initialDay, 1))
+    let newDay = startOfWeek(addWeeks(data[data.length - 1].initialDay, 1))
+    if (isSameWeek(newDay, startOfToday)) {
+      newDay = startOfToday
+    }
     setData(prevData => {
       const newData = [...prevData];
       newData.push({ id: generateUniqueId(), initialDay: newDay });

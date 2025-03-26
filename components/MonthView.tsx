@@ -91,7 +91,10 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
   }
 
   const fetchPreviousMonth = () => {
-    const newDay = startOfMonth(subMonths(data[0].initialDay, 1));
+    let newDay = startOfMonth(subMonths(data[0].initialDay, 1));
+    if (isSameMonth(newDay, startOfToday)) {
+      newDay = startOfToday
+    }
     setData(prevData => {
       const newData = [...prevData];
       newData.unshift({ id: generateUniqueId(), initialDay: newDay });
@@ -101,7 +104,10 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
   }
 
   const fetchNextMonth = () => {
-    const newDay = startOfMonth(addMonths(data[data.length - 1].initialDay, 1))
+    let newDay = startOfMonth(addMonths(data[data.length - 1].initialDay, 1))
+    if (isSameMonth(newDay, startOfToday)) {
+      newDay = startOfToday
+    }
     setData(prevData => {
       const newData = [...prevData];
       newData.push({ id: generateUniqueId(), initialDay: newDay });
