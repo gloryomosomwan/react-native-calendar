@@ -26,9 +26,9 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     topPadding = insets.top
   }
 
-  const monthViewRef = useRef<{ scrollToPreviousMonth: () => void; scrollToNextMonth: () => void } | null>(null)
+  const monthViewRef = useRef<{ scrollToPreviousMonth: () => void; scrollToNextMonth: () => void; setInitialMonthData: (day: Date, selectedDate: Date) => void } | null>(null)
   // const weekViewRef = useRef<{ scrollToPreviousWeek: () => void; scrollToNextWeek: () => void; setInitialData: (day: Date, selectedDate: Date) => void } | null>(null)
-  const weekViewRef = useRef<{ setInitialData: (day: Date, selectedDate: Date) => void } | null>(null)
+  const weekViewRef = useRef<{ setInitialWeekData: (day: Date, selectedDate: Date) => void } | null>(null)
 
   return (
     <View style={[
@@ -55,6 +55,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         setDateOfDisplayedMonth={setDateOfDisplayedMonth}
         scrollToPreviousMonth={() => monthViewRef?.current?.scrollToPreviousMonth()}
         scrollToNextMonth={() => monthViewRef?.current?.scrollToNextMonth()}
+        setInitialMonthData={(day: Date, selectedDate: Date) => monthViewRef?.current?.setInitialMonthData(day, selectedDate)}
       />
       <MonthView
         ref={monthViewRef}
@@ -67,7 +68,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         setDateOfDisplayedMonth={setDateOfDisplayedMonth}
         // scrollToPreviousWeek={() => weekViewRef?.current?.scrollToPreviousWeek()}
         // scrollToNextWeek={() => weekViewRef?.current?.scrollToNextWeek()}
-        setInitialData={(day: Date, selectedDate: Date) => weekViewRef?.current?.setInitialData(day, selectedDate)}
+        setInitialWeekData={(day: Date, selectedDate: Date) => weekViewRef?.current?.setInitialWeekData(day, selectedDate)}
       />
     </View>
   );

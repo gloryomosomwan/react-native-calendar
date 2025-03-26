@@ -21,9 +21,10 @@ type WeekViewProps = {
   setDateOfDisplayedMonth: (date: Date) => void
   scrollToPreviousMonth: () => void
   scrollToNextMonth: () => void
+  setInitialMonthData: (day: Date, selectedDate: Date) => void
 }
 
-const WeekView = forwardRef<{ setInitialData: (day: Date, selectedDate: Date) => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth }: WeekViewProps, ref) => {
+const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date) => void }, WeekViewProps>(({ bottomSheetTranslationY, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth, setInitialMonthData }: WeekViewProps, ref) => {
   let startOfToday = new Date(new Date().toDateString())
 
   const [data, setData] = useState([
@@ -44,7 +45,7 @@ const WeekView = forwardRef<{ setInitialData: (day: Date, selectedDate: Date) =>
   useImperativeHandle(ref, () => ({
     // scrollToPreviousWeek,
     // scrollToNextWeek,
-    setInitialData
+    setInitialWeekData
   }));
 
   const currentMode = useDerivedValue(() => {
@@ -53,7 +54,7 @@ const WeekView = forwardRef<{ setInitialData: (day: Date, selectedDate: Date) =>
       : 'collapsed'
   })
 
-  const setInitialData = (day: Date, selectedDate: Date) => {
+  const setInitialWeekData = (day: Date, selectedDate: Date) => {
     // console.log('day:', day)
     // console.log('selectedDay:', selectedDate)
     // console.log('setting initial data...')
@@ -118,7 +119,7 @@ const WeekView = forwardRef<{ setInitialData: (day: Date, selectedDate: Date) =>
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 0,
-        animated: false
+        // animated: false
       });
     }
   };
@@ -127,7 +128,7 @@ const WeekView = forwardRef<{ setInitialData: (day: Date, selectedDate: Date) =>
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 2,
-        animated: false
+        // animated: false
       });
     }
   };
@@ -168,6 +169,7 @@ const WeekView = forwardRef<{ setInitialData: (day: Date, selectedDate: Date) =>
     else if (isSameWeek(startOfToday, selectedDate)) {
       setSelectedDate(startOfToday)
     }
+    setInitialMonthData(startOfToday, selectedDate)
   }
 
   const handlePress = (date: Date) => {
@@ -229,11 +231,11 @@ const WeekView = forwardRef<{ setInitialData: (day: Date, selectedDate: Date) =>
   return (
     // 30 (size of header) + 5 (header margin) + 17 (weekday name text height)
     <Animated.View style={[styles.weekContainer, rWeekViewStyle, { paddingTop: topPadding + 30 + 5 + 17 }]}>
-      {/* <View style={{ position: 'absolute', top: 300, zIndex: 2 }}>
-        <Button title='today' onPress={scrollToToday} />
-      </View> */}
-      <View style={{ position: 'absolute', top: 340, zIndex: 2 }}>
-        <Button title='DATA' onPress={() => console.log(data)} />
+      <View style={{ position: 'absolute', top: 20, zIndex: 2 }}>
+        <Button title='Today (Week)' onPress={scrollToToday} />
+      </View>
+      <View style={{ position: 'absolute', top: 20, left: 250, zIndex: 2 }}>
+        <Button title='Data (Week)' onPress={() => console.log(data)} />
       </View>
       <FlatList
         ref={flatListRef}

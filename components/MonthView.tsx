@@ -23,10 +23,10 @@ type MonthViewProps = {
   setDateOfDisplayedMonth: (date: Date) => void
   // scrollToPreviousWeek: () => void
   // scrollToNextWeek: () => void
-  setInitialData: (day: Date, selectedDate: Date) => void
+  setInitialWeekData: (day: Date, selectedDate: Date) => void
 }
 
-const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMonth: () => void }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, setInitialData }: MonthViewProps, ref) => {
+const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMonth: () => void; setInitialMonthData: (day: Date, selectedDate: Date) => void; }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, setInitialWeekData }: MonthViewProps, ref) => {
   let startOfToday = new Date(new Date().toDateString())
 
   const [data, setData] = useState([
@@ -51,7 +51,8 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
 
   useImperativeHandle(ref, () => ({
     scrollToPreviousMonth,
-    scrollToNextMonth
+    scrollToNextMonth,
+    setInitialMonthData
   }));
 
   useEffect(() => {
@@ -77,7 +78,7 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
         scrollToPreviousMonth()
       }
     }
-    setInitialData(date, selectedDate)
+    setInitialWeekData(date, selectedDate)
   }
 
   function isInEarlierMonth(dateToCheck: Date, referenceDate: Date) {
@@ -164,7 +165,7 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
     else if (isSameMonth(startOfToday, selectedDate)) {
       setSelectedDate(startOfToday)
     }
-    setInitialData(startOfToday, selectedDate)
+    setInitialWeekData(startOfToday, selectedDate)
   }
 
   const viewabilityConfig = {
@@ -209,15 +210,53 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
   // const timeoutRef = useRef<number | undefined>(undefined)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
+  const setInitialMonthData = (day: Date, selectedDate: Date) => {
+    if (!isSameMonth(startOfToday, selectedDate)) {
+      if (isInLaterMonth(startOfToday, selectedDate)) {
+        setSelectedDate(startOfToday)
+        setData(prevData => {
+          const newData = [...prevData];
+          newData.pop();
+          newData.push({ id: generateUniqueId(), initialDay: startOfToday });
+          return newData;
+        });
+        scrollToNextMonth()
+        setData(prevData => {
+          const newData = [...prevData];
+          newData[1].initialDay = startOfMonth(subMonths(startOfToday, 1))
+          return newData;
+        });
+      }
+      else if (isInEarlierMonth(startOfToday, selectedDate)) {
+        setSelectedDate(startOfToday)
+        setData(prevData => {
+          const newData = [...prevData];
+          newData.shift();
+          newData.unshift({ id: generateUniqueId(), initialDay: startOfToday });
+          return newData;
+        });
+        scrollToPreviousMonth()
+        setData(prevData => {
+          const newData = [...prevData];
+          newData[1].initialDay = startOfMonth(addMonths(startOfToday, 1))
+          return newData;
+        });
+      }
+    }
+    else if (isSameMonth(startOfToday, selectedDate)) {
+      setSelectedDate(startOfToday)
+    }
+  }
+
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={[rMonthViewStyle]}>
-        <View style={{ position: 'absolute', top: 100, zIndex: 2 }}>
-          <Button title='today' onPress={scrollToToday} />
+        <View style={{ position: 'absolute', top: 310, zIndex: 2 }}>
+          <Button title='Today (Month)' onPress={scrollToToday} />
         </View>
-        {/* <View style={{ position: 'absolute', top: 100, zIndex: 2, left: 60 }}>
-        <Button title='data' onPress={() => console.log(data)} />
-      </View> */}
+        <View style={{ position: 'absolute', top: 310, zIndex: 2, left: 250 }}>
+          <Button title='Data (Month)' onPress={() => console.log(data)} />
+        </View>
         {/* <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 60 }}>
         <Button title='tRP' onPress={() => console.log('tRaP:', topRowPosition.value)} />
       </View> */}
@@ -270,7 +309,7 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
                     // clearTimeout(timeoutRef.current)
                   }
                   timeoutRef.current = setTimeout(() => {
-                    setInitialData(item.item.initialDay, selectedDate)
+                    setInitialWeekData(item.item.initialDay, selectedDate)
                     timeoutRef.current = undefined
                   }, 250);
                 }
