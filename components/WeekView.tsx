@@ -118,7 +118,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 0,
-        animated: true
+        animated: false
       });
     }
   };
@@ -127,7 +127,7 @@ const WeekView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () => 
     if (flatListRef.current) {
       flatListRef?.current?.scrollToIndex({
         index: 2,
-        animated: true
+        animated: false
       });
     }
   };

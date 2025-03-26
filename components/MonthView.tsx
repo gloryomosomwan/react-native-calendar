@@ -164,6 +164,7 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
     else if (isSameMonth(startOfToday, selectedDate)) {
       setSelectedDate(startOfToday)
     }
+    setInitialData(startOfToday, selectedDate)
   }
 
   const viewabilityConfig = {
@@ -258,17 +259,21 @@ const MonthView = forwardRef<{ scrollToPrevious: () => void; scrollToNext: () =>
             info.viewableItems.forEach(item => {
               if (currentMode.value === 'expanded') {
                 setDateOfDisplayedMonth(item.item.initialDay)
+                // console.log('initialDay:', item.item.initialDay)
+                // console.log('selectedDate:', selectedDate)
                 setSelectedDate(item.item.initialDay)
                 // console.log(timeoutRef)
 
-                if (timeoutRef.current !== undefined) {
-                  console.log('clearing timeoutRef')
-                  // clearTimeout(timeoutRef.current)
+                if (!isSameDay(item.item.initialDay, selectedDate)) {
+                  if (timeoutRef.current !== undefined) {
+                    console.log('clearing timeoutRef')
+                    // clearTimeout(timeoutRef.current)
+                  }
+                  timeoutRef.current = setTimeout(() => {
+                    setInitialData(item.item.initialDay, selectedDate)
+                    timeoutRef.current = undefined
+                  }, 250);
                 }
-                timeoutRef.current = setTimeout(() => {
-                  setInitialData(item.item.initialDay, selectedDate)
-                  timeoutRef.current = undefined
-                }, 250);
 
               }
             });
