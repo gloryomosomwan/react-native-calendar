@@ -215,40 +215,40 @@ const MonthView = forwardRef<{ scrollToPreviousMonth: () => void; scrollToNextMo
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const setInitialMonthData = (day: Date, selectedDate: Date) => {
-    if (!isSameMonth(startOfToday, selectedDate)) {
-      if (isInLaterMonth(startOfToday, selectedDate)) {
-        setSelectedDate(startOfToday)
+    if (!isSameMonth(day, selectedDate)) {
+      if (isInLaterMonth(day, selectedDate)) {
+        setSelectedDate(day)
         setData(prevData => {
           const newData = [...prevData];
           newData.pop();
-          newData.push({ id: generateUniqueId(), initialDay: startOfToday });
+          newData.push({ id: generateUniqueId(), initialDay: day });
           return newData;
         });
         scrollToNextMonth()
         setData(prevData => {
           const newData = [...prevData];
-          newData[1].initialDay = startOfMonth(subMonths(startOfToday, 1))
+          newData[1].initialDay = startOfMonth(subMonths(day, 1))
           return newData;
         });
       }
-      else if (isInEarlierMonth(startOfToday, selectedDate)) {
-        setSelectedDate(startOfToday)
+      else if (isInEarlierMonth(day, selectedDate)) {
+        setSelectedDate(day)
         setData(prevData => {
           const newData = [...prevData];
           newData.shift();
-          newData.unshift({ id: generateUniqueId(), initialDay: startOfToday });
+          newData.unshift({ id: generateUniqueId(), initialDay: day });
           return newData;
         });
         scrollToPreviousMonth()
         setData(prevData => {
           const newData = [...prevData];
-          newData[1].initialDay = startOfMonth(addMonths(startOfToday, 1))
+          newData[1].initialDay = startOfMonth(addMonths(day, 1))
           return newData;
         });
       }
     }
-    else if (isSameMonth(startOfToday, selectedDate)) {
-      setSelectedDate(startOfToday)
+    else if (isSameMonth(day, selectedDate)) {
+      setSelectedDate(day)
     }
   }
 
