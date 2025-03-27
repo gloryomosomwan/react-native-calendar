@@ -64,8 +64,6 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         selectedDatePosition={selectedDatePosition}
         dateOfDisplayedMonth={dateOfDisplayedMonth}
         setDateOfDisplayedMonth={setDateOfDisplayedMonth}
-        // scrollToPreviousWeek={() => weekViewRef?.current?.scrollToPreviousWeek()}
-        // scrollToNextWeek={() => weekViewRef?.current?.scrollToNextWeek()}
         setInitialWeekData={(day: Date, selectedDate: Date) => weekViewRef?.current?.setInitialWeekData(day, selectedDate)}
       />
     </View>
