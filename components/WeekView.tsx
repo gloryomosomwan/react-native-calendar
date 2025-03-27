@@ -209,18 +209,6 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
     // waitForInteraction: true // Wait for scroll to stop before checking
   };
 
-  function isInEarlierMonth(dateToCheck: Date, referenceDate: Date) {
-    const monthOfDateToCheck = startOfMonth(dateToCheck);
-    const monthOfReferenceDate = startOfMonth(referenceDate);
-    return isBefore(monthOfDateToCheck, monthOfReferenceDate);
-  }
-
-  function isInLaterMonth(dateToCheck: Date, referenceDate: Date) {
-    const monthOfDateToCheck = startOfMonth(dateToCheck);
-    const monthOfReferenceDate = startOfMonth(referenceDate);
-    return isAfter(monthOfDateToCheck, monthOfReferenceDate);
-  }
-
   function isInEarlierWeek(dateToCheck: Date, referenceDate: Date) {
     const weekOfDateToCheck = startOfWeek(dateToCheck)
     const weekOfReferenceDate = startOfWeek(referenceDate)
