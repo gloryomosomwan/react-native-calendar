@@ -27,7 +27,6 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
   }
 
   const monthViewRef = useRef<{ setInitialMonthData: (day: Date, selectedDate: Date) => void } | null>(null)
-  // const weekViewRef = useRef<{ scrollToPreviousWeek: () => void; scrollToNextWeek: () => void; setInitialData: (day: Date, selectedDate: Date) => void } | null>(null)
   const weekViewRef = useRef<{ setInitialWeekData: (day: Date, selectedDate: Date) => void; } | null>(null)
 
   return (
