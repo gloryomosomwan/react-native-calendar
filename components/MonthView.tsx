@@ -114,19 +114,35 @@ const MonthView = forwardRef<{ setInitialMonthData: (day: Date, selectedDate: Da
     });
   }
 
-  const scrollToPreviousMonth = () => {
+  const scrollToPreviousMonth = (mode?: string) => {
     if (flatListRef.current) {
-      flatListRef?.current?.scrollToIndex({
-        index: 0
-      });
+      if (mode === 'animated') {
+        flatListRef?.current?.scrollToIndex({
+          index: 0
+        });
+      }
+      else {
+        flatListRef?.current?.scrollToIndex({
+          index: 0,
+          animated: false
+        })
+      }
     }
   };
 
-  const scrollToNextMonth = () => {
+  const scrollToNextMonth = (mode?: string) => {
     if (flatListRef.current) {
-      flatListRef?.current?.scrollToIndex({
-        index: 2,
-      });
+      if (mode === 'animated') {
+        flatListRef?.current?.scrollToIndex({
+          index: 2,
+        });
+      }
+      else {
+        flatListRef?.current?.scrollToIndex({
+          index: 2,
+          animated: false
+        })
+      }
     }
   };
 
@@ -139,7 +155,7 @@ const MonthView = forwardRef<{ setInitialMonthData: (day: Date, selectedDate: Da
           newData.push({ id: generateUniqueId(), initialDay: startOfToday });
           return newData;
         });
-        scrollToNextMonth()
+        scrollToNextMonth('animated')
         setData(prevData => {
           const newData = [...prevData];
           newData[1].initialDay = startOfMonth(subMonths(startOfToday, 1))
@@ -153,7 +169,7 @@ const MonthView = forwardRef<{ setInitialMonthData: (day: Date, selectedDate: Da
           newData.unshift({ id: generateUniqueId(), initialDay: startOfToday });
           return newData;
         });
-        scrollToPreviousMonth()
+        scrollToPreviousMonth('animated')
         setData(prevData => {
           const newData = [...prevData];
           newData[1].initialDay = startOfMonth(addMonths(startOfToday, 1))
@@ -167,8 +183,8 @@ const MonthView = forwardRef<{ setInitialMonthData: (day: Date, selectedDate: Da
   }
 
   const viewabilityConfig = {
-    itemVisiblePercentThreshold: 90, // Percentage of item that needs to be visible
-    minimumViewTime: 50, // Minimum time (ms) an item must be visible to trigger
+    itemVisiblePercentThreshold: 100, // Percentage of item that needs to be visible
+    minimumViewTime: 1, // Minimum time (ms) an item must be visible to trigger
     // waitForInteraction: true // Wait for scroll to stop before checking
   };
 
@@ -199,12 +215,12 @@ const MonthView = forwardRef<{ setInitialMonthData: (day: Date, selectedDate: Da
       }
       if ((initialTranslationX.value - e.allTouches[0].absoluteX) > 50) {
         initialTranslationX.value = -1
-        runOnJS(scrollToNextMonth)()
+        runOnJS(scrollToNextMonth)('animated')
         stateManager.end()
       }
       else if ((initialTranslationX.value - e.allTouches[0].absoluteX < -50)) {
         initialTranslationX.value = -1
-        runOnJS(scrollToPreviousMonth)()
+        runOnJS(scrollToPreviousMonth)('animated')
         stateManager.end()
       }
     })
@@ -212,38 +228,72 @@ const MonthView = forwardRef<{ setInitialMonthData: (day: Date, selectedDate: Da
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const setInitialMonthData = (day: Date, selectedDate: Date) => {
+    // if (!isSameMonth(day, selectedDate)) {
+    //   if (isInLaterMonth(day, selectedDate)) {
+    //     setData(prevData => {
+    //       const newData = [...prevData];
+    //       newData.pop();
+    //       newData.push({ id: generateUniqueId(), initialDay: day });
+    //       return newData;
+    //     });
+    //     scrollToNextMonth()
+    //     setData(prevData => {
+    //       const newData = [...prevData];
+    //       newData[1].initialDay = startOfMonth(subMonths(day, 1))
+    //       return newData;
+    //     });
+    //   }
+    //   else if (isInEarlierMonth(day, selectedDate)) {
+    //     setData(prevData => {
+    //       const newData = [...prevData];
+    //       newData.shift();
+    //       newData.unshift({ id: generateUniqueId(), initialDay: day });
+    //       return newData;
+    //     });
+    //     scrollToPreviousMonth()
+    //     setData(prevData => {
+    //       const newData = [...prevData];
+    //       newData[1].initialDay = startOfMonth(addMonths(day, 1))
+    //       return newData;
+    //     });
+    //   }
+    // }
+    // else if (isSameMonth(day, selectedDate)) {
+    //   setSelectedDate(day)
+    // }
+
+    const newDay = startOfMonth(day)
     if (!isSameMonth(day, selectedDate)) {
-      if (isInLaterMonth(day, selectedDate)) {
+      if (isBefore(day, selectedDate)) {
         setData(prevData => {
-          const newData = [...prevData];
-          newData.pop();
-          newData.push({ id: generateUniqueId(), initialDay: day });
+          const newData = [...prevData]
+          newData[0] = { id: generateUniqueId(), initialDay: newDay }
           return newData;
-        });
-        scrollToNextMonth()
-        setData(prevData => {
-          const newData = [...prevData];
-          newData[1].initialDay = startOfMonth(subMonths(day, 1))
-          return newData;
-        });
-      }
-      else if (isInEarlierMonth(day, selectedDate)) {
-        setData(prevData => {
-          const newData = [...prevData];
-          newData.shift();
-          newData.unshift({ id: generateUniqueId(), initialDay: day });
-          return newData;
-        });
+        })
         scrollToPreviousMonth()
-        setData(prevData => {
-          const newData = [...prevData];
-          newData[1].initialDay = startOfMonth(addMonths(day, 1))
-          return newData;
-        });
+        setTimeout(() => {
+          setData(prevData => {
+            const newData = [...prevData]
+            newData[2] = { id: generateUniqueId(), initialDay: startOfMonth(addMonths(newDay, 1)) }
+            return newData
+          })
+        }, 250)
       }
-    }
-    else if (isSameMonth(day, selectedDate)) {
-      setSelectedDate(day)
+      else if (isAfter(day, selectedDate)) {
+        setData(prevData => {
+          const newData = [...prevData]
+          newData[2] = { id: generateUniqueId(), initialDay: newDay }
+          return newData
+        })
+        scrollToNextMonth()
+        setTimeout(() => {
+          setData(prevData => {
+            const newData = [...prevData]
+            newData[0] = { id: generateUniqueId(), initialDay: startOfMonth(subMonths(newDay, 1)) }
+            return newData
+          })
+        }, 250)
+      }
     }
   }
 
@@ -295,13 +345,13 @@ const MonthView = forwardRef<{ setInitialMonthData: (day: Date, selectedDate: Da
           viewabilityConfig={viewabilityConfig}
           onViewableItemsChanged={(info) => {
             info.viewableItems.forEach(item => {
-              if (currentMode.value === 'expanded') {
+              if (currentMode.value === 'collapsed') {
                 setDateOfDisplayedMonth(item.item.initialDay)
                 setSelectedDate(item.item.initialDay)
 
                 if (!isSameDay(item.item.initialDay, selectedDate)) {
                   if (timeoutRef.current !== undefined) {
-                    console.log('timeout cleared')
+                    console.log('timeout cleard')
                     clearTimeout(timeoutRef.current)
                   }
                   timeoutRef.current = setTimeout(() => {

@@ -279,7 +279,7 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
-            if (currentMode.value === 'collapsed') {
+            if (currentMode.value === 'expanded') {
               setDateOfDisplayedMonth(item.item.initialDay)
               setSelectedDate(item.item.initialDay)
 
