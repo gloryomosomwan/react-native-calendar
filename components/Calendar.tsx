@@ -26,7 +26,7 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     topPadding = insets.top
   }
 
-  const monthViewRef = useRef<{ scrollToPreviousMonth: () => void; scrollToNextMonth: () => void; setInitialMonthData: (day: Date, selectedDate: Date) => void } | null>(null)
+  const monthViewRef = useRef<{ setInitialMonthData: (day: Date, selectedDate: Date) => void } | null>(null)
   // const weekViewRef = useRef<{ scrollToPreviousWeek: () => void; scrollToNextWeek: () => void; setInitialData: (day: Date, selectedDate: Date) => void } | null>(null)
   const weekViewRef = useRef<{ setInitialWeekData: (day: Date, selectedDate: Date) => void; } | null>(null)
 
@@ -53,8 +53,6 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         selectedDatePosition={selectedDatePosition}
         dateOfDisplayedMonth={dateOfDisplayedMonth}
         setDateOfDisplayedMonth={setDateOfDisplayedMonth}
-        scrollToPreviousMonth={() => monthViewRef?.current?.scrollToPreviousMonth()}
-        scrollToNextMonth={() => monthViewRef?.current?.scrollToNextMonth()}
         setInitialMonthData={(day: Date, selectedDate: Date) => monthViewRef?.current?.setInitialMonthData(day, selectedDate)}
       />
       <MonthView

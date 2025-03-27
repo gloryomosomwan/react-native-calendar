@@ -19,12 +19,10 @@ type WeekViewProps = {
   selectedDatePosition: SharedValue<number>
   dateOfDisplayedMonth: Date
   setDateOfDisplayedMonth: (date: Date) => void
-  scrollToPreviousMonth: () => void
-  scrollToNextMonth: () => void
   setInitialMonthData: (day: Date, selectedDate: Date) => void
 }
 
-const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date) => void; }, WeekViewProps>(({ bottomSheetTranslationY, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, scrollToPreviousMonth, scrollToNextMonth, setInitialMonthData }: WeekViewProps, ref) => {
+const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date) => void; }, WeekViewProps>(({ bottomSheetTranslationY, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, setInitialMonthData }: WeekViewProps, ref) => {
   let startOfToday = new Date(new Date().toDateString())
 
   const [data, setData] = useState([
