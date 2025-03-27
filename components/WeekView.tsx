@@ -188,12 +188,7 @@ const WeekView = forwardRef<{ setInitialWeekData: (day: Date, selectedDate: Date
     // In here, we just compare date and selectedDate because handlePress has a stale closure. In other words, even if we set selectedDate to date (which we do below) it won't update for us in here
     setSelectedDate(date)
     if (!isSameDay(date, selectedDate)) {
-      if (isInLaterMonth(date, selectedDate)) {
-        scrollToNextMonth()
-      }
-      else if (isInEarlierMonth(date, selectedDate)) {
-        scrollToPreviousMonth()
-      }
+      setInitialMonthData(date, selectedDate)
     }
   }
 
