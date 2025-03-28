@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    paddingTop: 99,
+    paddingTop: 52,
   },
   week: {
     flexDirection: 'row',

@@ -21,10 +21,9 @@ type MonthViewProps = {
   selectedDatePosition: SharedValue<number>
   dateOfDisplayedMonth: Date
   setDateOfDisplayedMonth: (date: Date) => void
-  setInitialWeekData: (day: Date, selectedDate: Date) => void
 }
 
-const MonthView = forwardRef<{ setInitialMonthData: (day: Date, selectedDate: Date) => void; }, MonthViewProps>(({ bottomSheetTranslationY, calendarBottom, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth, setInitialWeekData }: MonthViewProps, ref) => {
+export default function MonthView({ bottomSheetTranslationY, calendarBottom, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth }: MonthViewProps) {
   let startOfToday = new Date(new Date().toDateString())
 
   const [data, setData] = useState([
@@ -46,10 +45,6 @@ const MonthView = forwardRef<{ setInitialMonthData: (day: Date, selectedDate: Da
   const setCalendarBottom = (y: number) => {
     calendarBottom.value = y
   }
-
-  useImperativeHandle(ref, () => ({
-    setInitialMonthData
-  }));
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
@@ -73,7 +68,6 @@ const MonthView = forwardRef<{ setInitialMonthData: (day: Date, selectedDate: Da
         scrollToPreviousMonth()
       }
     }
-    setInitialWeekData(date, selectedDate)
   }
 
   function isInEarlierMonth(dateToCheck: Date, referenceDate: Date) {
@@ -190,12 +184,6 @@ const MonthView = forwardRef<{ setInitialMonthData: (day: Date, selectedDate: Da
 
   const rMonthViewStyle = useAnimatedStyle(() => {
     return {
-      opacity: interpolate(
-        bottomSheetTranslationY.value,
-        [EXPANDED_MODE_THRESHOLD, EXPANDED_MODE_THRESHOLD + 1],
-        [0, 1],
-        Extrapolate.CLAMP
-      ),
       transform: [{
         translateY: interpolate(
           bottomSheetTranslationY.value,
@@ -225,90 +213,15 @@ const MonthView = forwardRef<{ setInitialMonthData: (day: Date, selectedDate: Da
       }
     })
 
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-
-  const setInitialMonthData = (day: Date, selectedDate: Date) => {
-    // if (!isSameMonth(day, selectedDate)) {
-    //   if (isInLaterMonth(day, selectedDate)) {
-    //     setData(prevData => {
-    //       const newData = [...prevData];
-    //       newData.pop();
-    //       newData.push({ id: generateUniqueId(), initialDay: day });
-    //       return newData;
-    //     });
-    //     scrollToNextMonth()
-    //     setData(prevData => {
-    //       const newData = [...prevData];
-    //       newData[1].initialDay = startOfMonth(subMonths(day, 1))
-    //       return newData;
-    //     });
-    //   }
-    //   else if (isInEarlierMonth(day, selectedDate)) {
-    //     setData(prevData => {
-    //       const newData = [...prevData];
-    //       newData.shift();
-    //       newData.unshift({ id: generateUniqueId(), initialDay: day });
-    //       return newData;
-    //     });
-    //     scrollToPreviousMonth()
-    //     setData(prevData => {
-    //       const newData = [...prevData];
-    //       newData[1].initialDay = startOfMonth(addMonths(day, 1))
-    //       return newData;
-    //     });
-    //   }
-    // }
-    // else if (isSameMonth(day, selectedDate)) {
-    //   setSelectedDate(day)
-    // }
-
-    const newDay = startOfMonth(day)
-    if (!isSameMonth(day, selectedDate)) {
-      if (isBefore(day, selectedDate)) {
-        setData(prevData => {
-          const newData = [...prevData]
-          newData[0] = { id: generateUniqueId(), initialDay: newDay }
-          return newData;
-        })
-        scrollToPreviousMonth()
-        setTimeout(() => {
-          setData(prevData => {
-            const newData = [...prevData]
-            newData[2] = { id: generateUniqueId(), initialDay: startOfMonth(addMonths(newDay, 1)) }
-            return newData
-          })
-        }, 250)
-      }
-      else if (isAfter(day, selectedDate)) {
-        setData(prevData => {
-          const newData = [...prevData]
-          newData[2] = { id: generateUniqueId(), initialDay: newDay }
-          return newData
-        })
-        scrollToNextMonth()
-        setTimeout(() => {
-          setData(prevData => {
-            const newData = [...prevData]
-            newData[0] = { id: generateUniqueId(), initialDay: startOfMonth(subMonths(newDay, 1)) }
-            return newData
-          })
-        }, 250)
-      }
-    }
-  }
-
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={[rMonthViewStyle]}>
-        <View style={{ position: 'absolute', top: 310, zIndex: 2 }}>
+        {/* <View style={{ position: 'absolute', top: 310, zIndex: 2 }}>
           <Button title='Today (Month)' onPress={scrollToToday} />
         </View>
         <View style={{ position: 'absolute', top: 310, zIndex: 2, left: 250 }}>
           <Button title='Data (Month)' onPress={() => console.log(data)} />
-        </View>
-        {/* <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 60 }}>
-        <Button title='tRP' onPress={() => console.log('tRaP:', topRowPosition.value)} />
-      </View> */}
+        </View> */}
         <FlatList
           ref={flatListRef}
           data={data}
@@ -348,18 +261,6 @@ const MonthView = forwardRef<{ setInitialMonthData: (day: Date, selectedDate: Da
               if (currentMode.value === 'collapsed') {
                 setDateOfDisplayedMonth(item.item.initialDay)
                 setSelectedDate(item.item.initialDay)
-
-                if (!isSameDay(item.item.initialDay, selectedDate)) {
-                  if (timeoutRef.current !== undefined) {
-                    console.log('timeout cleard')
-                    clearTimeout(timeoutRef.current)
-                  }
-                  timeoutRef.current = setTimeout(() => {
-                    setInitialWeekData(item.item.initialDay, selectedDate)
-                    timeoutRef.current = undefined
-                  }, 250);
-                }
-
               }
             });
           }}
@@ -368,8 +269,6 @@ const MonthView = forwardRef<{ setInitialMonthData: (day: Date, selectedDate: Da
       </Animated.View>
     </GestureDetector>
   )
-})
+}
 
 const styles = StyleSheet.create({})
-
-export default MonthView

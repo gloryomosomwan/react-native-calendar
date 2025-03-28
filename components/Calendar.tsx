@@ -26,9 +26,6 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     topPadding = insets.top
   }
 
-  const monthViewRef = useRef<{ setInitialMonthData: (day: Date, selectedDate: Date) => void } | null>(null)
-  const weekViewRef = useRef<{ setInitialWeekData: (day: Date, selectedDate: Date) => void; } | null>(null)
-
   return (
     <View style={[
       styles.container,
@@ -37,25 +34,18 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         paddingBottom: insets.bottom
       }
     ]}>
-      {/* <View style={{ position: 'absolute', zIndex: 2, top: 20, left: 0, flex: 1, flexDirection: 'row' }}>
-        <Button title='SV' onPress={() => { console.log('selectedDate Position', insets.top) }}></Button>
-        <Button title='TV' onPress={() => { console.log('Top Row Position:', topRowPosition.value) }}></Button>
-      </View> */}
       <Header
         selectedDate={selectedDate}
       />
       <WeekView
-        ref={weekViewRef}
         bottomSheetTranslationY={bottomSheetTranslationY}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
         selectedDatePosition={selectedDatePosition}
         dateOfDisplayedMonth={dateOfDisplayedMonth}
         setDateOfDisplayedMonth={setDateOfDisplayedMonth}
-        setInitialMonthData={(day: Date, selectedDate: Date) => monthViewRef?.current?.setInitialMonthData(day, selectedDate)}
       />
       <MonthView
-        ref={monthViewRef}
         bottomSheetTranslationY={bottomSheetTranslationY}
         calendarBottom={calendarBottom}
         selectedDate={selectedDate}
@@ -63,7 +53,6 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         selectedDatePosition={selectedDatePosition}
         dateOfDisplayedMonth={dateOfDisplayedMonth}
         setDateOfDisplayedMonth={setDateOfDisplayedMonth}
-        setInitialWeekData={(day: Date, selectedDate: Date) => weekViewRef?.current?.setInitialWeekData(day, selectedDate)}
       />
     </View>
   );
