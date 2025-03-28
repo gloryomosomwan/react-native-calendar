@@ -1,6 +1,6 @@
 import { View, StyleSheet, Button, Text, Platform } from "react-native";
 import { useState, useRef, useEffect } from "react";
-import { SharedValue, useSharedValue } from "react-native-reanimated";
+import { runOnJS, SharedValue, useAnimatedReaction, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Header from "./Header";
@@ -26,6 +26,20 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     topPadding = insets.top
   }
 
+  const [monthView, setMonthView] = useState(true)
+
+  useAnimatedReaction(
+    () => { return bottomSheetTranslationY.value },
+    (currentValue, previousValue) => {
+      if (currentValue === -235) {
+        runOnJS(setMonthView)(false)
+      }
+      else if (currentValue > -235) {
+        runOnJS(setMonthView)(true)
+      }
+    }
+  );
+
   return (
     <View style={[
       styles.container,
@@ -37,23 +51,27 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
       <Header
         selectedDate={selectedDate}
       />
-      <WeekView
-        bottomSheetTranslationY={bottomSheetTranslationY}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-        selectedDatePosition={selectedDatePosition}
-        dateOfDisplayedMonth={dateOfDisplayedMonth}
-        setDateOfDisplayedMonth={setDateOfDisplayedMonth}
-      />
-      <MonthView
-        bottomSheetTranslationY={bottomSheetTranslationY}
-        calendarBottom={calendarBottom}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-        selectedDatePosition={selectedDatePosition}
-        dateOfDisplayedMonth={dateOfDisplayedMonth}
-        setDateOfDisplayedMonth={setDateOfDisplayedMonth}
-      />
+      {
+        monthView ?
+          <MonthView
+            bottomSheetTranslationY={bottomSheetTranslationY}
+            calendarBottom={calendarBottom}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            selectedDatePosition={selectedDatePosition}
+            dateOfDisplayedMonth={dateOfDisplayedMonth}
+            setDateOfDisplayedMonth={setDateOfDisplayedMonth}
+          />
+          :
+          <WeekView
+            bottomSheetTranslationY={bottomSheetTranslationY}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            selectedDatePosition={selectedDatePosition}
+            dateOfDisplayedMonth={dateOfDisplayedMonth}
+            setDateOfDisplayedMonth={setDateOfDisplayedMonth}
+          />
+      }
     </View>
   );
 }

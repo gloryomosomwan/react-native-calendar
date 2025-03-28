@@ -27,9 +27,9 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   let startOfToday = new Date(new Date().toDateString())
 
   const [data, setData] = useState([
-    { id: generateUniqueId(), initialDay: startOfMonth(subMonths(startOfToday, 1)) },
-    { id: generateUniqueId(), initialDay: startOfToday },
-    { id: generateUniqueId(), initialDay: startOfMonth(addMonths(startOfToday, 1)) },
+    { id: generateUniqueId(), initialDay: startOfMonth(subMonths(selectedDate, 1)) },
+    { id: generateUniqueId(), initialDay: selectedDate },
+    { id: generateUniqueId(), initialDay: startOfMonth(addMonths(selectedDate, 1)) },
   ])
 
   const flatListRef = useRef<FlatList>(null);
@@ -258,10 +258,8 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
           viewabilityConfig={viewabilityConfig}
           onViewableItemsChanged={(info) => {
             info.viewableItems.forEach(item => {
-              if (currentMode.value === 'collapsed') {
-                setDateOfDisplayedMonth(item.item.initialDay)
-                setSelectedDate(item.item.initialDay)
-              }
+              setDateOfDisplayedMonth(item.item.initialDay)
+              setSelectedDate(item.item.initialDay)
             });
           }}
           scrollEnabled={false}

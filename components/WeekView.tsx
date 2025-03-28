@@ -25,9 +25,9 @@ export default function WeekView({ bottomSheetTranslationY, selectedDate, setSel
   let startOfToday = new Date(new Date().toDateString())
 
   const [data, setData] = useState([
-    { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(startOfToday, 1)) },
-    { id: generateUniqueId(), initialDay: startOfToday },
-    { id: generateUniqueId(), initialDay: startOfWeek(addWeeks(startOfToday, 1)) },
+    { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(selectedDate, 1)) },
+    { id: generateUniqueId(), initialDay: selectedDate },
+    { id: generateUniqueId(), initialDay: startOfWeek(addWeeks(selectedDate, 1)) },
   ])
   const flatListRef = useRef<FlatList>(null);
   const insets = useSafeAreaInsets()
@@ -205,10 +205,8 @@ export default function WeekView({ bottomSheetTranslationY, selectedDate, setSel
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
-            if (currentMode.value === 'expanded') {
-              setDateOfDisplayedMonth(item.item.initialDay)
-              setSelectedDate(item.item.initialDay)
-            }
+            setDateOfDisplayedMonth(item.item.initialDay)
+            setSelectedDate(item.item.initialDay)
           });
         }}
       />
