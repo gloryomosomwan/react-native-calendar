@@ -178,7 +178,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
 
   const viewabilityConfig = {
     itemVisiblePercentThreshold: 100, // Percentage of item that needs to be visible
-    minimumViewTime: 1, // Minimum time (ms) an item must be visible to trigger
+    minimumViewTime: 5, // Minimum time (ms) an item must be visible to trigger
     // waitForInteraction: true // Wait for scroll to stop before checking
   };
 
@@ -258,6 +258,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
           viewabilityConfig={viewabilityConfig}
           onViewableItemsChanged={(info) => {
             info.viewableItems.forEach(item => {
+              console.log(item.item.initialDay)
               setDateOfDisplayedMonth(item.item.initialDay)
               setSelectedDate(item.item.initialDay)
             });
