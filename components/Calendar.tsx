@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { runOnJS, SharedValue, useAnimatedReaction, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { CalendarProvider } from "./CalendarContext";
 import Header from "./Header";
 import MonthView from "./MonthView";
 import WeekView from "./WeekView";
@@ -26,43 +27,35 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
     topPadding = insets.top
   }
 
-  const [monthView, setMonthView] = useState(true)
+  // const [monthView, setMonthView] = useState(true)
+  const [weekView, setWeekView] = useState(true)
 
   useAnimatedReaction(
     () => { return bottomSheetTranslationY.value },
     (currentValue, previousValue) => {
-      if (currentValue === -235) {
-        runOnJS(setMonthView)(false)
+      if (currentValue < -117.5) {
+        runOnJS(setWeekView)(true)
       }
-      else if (currentValue > -235) {
-        runOnJS(setMonthView)(true)
+      else if (currentValue > -117.5) {
+        runOnJS(setWeekView)(false)
       }
     }
   );
 
   return (
-    <View style={[
-      styles.container,
-      {
-        paddingTop: topPadding,
-        paddingBottom: insets.bottom
-      }
-    ]}>
-      <Header
-        selectedDate={selectedDate}
-      />
-      {
-        monthView ?
-          <MonthView
-            bottomSheetTranslationY={bottomSheetTranslationY}
-            calendarBottom={calendarBottom}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            selectedDatePosition={selectedDatePosition}
-            dateOfDisplayedMonth={dateOfDisplayedMonth}
-            setDateOfDisplayedMonth={setDateOfDisplayedMonth}
-          />
-          :
+    <CalendarProvider>
+      <View style={[
+        styles.container,
+        {
+          paddingTop: topPadding,
+          paddingBottom: insets.bottom
+        }
+      ]}>
+        <Header
+          selectedDate={selectedDate}
+        />
+        {
+          weekView &&
           <WeekView
             bottomSheetTranslationY={bottomSheetTranslationY}
             selectedDate={selectedDate}
@@ -71,8 +64,18 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
             dateOfDisplayedMonth={dateOfDisplayedMonth}
             setDateOfDisplayedMonth={setDateOfDisplayedMonth}
           />
-      }
-    </View>
+        }
+        <MonthView
+          bottomSheetTranslationY={bottomSheetTranslationY}
+          calendarBottom={calendarBottom}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          selectedDatePosition={selectedDatePosition}
+          dateOfDisplayedMonth={dateOfDisplayedMonth}
+          setDateOfDisplayedMonth={setDateOfDisplayedMonth}
+        />
+      </View>
+    </CalendarProvider>
   );
 }
 

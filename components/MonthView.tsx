@@ -5,6 +5,7 @@ import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, E
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 
+import { useCalendar } from "./CalendarContext";
 import Month from "./Month";
 
 const EXPANDED_MODE_THRESHOLD = -235
@@ -26,11 +27,25 @@ type MonthViewProps = {
 export default function MonthView({ bottomSheetTranslationY, calendarBottom, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth }: MonthViewProps) {
   let startOfToday = new Date(new Date().toDateString())
 
+  const { calendarState } = useCalendar()
+
   const [data, setData] = useState([
     { id: generateUniqueId(), initialDay: startOfMonth(subMonths(selectedDate, 1)) },
     { id: generateUniqueId(), initialDay: selectedDate },
     { id: generateUniqueId(), initialDay: startOfMonth(addMonths(selectedDate, 1)) },
   ])
+
+  useEffect(() => {
+    const unsubscribe = calendarState.subscribe(() => {
+      console.log('lmao')
+      // if (calendarState.viewMode === 'month') {
+      // setData(calendarState.getMonthItems());
+      // flatListRef.current?.scrollToIndex({ index: 1, animated: false });
+      // }
+    });
+
+    return unsubscribe;
+  }, [calendarState])
 
   const flatListRef = useRef<FlatList>(null);
   const topRowPosition = useSharedValue(0)
@@ -191,6 +206,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
           [0, (topRowPosition.value + 50) - selectedDatePosition.value] // 50 is for the padding
         )
       }],
+      opacity: bottomSheetTranslationY.value === -235 ? 0 : 1
     };
   });
 
@@ -213,15 +229,19 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
       }
     })
 
+  const handlePress1 = () => {
+    calendarState.selectDate(new Date(2021, 2))
+  };
+
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={[rMonthViewStyle]}>
         {/* <View style={{ position: 'absolute', top: 310, zIndex: 2 }}>
           <Button title='Today (Month)' onPress={scrollToToday} />
-        </View>
-        <View style={{ position: 'absolute', top: 310, zIndex: 2, left: 250 }}>
-          <Button title='Data (Month)' onPress={() => console.log(data)} />
         </View> */}
+        <View style={{ position: 'absolute', top: 310, zIndex: 2, left: 250 }}>
+          <Button title='press' onPress={handlePress1} />
+        </View>
         <FlatList
           ref={flatListRef}
           data={data}

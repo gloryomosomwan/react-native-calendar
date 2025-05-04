@@ -160,10 +160,15 @@ export default function WeekView({ bottomSheetTranslationY, selectedDate, setSel
     return isAfter(weekOfDateToCheck, weekOfReferenceDate)
   }
 
+  const rWeekViewStyle = useAnimatedStyle(() => {
+    return {
+      opacity: bottomSheetTranslationY.value === -235 ? 1 : 0
+    };
+  });
 
   return (
     // 30 (size of header) + 5 (header margin) + 17 (weekday name text height)
-    <Animated.View style={[styles.weekContainer, { paddingTop: topPadding + 30 + 5 + 17 }]}>
+    <Animated.View style={[rWeekViewStyle, styles.weekContainer, { paddingTop: topPadding + 30 + 5 + 17 }]}>
       {/* <View style={{ position: 'absolute', top: 40, zIndex: 2 }}>
         <Button title='Today (Week)' onPress={scrollToToday} />
       </View>
