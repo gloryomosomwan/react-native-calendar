@@ -3,12 +3,13 @@ import React, { useRef, useLayoutEffect } from 'react'
 import { isSameMonth, isSameDay, getWeekOfMonth } from 'date-fns'
 import { SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useCalendar } from "./CalendarContext";
 
 type DayType = 'week' | 'month'
 
 type DayProps = {
   date: Date;
-  selectedDate: Date;
+  // selectedDate: Date;
   firstDayOfMonth: Date;
   handlePress: (date: Date) => void
   selectedDatePosition: SharedValue<number>
@@ -17,9 +18,13 @@ type DayProps = {
   dayType: DayType
 }
 
-export default function Day({ date, selectedDate, firstDayOfMonth, handlePress, selectedDatePosition, bottomSheetTranslationY, dateOfDisplayedMonth, dayType }: DayProps) {
+export default function Day({ date, firstDayOfMonth, handlePress, selectedDatePosition, bottomSheetTranslationY, dateOfDisplayedMonth, dayType }: DayProps) {
+  const { calendarState } = useCalendar()
+  let selectedDate = calendarState.currentDate
+
   const elementRef = useRef<View | null>(null)
   const insets = useSafeAreaInsets()
+
   let topPadding = 0;
   if (Platform.OS === 'android') {
     topPadding = 0

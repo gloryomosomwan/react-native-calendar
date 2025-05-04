@@ -5,6 +5,7 @@ import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, E
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Week from "./Week"
+import { useCalendar } from "./CalendarContext";
 
 const EXPANDED_MODE_THRESHOLD = -235
 
@@ -14,15 +15,18 @@ const generateUniqueId = () => {
 
 type WeekViewProps = {
   bottomSheetTranslationY: SharedValue<number>
-  selectedDate: Date
-  setSelectedDate: (date: Date) => void
+  // selectedDate: Date
+  // setSelectedDate: (date: Date) => void
   selectedDatePosition: SharedValue<number>
   dateOfDisplayedMonth: Date
   setDateOfDisplayedMonth: (date: Date) => void
 }
 
-export default function WeekView({ bottomSheetTranslationY, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth }: WeekViewProps) {
+export default function WeekView({ bottomSheetTranslationY, dateOfDisplayedMonth, selectedDatePosition, setDateOfDisplayedMonth }: WeekViewProps) {
   let startOfToday = new Date(new Date().toDateString())
+
+  const { calendarState } = useCalendar()
+  let selectedDate = calendarState.currentDate
 
   const [data, setData] = useState([
     { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(selectedDate, 1)) },
@@ -133,13 +137,16 @@ export default function WeekView({ bottomSheetTranslationY, selectedDate, setSel
       }
     }
     else if (isSameWeek(startOfToday, selectedDate)) {
-      setSelectedDate(startOfToday)
+      // setSelectedDate(startOfToday)
+      calendarState.selectDate(startOfToday)
     }
   }
 
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDate because handlePress has a stale closure. In other words, even if we set selectedDate to date (which we do below) it won't update for us in here
-    setSelectedDate(date)
+    // setSelectedDate(date)
+    calendarState.selectDate(date)
+
   }
 
   const viewabilityConfig = {
@@ -166,13 +173,17 @@ export default function WeekView({ bottomSheetTranslationY, selectedDate, setSel
     };
   });
 
+  const handlePress1 = () => {
+    calendarState.selectDate(new Date(2021, 2))
+  };
+
   return (
     // 30 (size of header) + 5 (header margin) + 17 (weekday name text height)
     <Animated.View style={[rWeekViewStyle, styles.weekContainer, { paddingTop: topPadding + 30 + 5 + 17 }]}>
-      {/* <View style={{ position: 'absolute', top: 40, zIndex: 2 }}>
-        <Button title='Today (Week)' onPress={scrollToToday} />
+      <View style={{ position: 'absolute', top: 310, zIndex: 3 }}>
+        <Button title='Today (Week)' onPress={handlePress1} />
       </View>
-      <View style={{ position: 'absolute', top: 40, left: 250, zIndex: 2 }}>
+      {/* <View style={{ position: 'absolute', top: 40, left: 250, zIndex: 2 }}>
         <Button title='Data (Week)' onPress={() => console.log(data)} />
       </View> */}
       <FlatList
@@ -181,7 +192,7 @@ export default function WeekView({ bottomSheetTranslationY, selectedDate, setSel
         renderItem={({ item }) => (
           <Week
             initialDay={item.initialDay}
-            selectedDate={selectedDate}
+            // selectedDate={selectedDate}
             selectedDatePosition={selectedDatePosition}
             dateOfDisplayedMonth={dateOfDisplayedMonth}
             handlePress={handlePress}
@@ -211,7 +222,8 @@ export default function WeekView({ bottomSheetTranslationY, selectedDate, setSel
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
             setDateOfDisplayedMonth(item.item.initialDay)
-            setSelectedDate(item.item.initialDay)
+            // setSelectedDate(item.item.initialDay)
+            calendarState.selectDate(item.item.initialDay)
           });
         }}
       />

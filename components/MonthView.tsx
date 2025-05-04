@@ -17,17 +17,18 @@ const generateUniqueId = () => {
 type MonthViewProps = {
   bottomSheetTranslationY: SharedValue<number>
   calendarBottom: SharedValue<number>
-  selectedDate: Date
-  setSelectedDate: (date: Date) => void
+  // selectedDate: Date
+  // setSelectedDate: (date: Date) => void
   selectedDatePosition: SharedValue<number>
   dateOfDisplayedMonth: Date
   setDateOfDisplayedMonth: (date: Date) => void
 }
 
-export default function MonthView({ bottomSheetTranslationY, calendarBottom, selectedDate, setSelectedDate, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth }: MonthViewProps) {
+export default function MonthView({ bottomSheetTranslationY, calendarBottom, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth }: MonthViewProps) {
   let startOfToday = new Date(new Date().toDateString())
 
   const { calendarState } = useCalendar()
+  let selectedDate = calendarState.currentDate
 
   const [data, setData] = useState([
     { id: generateUniqueId(), initialDay: startOfMonth(subMonths(selectedDate, 1)) },
@@ -37,7 +38,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
 
   useEffect(() => {
     const unsubscribe = calendarState.subscribe(() => {
-      console.log('lmao')
+      console.log('current', calendarState.currentDate)
       // if (calendarState.viewMode === 'month') {
       // setData(calendarState.getMonthItems());
       // flatListRef.current?.scrollToIndex({ index: 1, animated: false });
@@ -72,7 +73,8 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
 
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDate because handlePress has a stale closure. In other words, even if we set selectedDate to date (which we do below) it won't update for us in here
-    setSelectedDate(date)
+    // setSelectedDate(date)
+    calendarState.selectDate(date)
     if (!isSameDay(date, selectedDate)) {
       if (isInLaterMonth(date, selectedDate)) {
         data[2].initialDay = date
@@ -187,7 +189,8 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
       }
     }
     else if (isSameMonth(startOfToday, selectedDate)) {
-      setSelectedDate(startOfToday)
+      // setSelectedDate(startOfToday)
+      calendarState.selectDate(startOfToday)
     }
   }
 
@@ -280,7 +283,8 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
             info.viewableItems.forEach(item => {
               console.log(item.item.initialDay)
               setDateOfDisplayedMonth(item.item.initialDay)
-              setSelectedDate(item.item.initialDay)
+              // setSelectedDate(item.item.initialDay)
+              calendarState.selectDate(startOfToday)
             });
           }}
           scrollEnabled={false}
