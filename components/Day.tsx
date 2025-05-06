@@ -21,6 +21,13 @@ export default function Day({ date, firstDayOfMonth, handlePress, selectedDatePo
   const { calendarState } = useCalendar()
   const [selectedDate, setSelectedDate] = useState(calendarState.currentDate)
 
+  useEffect(() => {
+    const unsubscribe = calendarState.subscribe(() => {
+      setSelectedDate(calendarState.currentDate)
+    });
+    return unsubscribe;
+  }, [])
+
   const elementRef = useRef<View | null>(null)
   const insets = useSafeAreaInsets()
 
@@ -32,12 +39,6 @@ export default function Day({ date, firstDayOfMonth, handlePress, selectedDatePo
     topPadding = insets.top
   }
 
-  useEffect(() => {
-    const unsubscribe = calendarState.subscribe(() => {
-      setSelectedDate(calendarState.currentDate)
-    });
-    return unsubscribe;
-  }, [])
 
 
   const onPress = () => {

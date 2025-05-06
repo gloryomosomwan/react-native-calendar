@@ -1,11 +1,18 @@
 import { StyleSheet, Text, View, Dimensions, Platform } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useCalendar } from "./CalendarContext";
 
 export default function Header() {
   const { calendarState } = useCalendar()
-  let selectedDate = calendarState.currentDate
+  const [selectedDate, setSelectedDate] = useState(calendarState.currentDate)
+
+  useEffect(() => {
+    const unsubscribe = calendarState.subscribe(() => {
+      setSelectedDate(calendarState.currentDate)
+    });
+    return unsubscribe;
+  }, [])
 
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   const insets = useSafeAreaInsets()
