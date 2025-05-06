@@ -16,7 +16,6 @@ type CalendarProps = {
 export default function Calendar({ bottomSheetTranslationY, calendarBottom }: CalendarProps) {
   let startOfToday = new Date(new Date().toDateString())
   // const [selectedDate, setSelectedDate] = useState(startOfToday)
-  const [dateOfDisplayedMonth, setDateOfDisplayedMonth] = useState(startOfToday)
   const selectedDatePosition = useSharedValue(0)
   const insets = useSafeAreaInsets()
   let topPadding = 0;
@@ -55,15 +54,11 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         <WeekView
           bottomSheetTranslationY={bottomSheetTranslationY}
           selectedDatePosition={selectedDatePosition}
-          dateOfDisplayedMonth={dateOfDisplayedMonth}
-          setDateOfDisplayedMonth={setDateOfDisplayedMonth}
         />
         <MonthView
           bottomSheetTranslationY={bottomSheetTranslationY}
           calendarBottom={calendarBottom}
           selectedDatePosition={selectedDatePosition}
-          dateOfDisplayedMonth={dateOfDisplayedMonth}
-          setDateOfDisplayedMonth={setDateOfDisplayedMonth}
         />
       </View>
     </CalendarProvider>

@@ -17,14 +17,10 @@ const generateUniqueId = () => {
 type MonthViewProps = {
   bottomSheetTranslationY: SharedValue<number>
   calendarBottom: SharedValue<number>
-  // selectedDate: Date
-  // setSelectedDate: (date: Date) => void
   selectedDatePosition: SharedValue<number>
-  dateOfDisplayedMonth: Date
-  setDateOfDisplayedMonth: (date: Date) => void
 }
 
-export default function MonthView({ bottomSheetTranslationY, calendarBottom, selectedDatePosition, dateOfDisplayedMonth, setDateOfDisplayedMonth }: MonthViewProps) {
+export default function MonthView({ bottomSheetTranslationY, calendarBottom, selectedDatePosition }: MonthViewProps) {
   let startOfToday = new Date(new Date().toDateString())
 
   const { calendarState } = useCalendar()
@@ -260,7 +256,6 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
               initialDay={item.initialDay}
               selectedDate={selectedDate}
               selectedDatePosition={selectedDatePosition}
-              dateOfDisplayedMonth={dateOfDisplayedMonth}
               handlePress={handlePress}
               bottomSheetTranslationY={bottomSheetTranslationY}
               setCalendarBottom={setCalendarBottom}

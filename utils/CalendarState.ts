@@ -158,6 +158,7 @@ export class CalendarState {
 
   // Getters
   get currentDate() { return this._currentDate; }
+  get dateOfDisplayedMonth() { return this._dateOfDisplayedMonth }
   // get viewMode() { return this._viewMode; }
   // get displayedPeriod() { return this._displayedPeriod; }
   get todayDate() { return this._todayDate; }

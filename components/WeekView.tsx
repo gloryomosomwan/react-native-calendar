@@ -15,14 +15,10 @@ const generateUniqueId = () => {
 
 type WeekViewProps = {
   bottomSheetTranslationY: SharedValue<number>
-  // selectedDate: Date
-  // setSelectedDate: (date: Date) => void
   selectedDatePosition: SharedValue<number>
-  dateOfDisplayedMonth: Date
-  setDateOfDisplayedMonth: (date: Date) => void
 }
 
-export default function WeekView({ bottomSheetTranslationY, dateOfDisplayedMonth, selectedDatePosition, setDateOfDisplayedMonth }: WeekViewProps) {
+export default function WeekView({ bottomSheetTranslationY, selectedDatePosition }: WeekViewProps) {
   let startOfToday = new Date(new Date().toDateString())
 
   const { calendarState } = useCalendar()
@@ -203,7 +199,6 @@ export default function WeekView({ bottomSheetTranslationY, dateOfDisplayedMonth
             initialDay={item.initialDay}
             // selectedDate={selectedDate}
             selectedDatePosition={selectedDatePosition}
-            dateOfDisplayedMonth={dateOfDisplayedMonth}
             handlePress={handlePress}
             bottomSheetTranslationY={bottomSheetTranslationY}
           />

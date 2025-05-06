@@ -13,11 +13,10 @@ type DayProps = {
   handlePress: (date: Date) => void
   selectedDatePosition: SharedValue<number>
   bottomSheetTranslationY: SharedValue<number>
-  dateOfDisplayedMonth: Date
   dayType: DayType
 }
 
-export default function Day({ date, firstDayOfMonth, handlePress, selectedDatePosition, bottomSheetTranslationY, dateOfDisplayedMonth, dayType }: DayProps) {
+export default function Day({ date, firstDayOfMonth, handlePress, selectedDatePosition, bottomSheetTranslationY, dayType }: DayProps) {
   const { calendarState } = useCalendar()
   const [selectedDate, setSelectedDate] = useState(calendarState.currentDate)
 
@@ -58,7 +57,7 @@ export default function Day({ date, firstDayOfMonth, handlePress, selectedDatePo
 
   useLayoutEffect(() => {
     // Add a check to see where botttom sheet is?
-    if (isSameDay(date, selectedDate) && isSameMonth(date, selectedDate) && isSameMonth(firstDayOfMonth, dateOfDisplayedMonth)) {
+    if (isSameDay(date, selectedDate) && isSameMonth(date, selectedDate) && isSameMonth(firstDayOfMonth, calendarState.dateOfDisplayedMonth)) {
       //     if (bottomSheetTranslationY.value > -235) {
       //       selectedDatePosition.value = pageY
       //     }

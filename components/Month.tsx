@@ -13,13 +13,12 @@ type MonthProps = {
   selectedDatePosition: SharedValue<number>
   setCalendarBottom: (y: number) => void
   bottomSheetTranslationY: SharedValue<number>
-  dateOfDisplayedMonth: Date
 }
 
-export default function Month({ initialDay, selectedDate, handlePress, selectedDatePosition, setCalendarBottom, bottomSheetTranslationY, dateOfDisplayedMonth }: MonthProps) {
+export default function Month({ initialDay, selectedDate, handlePress, selectedDatePosition, setCalendarBottom, bottomSheetTranslationY }: MonthProps) {
   const dates = getDates(initialDay)
   const paddedDates = padDatesArray(dates)
-  const daysArray = createDays(paddedDates, selectedDate, initialDay, handlePress, selectedDatePosition, bottomSheetTranslationY, dateOfDisplayedMonth)
+  const daysArray = createDays(paddedDates, selectedDate, initialDay, handlePress, selectedDatePosition, bottomSheetTranslationY)
   const weeks = createWeeks(daysArray)
   const insets = useSafeAreaInsets()
 
@@ -62,7 +61,7 @@ function getDates(initialDay: Date) {
   return dates
 }
 
-function createDays(dates: Date[], selectedDate: Date, initialDay: Date, handlePress: (date: Date) => void, selectedDatePosition: SharedValue<number>, bottomSheetTranslationY: SharedValue<number>, dateOfDisplayedMonth: Date) {
+function createDays(dates: Date[], selectedDate: Date, initialDay: Date, handlePress: (date: Date) => void, selectedDatePosition: SharedValue<number>, bottomSheetTranslationY: SharedValue<number>) {
   let days: JSX.Element[] = []
   dates.map((date) => {
     days.push(
@@ -72,7 +71,6 @@ function createDays(dates: Date[], selectedDate: Date, initialDay: Date, handleP
         handlePress={handlePress}
         selectedDatePosition={selectedDatePosition}
         bottomSheetTranslationY={bottomSheetTranslationY}
-        dateOfDisplayedMonth={dateOfDisplayedMonth}
         dayType='month'
       />
     )
