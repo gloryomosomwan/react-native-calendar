@@ -68,7 +68,6 @@ function createDays(dates: Date[], selectedDate: Date, initialDay: Date, handleP
     days.push(
       <Day key={date.toDateString()}
         date={date}
-        selectedDate={selectedDate}
         firstDayOfMonth={initialDay}
         handlePress={handlePress}
         selectedDatePosition={selectedDatePosition}

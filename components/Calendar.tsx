@@ -51,25 +51,16 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
           paddingBottom: insets.bottom
         }
       ]}>
-        <Header
-        // selectedDate={selectedDate}
+        <Header />
+        <WeekView
+          bottomSheetTranslationY={bottomSheetTranslationY}
+          selectedDatePosition={selectedDatePosition}
+          dateOfDisplayedMonth={dateOfDisplayedMonth}
+          setDateOfDisplayedMonth={setDateOfDisplayedMonth}
         />
-        {
-          weekView &&
-          <WeekView
-            bottomSheetTranslationY={bottomSheetTranslationY}
-            // selectedDate={selectedDate}
-            // setSelectedDate={setSelectedDate}
-            selectedDatePosition={selectedDatePosition}
-            dateOfDisplayedMonth={dateOfDisplayedMonth}
-            setDateOfDisplayedMonth={setDateOfDisplayedMonth}
-          />
-        }
         <MonthView
           bottomSheetTranslationY={bottomSheetTranslationY}
           calendarBottom={calendarBottom}
-          // selectedDate={selectedDate}
-          // setSelectedDate={setSelectedDate}
           selectedDatePosition={selectedDatePosition}
           dateOfDisplayedMonth={dateOfDisplayedMonth}
           setDateOfDisplayedMonth={setDateOfDisplayedMonth}

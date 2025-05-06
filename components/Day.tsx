@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Pressable, Dimensions, Platform } from 'react-native'
-import React, { useRef, useLayoutEffect } from 'react'
-import { isSameMonth, isSameDay, getWeekOfMonth } from 'date-fns'
+import React, { useRef, useLayoutEffect, useEffect, useState } from 'react'
+import { isSameMonth, isSameDay, getWeekOfMonth, isBefore } from 'date-fns'
 import { SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCalendar } from "./CalendarContext";
@@ -9,7 +9,6 @@ type DayType = 'week' | 'month'
 
 type DayProps = {
   date: Date;
-  // selectedDate: Date;
   firstDayOfMonth: Date;
   handlePress: (date: Date) => void
   selectedDatePosition: SharedValue<number>
@@ -20,7 +19,7 @@ type DayProps = {
 
 export default function Day({ date, firstDayOfMonth, handlePress, selectedDatePosition, bottomSheetTranslationY, dateOfDisplayedMonth, dayType }: DayProps) {
   const { calendarState } = useCalendar()
-  let selectedDate = calendarState.currentDate
+  const [selectedDate, setSelectedDate] = useState(calendarState.currentDate)
 
   const elementRef = useRef<View | null>(null)
   const insets = useSafeAreaInsets()
@@ -33,17 +32,27 @@ export default function Day({ date, firstDayOfMonth, handlePress, selectedDatePo
     topPadding = insets.top
   }
 
+  useEffect(() => {
+    const unsubscribe = calendarState.subscribe(() => {
+      setSelectedDate(calendarState.currentDate)
+    });
+    return unsubscribe;
+  }, [])
+
+
   const onPress = () => {
-    if (bottomSheetTranslationY.value === 0 || bottomSheetTranslationY.value === -235) {
-      if (elementRef.current) {
-        elementRef.current.measure((x, y, width, height, pageX, pageY) => {
-          // if (bottomSheetTranslationY.value > -235) {
-          selectedDatePosition.value = pageY
-          // }
-        });
-      }
-      handlePress(date)
-    }
+    console.log('pressed')
+    // if (bottomSheetTranslationY.value === 0 || bottomSheetTranslationY.value === -235) {
+    //   if (elementRef.current) {
+    //     elementRef.current.measure((x, y, width, height, pageX, pageY) => {
+    //       // if (bottomSheetTranslationY.value > -235) {
+    //       selectedDatePosition.value = pageY
+    //       // }
+    //     });
+    //   }
+    //   handlePress(date)
+    // }
+    handlePress(date)
   }
 
   useLayoutEffect(() => {

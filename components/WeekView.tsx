@@ -43,6 +43,10 @@ export default function WeekView({ bottomSheetTranslationY, dateOfDisplayedMonth
     topPadding = insets.top
   }
 
+  useEffect(() => {
+    console.log('rendered')
+  })
+
   const currentMode = useDerivedValue(() => {
     return bottomSheetTranslationY.value > EXPANDED_MODE_THRESHOLD
       ? 'expanded'
@@ -169,23 +173,28 @@ export default function WeekView({ bottomSheetTranslationY, dateOfDisplayedMonth
 
   const rWeekViewStyle = useAnimatedStyle(() => {
     return {
-      opacity: bottomSheetTranslationY.value === -235 ? 1 : 0
+      // opacity: bottomSheetTranslationY.value === -235 ? 1 : 0
+      opacity: interpolate(
+        bottomSheetTranslationY.value,
+        [-117, -235],
+        [0, 1],
+        Extrapolate.CLAMP
+      ),
     };
   });
 
-  const handlePress1 = () => {
-    calendarState.selectDate(new Date(2021, 2))
-  };
+  // const handlePress1 = () => {
+  //   calendarState.selectDate(new Date(2025, 5))
+  // };
 
   return (
     // 30 (size of header) + 5 (header margin) + 17 (weekday name text height)
     <Animated.View style={[rWeekViewStyle, styles.weekContainer, { paddingTop: topPadding + 30 + 5 + 17 }]}>
-      <View style={{ position: 'absolute', top: 310, zIndex: 3 }}>
+
+      {/* <View style={{ position: 'absolute', top: 310, zIndex: 3 }}>
         <Button title='Today (Week)' onPress={handlePress1} />
-      </View>
-      {/* <View style={{ position: 'absolute', top: 40, left: 250, zIndex: 2 }}>
-        <Button title='Data (Week)' onPress={() => console.log(data)} />
       </View> */}
+
       <FlatList
         ref={flatListRef}
         data={data}

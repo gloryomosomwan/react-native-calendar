@@ -36,17 +36,15 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
     { id: generateUniqueId(), initialDay: startOfMonth(addMonths(selectedDate, 1)) },
   ])
 
-  useEffect(() => {
-    const unsubscribe = calendarState.subscribe(() => {
-      console.log('current', calendarState.currentDate)
-      // if (calendarState.viewMode === 'month') {
-      // setData(calendarState.getMonthItems());
-      // flatListRef.current?.scrollToIndex({ index: 1, animated: false });
-      // }
-    });
+  // useEffect(() => {
+  //   const unsubscribe = calendarState.subscribe(() => {
+  //     if (isBefore(selectedDate, calendarState.currentDate)) {
+  //       scrollToNextMonth()
+  //     }
+  //   });
 
-    return unsubscribe;
-  }, [calendarState])
+  //   return unsubscribe;
+  // }, [calendarState])
 
   const flatListRef = useRef<FlatList>(null);
   const topRowPosition = useSharedValue(0)
@@ -209,7 +207,13 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
           [0, (topRowPosition.value + 50) - selectedDatePosition.value] // 50 is for the padding
         )
       }],
-      opacity: bottomSheetTranslationY.value === -235 ? 0 : 1
+      // opacity: bottomSheetTranslationY.value === -235 ? 0 : 1
+      opacity: interpolate(
+        bottomSheetTranslationY.value,
+        [-117.5, -235],
+        [1, 0],
+        Extrapolate.CLAMP
+      ),
     };
   });
 
@@ -232,19 +236,22 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
       }
     })
 
-  const handlePress1 = () => {
-    calendarState.selectDate(new Date(2021, 2))
+  const changeState = () => {
+    calendarState.selectDate(new Date(2021, 2, 1))
   };
 
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={[rMonthViewStyle]}>
+
         {/* <View style={{ position: 'absolute', top: 310, zIndex: 2 }}>
           <Button title='Today (Month)' onPress={scrollToToday} />
         </View> */}
-        <View style={{ position: 'absolute', top: 310, zIndex: 2, left: 250 }}>
-          <Button title='press' onPress={handlePress1} />
+
+        <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 30 }}>
+          <Button title='change' onPress={changeState} />
         </View>
+
         <FlatList
           ref={flatListRef}
           data={data}
@@ -284,7 +291,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
               console.log(item.item.initialDay)
               setDateOfDisplayedMonth(item.item.initialDay)
               // setSelectedDate(item.item.initialDay)
-              calendarState.selectDate(startOfToday)
+              // calendarState.selectDate(startOfToday)
             });
           }}
           scrollEnabled={false}
