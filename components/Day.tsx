@@ -40,7 +40,6 @@ export default function Day({ date, firstDayOfMonth, selectedDatePosition, botto
 
 
   const onPress = () => {
-    console.log('pressed')
     // if (bottomSheetTranslationY.value === 0 || bottomSheetTranslationY.value === -235) {
     //   if (elementRef.current) {
     //     elementRef.current.measure((x, y, width, height, pageX, pageY) => {
@@ -51,6 +50,7 @@ export default function Day({ date, firstDayOfMonth, selectedDatePosition, botto
     //   }
     //   handlePress(date)
     // }
+    calendarState.selectPreviousDate(calendarState.currentDate)
     calendarState.selectDate(date)
   }
 

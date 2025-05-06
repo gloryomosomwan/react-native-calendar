@@ -39,10 +39,6 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
     topPadding = insets.top
   }
 
-  useEffect(() => {
-    console.log('rendered')
-  })
-
   const currentMode = useDerivedValue(() => {
     return bottomSheetTranslationY.value > EXPANDED_MODE_THRESHOLD
       ? 'expanded'

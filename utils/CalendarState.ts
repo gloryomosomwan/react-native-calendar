@@ -10,10 +10,12 @@ export class CalendarState {
   private _subscribers: Set<() => void>;
   private _todayDate: Date;
   private _dateOfDisplayedMonth: Date;
+  private _previousDate: Date
 
   constructor(initialDate: Date = new Date()) {
     this._todayDate = new Date(new Date().toDateString());
     this._currentDate = initialDate;
+    this._previousDate = initialDate
     // this._viewMode = 'month';
     // this._displayedPeriod = this.calculateRange(initialDate);
     this._subscribers = new Set();
@@ -42,6 +44,10 @@ export class CalendarState {
     this._currentDate = date;
     // this._displayedPeriod = this.calculateRange(date);
     this.notifySubscribers();
+  }
+
+  selectPreviousDate(date: Date) {
+    this._previousDate = date
   }
 
   setDayOfDisplayedMonth(date: Date) {
@@ -158,6 +164,7 @@ export class CalendarState {
 
   // Getters
   get currentDate() { return this._currentDate; }
+  get previousDate() { return this._previousDate }
   get dateOfDisplayedMonth() { return this._dateOfDisplayedMonth }
   // get viewMode() { return this._viewMode; }
   // get displayedPeriod() { return this._displayedPeriod; }
