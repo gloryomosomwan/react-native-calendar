@@ -288,10 +288,9 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
           viewabilityConfig={viewabilityConfig}
           onViewableItemsChanged={(info) => {
             info.viewableItems.forEach(item => {
-              console.log(item.item.initialDay)
               setDateOfDisplayedMonth(item.item.initialDay)
               // setSelectedDate(item.item.initialDay)
-              // calendarState.selectDate(startOfToday)
+              calendarState.selectDate(item.item.initialDay)
             });
           }}
           scrollEnabled={false}
