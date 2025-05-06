@@ -67,7 +67,6 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
 
   const handlePress = (date: Date) => {
     // In here, we just compare date and selectedDate because handlePress has a stale closure. In other words, even if we set selectedDate to date (which we do below) it won't update for us in here
-    // setSelectedDate(date)
     calendarState.selectDate(date)
     if (!isSameDay(date, selectedDate)) {
       if (isInLaterMonth(date, selectedDate)) {
@@ -283,7 +282,6 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
           viewabilityConfig={viewabilityConfig}
           onViewableItemsChanged={(info) => {
             info.viewableItems.forEach(item => {
-              // setSelectedDate(item.item.initialDay)
               calendarState.setDayOfDisplayedMonth(item.item.initialDay)
               calendarState.selectDate(item.item.initialDay)
             });

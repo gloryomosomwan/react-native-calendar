@@ -197,7 +197,6 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
         renderItem={({ item }) => (
           <Week
             initialDay={item.initialDay}
-            // selectedDate={selectedDate}
             selectedDatePosition={selectedDatePosition}
             handlePress={handlePress}
             bottomSheetTranslationY={bottomSheetTranslationY}
@@ -225,7 +224,6 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
-            // setSelectedDate(item.item.initialDay)
             calendarState.setDayOfDisplayedMonth(item.item.initialDay)
             calendarState.selectDate(item.item.initialDay)
           });
