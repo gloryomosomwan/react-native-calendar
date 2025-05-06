@@ -230,8 +230,8 @@ export default function WeekView({ bottomSheetTranslationY, dateOfDisplayedMonth
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
-            setDateOfDisplayedMonth(item.item.initialDay)
             // setSelectedDate(item.item.initialDay)
+            calendarState.setDayOfDisplayedMonth(item.item.initialDay)
             calendarState.selectDate(item.item.initialDay)
           });
         }}

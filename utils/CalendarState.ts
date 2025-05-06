@@ -9,6 +9,7 @@ export class CalendarState {
   // private _displayedPeriod: DateRange;
   private _subscribers: Set<() => void>;
   private _todayDate: Date;
+  private _dateOfDisplayedMonth: Date;
 
   constructor(initialDate: Date = new Date()) {
     this._todayDate = new Date(new Date().toDateString());
@@ -16,6 +17,7 @@ export class CalendarState {
     // this._viewMode = 'month';
     // this._displayedPeriod = this.calculateRange(initialDate);
     this._subscribers = new Set();
+    this._dateOfDisplayedMonth = initialDate
   }
 
   // Calculate the visible range based on current mode and date
@@ -40,6 +42,12 @@ export class CalendarState {
     this._currentDate = date;
     // this._displayedPeriod = this.calculateRange(date);
     this.notifySubscribers();
+  }
+
+  setDayOfDisplayedMonth(date: Date) {
+    if (isSameDay(this._dateOfDisplayedMonth, date)) return;
+
+    this._dateOfDisplayedMonth = date
   }
 
   // Navigate to next period (month/week)
