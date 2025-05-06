@@ -9,16 +9,15 @@ import Day from './Day'
 type MonthProps = {
   initialDay: Date
   selectedDate: Date
-  handlePress: (date: Date) => void
   selectedDatePosition: SharedValue<number>
   setCalendarBottom: (y: number) => void
   bottomSheetTranslationY: SharedValue<number>
 }
 
-export default function Month({ initialDay, handlePress, selectedDatePosition, setCalendarBottom, bottomSheetTranslationY }: MonthProps) {
+export default function Month({ initialDay, selectedDatePosition, setCalendarBottom, bottomSheetTranslationY }: MonthProps) {
   const dates = getDates(initialDay)
   const paddedDates = padDatesArray(dates)
-  const daysArray = createDays(paddedDates, initialDay, handlePress, selectedDatePosition, bottomSheetTranslationY)
+  const daysArray = createDays(paddedDates, initialDay, selectedDatePosition, bottomSheetTranslationY)
   const weeks = createWeeks(daysArray)
   const insets = useSafeAreaInsets()
 
@@ -61,14 +60,13 @@ function getDates(initialDay: Date) {
   return dates
 }
 
-function createDays(dates: Date[], initialDay: Date, handlePress: (date: Date) => void, selectedDatePosition: SharedValue<number>, bottomSheetTranslationY: SharedValue<number>) {
+function createDays(dates: Date[], initialDay: Date, selectedDatePosition: SharedValue<number>, bottomSheetTranslationY: SharedValue<number>) {
   let days: JSX.Element[] = []
   dates.map((date) => {
     days.push(
       <Day key={date.toDateString()}
         date={date}
         firstDayOfMonth={initialDay}
-        handlePress={handlePress}
         selectedDatePosition={selectedDatePosition}
         bottomSheetTranslationY={bottomSheetTranslationY}
         dayType='month'

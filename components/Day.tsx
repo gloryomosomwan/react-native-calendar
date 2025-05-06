@@ -10,13 +10,12 @@ type DayType = 'week' | 'month'
 type DayProps = {
   date: Date;
   firstDayOfMonth: Date;
-  handlePress: (date: Date) => void
   selectedDatePosition: SharedValue<number>
   bottomSheetTranslationY: SharedValue<number>
   dayType: DayType
 }
 
-export default function Day({ date, firstDayOfMonth, handlePress, selectedDatePosition, bottomSheetTranslationY, dayType }: DayProps) {
+export default function Day({ date, firstDayOfMonth, selectedDatePosition, bottomSheetTranslationY, dayType }: DayProps) {
   const { calendarState } = useCalendar()
   const [selectedDate, setSelectedDate] = useState(calendarState.currentDate)
 
@@ -52,7 +51,7 @@ export default function Day({ date, firstDayOfMonth, handlePress, selectedDatePo
     //   }
     //   handlePress(date)
     // }
-    handlePress(date)
+    calendarState.selectDate(date)
   }
 
   useLayoutEffect(() => {

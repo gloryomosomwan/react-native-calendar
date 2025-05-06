@@ -65,21 +65,6 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
     }
   })
 
-  const handlePress = (date: Date) => {
-    // In here, we just compare date and selectedDate because handlePress has a stale closure. In other words, even if we set selectedDate to date (which we do below) it won't update for us in here
-    calendarState.selectDate(date)
-    if (!isSameDay(date, selectedDate)) {
-      if (isInLaterMonth(date, selectedDate)) {
-        data[2].initialDay = date
-        scrollToNextMonth()
-      }
-      else if (isInEarlierMonth(date, selectedDate)) {
-        data[0].initialDay = date
-        scrollToPreviousMonth()
-      }
-    }
-  }
-
   function isInEarlierMonth(dateToCheck: Date, referenceDate: Date) {
     const monthOfDateToCheck = startOfMonth(dateToCheck);
     const monthOfReferenceDate = startOfMonth(referenceDate);
@@ -255,7 +240,6 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
               initialDay={item.initialDay}
               selectedDate={selectedDate}
               selectedDatePosition={selectedDatePosition}
-              handlePress={handlePress}
               bottomSheetTranslationY={bottomSheetTranslationY}
               setCalendarBottom={setCalendarBottom}
             />

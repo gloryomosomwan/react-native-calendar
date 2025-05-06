@@ -142,12 +142,6 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
     }
   }
 
-  const handlePress = (date: Date) => {
-    // In here, we just compare date and selectedDate because handlePress has a stale closure. In other words, even if we set selectedDate to date (which we do below) it won't update for us in here
-    calendarState.selectDate(date)
-
-  }
-
   const viewabilityConfig = {
     itemVisiblePercentThreshold: 90, // Percentage of item that needs to be visible
     minimumViewTime: 50, // Minimum time (ms) an item must be visible to trigger
@@ -197,7 +191,6 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
           <Week
             initialDay={item.initialDay}
             selectedDatePosition={selectedDatePosition}
-            handlePress={handlePress}
             bottomSheetTranslationY={bottomSheetTranslationY}
           />
         )}
