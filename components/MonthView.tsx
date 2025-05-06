@@ -238,7 +238,6 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
           renderItem={({ item }) => (
             <Month
               initialDay={item.initialDay}
-              selectedDate={selectedDate}
               selectedDatePosition={selectedDatePosition}
               bottomSheetTranslationY={bottomSheetTranslationY}
               setCalendarBottom={setCalendarBottom}

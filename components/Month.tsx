@@ -8,7 +8,6 @@ import Day from './Day'
 
 type MonthProps = {
   initialDay: Date
-  selectedDate: Date
   selectedDatePosition: SharedValue<number>
   setCalendarBottom: (y: number) => void
   bottomSheetTranslationY: SharedValue<number>
