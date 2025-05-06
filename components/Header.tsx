@@ -3,10 +3,6 @@ import React from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useCalendar } from "./CalendarContext";
 
-type HeaderProps = {
-  // selectedDate: Date
-}
-
 export default function Header() {
   const { calendarState } = useCalendar()
   let selectedDate = calendarState.currentDate
