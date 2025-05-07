@@ -37,14 +37,14 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   useEffect(() => {
     const unsubscribe = calendarState.subscribe(() => {
       setSelectedDate(calendarState.currentDate)
-      // if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
-      //   data[0].initialDay = calendarState.currentDate
-      //   scrollToPreviousMonth('animated')
-      // }
-      // else if (isInLaterMonth(calendarState.currentDate, calendarState.previousDate)) {
-      //   data[2].initialDay = calendarState.currentDate
-      //   scrollToNextMonth('animated')
-      // }
+      if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
+        data[0].initialDay = calendarState.currentDate
+        scrollToPreviousMonth('animated')
+      }
+      else if (isInLaterMonth(calendarState.currentDate, calendarState.previousDate)) {
+        data[2].initialDay = calendarState.currentDate
+        scrollToNextMonth('animated')
+      }
     })
     return unsubscribe
   }, [calendarState])
