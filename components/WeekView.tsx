@@ -22,10 +22,8 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
   let startOfToday = new Date(new Date().toDateString())
 
   const { calendarState } = useCalendar()
-  // let selectedDate = calendarState.currentDate
   const [selectedDate, setSelectedDate] = useState(calendarState.currentDate)
 
-  // Helper to generate a stable id for a week
   const weekId = (date: Date) => startOfWeek(date).toISOString();
   const centerWeekStart = startOfWeek(selectedDate);
 
@@ -51,12 +49,6 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
   else if (Platform.OS === 'ios') {
     topPadding = insets.top
   }
-
-  const currentMode = useDerivedValue(() => {
-    return bottomSheetTranslationY.value > EXPANDED_MODE_THRESHOLD
-      ? 'expanded'
-      : 'collapsed'
-  })
 
   const fetchPreviousWeek = () => {
     let newDay = startOfWeek(subWeeks(centerWeekStart, 1));
@@ -144,7 +136,6 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
       }
     }
     else if (isSameWeek(startOfToday, selectedDate)) {
-      // setSelectedDate(startOfToday)
       calendarState.selectDate(startOfToday)
     }
   }
@@ -169,7 +160,6 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
 
   const rWeekViewStyle = useAnimatedStyle(() => {
     return {
-      // opacity: bottomSheetTranslationY.value === -235 ? 1 : 0
       // opacity: interpolate(
       //   bottomSheetTranslationY.value,
       //   [-117, -235],
