@@ -14,8 +14,6 @@ type CalendarProps = {
 }
 
 export default function Calendar({ bottomSheetTranslationY, calendarBottom }: CalendarProps) {
-  let startOfToday = new Date(new Date().toDateString())
-  // const [selectedDate, setSelectedDate] = useState(startOfToday)
   const selectedDatePosition = useSharedValue(0)
   const insets = useSafeAreaInsets()
   let topPadding = 0;
@@ -25,21 +23,6 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
   else if (Platform.OS === 'ios') {
     topPadding = insets.top
   }
-
-  // const [monthView, setMonthView] = useState(true)
-  const [weekView, setWeekView] = useState(true)
-
-  useAnimatedReaction(
-    () => { return bottomSheetTranslationY.value },
-    (currentValue, previousValue) => {
-      if (currentValue < -117.5) {
-        runOnJS(setWeekView)(true)
-      }
-      else if (currentValue > -117.5) {
-        runOnJS(setWeekView)(false)
-      }
-    }
-  );
 
   return (
     <CalendarProvider>
