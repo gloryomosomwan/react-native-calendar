@@ -174,11 +174,11 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
     }
   }
 
-  const viewabilityConfig = {
-    itemVisiblePercentThreshold: 100, // Percentage of item that needs to be visible
-    minimumViewTime: 100, // Minimum time (ms) an item must be visible to trigger
-    // waitForInteraction: true // Wait for scroll to stop before checking
-  };
+  // const viewabilityConfig = {
+  //   itemVisiblePercentThreshold: 100, // Percentage of item that needs to be visible
+  //   minimumViewTime: 100, // Minimum time (ms) an item must be visible to trigger
+  //   // waitForInteraction: true // Wait for scroll to stop before checking
+  // };
 
   const rMonthViewStyle = useAnimatedStyle(() => {
     return {
@@ -189,7 +189,6 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
           [0, (topRowPosition.value + 50) - selectedDatePosition.value] // 50 is for the padding
         )
       }],
-      // opacity: bottomSheetTranslationY.value === -235 ? 0 : 1
       opacity: interpolate(
         bottomSheetTranslationY.value,
         [-117.5, -235],
@@ -199,11 +198,12 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
     };
   });
 
-  const changeStateAsync1 = () => {
+  // 
+  const updateStateToNextMonth = () => {
     calendarState.selectDate(data[2].initialDay)
   }
 
-  const changeStateAsync2 = () => {
+  const updateStateToPreviousMonth = () => {
     calendarState.selectDate(data[0].initialDay)
   }
 
@@ -216,13 +216,13 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
       }
       if ((initialTranslationX.value - e.allTouches[0].absoluteX) > 50) {
         initialTranslationX.value = -1
-        runOnJS(changeStateAsync1)()
+        runOnJS(updateStateToNextMonth)()
         runOnJS(scrollToNextMonth)('animated')
         stateManager.end()
       }
       else if ((initialTranslationX.value - e.allTouches[0].absoluteX < -50)) {
         initialTranslationX.value = -1
-        runOnJS(changeStateAsync2)()
+        runOnJS(updateStateToPreviousMonth)()
         runOnJS(scrollToPreviousMonth)('animated')
         stateManager.end()
       }
