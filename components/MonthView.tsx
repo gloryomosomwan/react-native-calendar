@@ -33,24 +33,19 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
     { id: generateUniqueId(), initialDay: startOfMonth(addMonths(selectedDate, 1)) },
   ])
 
-  useEffect(() => {
-    console.log('yellow')
-    const unsubscribe = calendarState.subscribe(() => {
-      console.log('hello')
-      console.log(calendarState.previousDate)
-      console.log(calendarState.currentDate)
-      if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
-        data[0].initialDay = calendarState.currentDate
-        scrollToPreviousMonth('animated')
-      }
-      else if (isInLaterMonth(calendarState.currentDate, calendarState.previousDate)) {
-        data[2].initialDay = calendarState.currentDate
-        scrollToNextMonth('animated')
-      }
-    })
-
-    return unsubscribe
-  }, [calendarState])
+  // useEffect(() => {
+  //   const unsubscribe = calendarState.subscribe(() => {
+  //     if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
+  //       data[0].initialDay = calendarState.currentDate
+  //       scrollToPreviousMonth('animated')
+  //     }
+  //     else if (isInLaterMonth(calendarState.currentDate, calendarState.previousDate)) {
+  //       data[2].initialDay = calendarState.currentDate
+  //       scrollToNextMonth('animated')
+  //     }
+  //   })
+  //   return unsubscribe
+  // }, [calendarState])
 
   // useEffect(() => {
   //   // calendarState.selectDate(date)
@@ -243,7 +238,6 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   });
 
   const handleScroll = (event: any) => {
-    console.log('lol')
     const newIndex = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width)
     if (newIndex !== currentIndex) {
       setCurrentIndex(newIndex)

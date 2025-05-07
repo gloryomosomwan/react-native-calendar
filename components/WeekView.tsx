@@ -1,5 +1,5 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text, Platform } from "react-native";
-import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle, useMemo } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks, isSameWeek, getWeek } from "date-fns";
 import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate, useDerivedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,13 +22,26 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
   let startOfToday = new Date(new Date().toDateString())
 
   const { calendarState } = useCalendar()
-  let selectedDate = calendarState.currentDate
+  // let selectedDate = calendarState.currentDate
+  const [selectedDate, setSelectedDate] = useState(calendarState.currentDate)
 
-  const [data, setData] = useState([
-    { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(selectedDate, 1)) },
-    { id: generateUniqueId(), initialDay: selectedDate },
-    { id: generateUniqueId(), initialDay: startOfWeek(addWeeks(selectedDate, 1)) },
-  ])
+  // Helper to generate a stable id for a week
+  const weekId = (date: Date) => startOfWeek(date).toISOString();
+  const centerWeekStart = startOfWeek(selectedDate);
+
+  const weeksData = useMemo(() => [
+    { id: weekId(subWeeks(centerWeekStart, 1)), initialDay: subWeeks(centerWeekStart, 1) },
+    { id: weekId(centerWeekStart), initialDay: centerWeekStart },
+    { id: weekId(addWeeks(centerWeekStart, 1)), initialDay: addWeeks(centerWeekStart, 1) },
+  ], [centerWeekStart]);
+
+  useEffect(() => {
+    const unsubscribe = calendarState.subscribe(() => {
+      setSelectedDate(calendarState.currentDate)
+    })
+    return unsubscribe
+  }, [calendarState])
+
   const flatListRef = useRef<FlatList>(null);
   const insets = useSafeAreaInsets()
   let topPadding = 0;
@@ -46,28 +59,26 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
   })
 
   const fetchPreviousWeek = () => {
-    let newDay = startOfWeek(subWeeks(data[0].initialDay, 1));
+    let newDay = startOfWeek(subWeeks(centerWeekStart, 1));
     if (isSameWeek(newDay, startOfToday)) {
       newDay = startOfToday
     }
-    setData(prevData => {
-      const newData = [...prevData];
-      newData.unshift({ id: generateUniqueId(), initialDay: newDay });
-      newData.pop();
-      return newData;
+    setSelectedDate(prevDate => {
+      const newDate = new Date(prevDate);
+      newDate.setDate(prevDate.getDate() - 7);
+      return newDate;
     });
   }
 
   const fetchNextWeek = () => {
-    let newDay = startOfWeek(addWeeks(data[data.length - 1].initialDay, 1))
+    let newDay = startOfWeek(addWeeks(centerWeekStart, 1))
     if (isSameWeek(newDay, startOfToday)) {
       newDay = startOfToday
     }
-    setData(prevData => {
-      const newData = [...prevData];
-      newData.push({ id: generateUniqueId(), initialDay: newDay });
-      newData.shift();
-      return newData;
+    setSelectedDate(prevDate => {
+      const newDate = new Date(prevDate);
+      newDate.setDate(prevDate.getDate() + 7);
+      return newDate;
     });
   }
 
@@ -106,30 +117,30 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
   const scrollToToday = () => {
     if (!isSameWeek(startOfToday, selectedDate)) {
       if (isInEarlierWeek(startOfToday, selectedDate)) {
-        setData(prevData => {
-          const newData = [...prevData];
-          newData[0] = { id: generateUniqueId(), initialDay: startOfToday }
-          return newData;
+        setSelectedDate(prevDate => {
+          const newDate = new Date(prevDate);
+          newDate.setDate(prevDate.getDate() - 7);
+          return newDate;
         });
         scrollToPreviousWeek('animated')
-        setData(prevData => {
-          const newData = [...prevData]
-          newData[2] = { id: generateUniqueId(), initialDay: startOfWeek(addWeeks(startOfToday, 1)) }
-          return newData
-        })
+        setSelectedDate(prevDate => {
+          const newDate = new Date(prevDate);
+          newDate.setDate(prevDate.getDate() + 7);
+          return newDate;
+        });
       }
       else if (isInLaterWeek(startOfToday, selectedDate)) {
-        setData(prevData => {
-          const newData = [...prevData];
-          newData[2] = { id: generateUniqueId(), initialDay: startOfToday }
-          return newData;
+        setSelectedDate(prevDate => {
+          const newDate = new Date(prevDate);
+          newDate.setDate(prevDate.getDate() + 7);
+          return newDate;
         });
         scrollToNextWeek('animated')
-        setData(prevData => {
-          const newData = [...prevData]
-          newData[0] = { id: generateUniqueId(), initialDay: startOfWeek(subWeeks(startOfToday, 1)) }
-          return newData
-        })
+        setSelectedDate(prevDate => {
+          const newDate = new Date(prevDate);
+          newDate.setDate(prevDate.getDate() - 7);
+          return newDate;
+        });
       }
     }
     else if (isSameWeek(startOfToday, selectedDate)) {
@@ -159,30 +170,36 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
   const rWeekViewStyle = useAnimatedStyle(() => {
     return {
       // opacity: bottomSheetTranslationY.value === -235 ? 1 : 0
-      opacity: interpolate(
-        bottomSheetTranslationY.value,
-        [-117, -235],
-        [0, 1],
-        Extrapolate.CLAMP
-      ),
+      // opacity: interpolate(
+      //   bottomSheetTranslationY.value,
+      //   [-117, -235],
+      //   [0, 1],
+      //   Extrapolate.CLAMP
+      // ),
     };
   });
 
-  // const handlePress1 = () => {
-  //   calendarState.selectDate(new Date(2025, 5))
-  // };
+  const logState = () => {
+    console.log(weeksData)
+  };
+
+  useEffect(() => {
+    if (flatListRef.current) {
+      flatListRef.current.scrollToIndex({ index: 1, animated: false });
+    }
+  }, [centerWeekStart]);
 
   return (
     // 30 (size of header) + 5 (header margin) + 17 (weekday name text height)
     <Animated.View style={[rWeekViewStyle, styles.weekContainer, { paddingTop: topPadding + 30 + 5 + 17 }]}>
 
-      {/* <View style={{ position: 'absolute', top: 310, zIndex: 3 }}>
-        <Button title='Today (Week)' onPress={handlePress1} />
-      </View> */}
+      <View style={{ position: 'absolute', top: 310, zIndex: 3 }}>
+        <Button title='Today (Week)' onPress={logState} />
+      </View>
 
       <FlatList
         ref={flatListRef}
-        data={data}
+        data={weeksData}
         renderItem={({ item }) => (
           <Week
             initialDay={item.initialDay}
@@ -212,8 +229,8 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
-            calendarState.setDayOfDisplayedMonth(item.item.initialDay)
-            calendarState.selectDate(item.item.initialDay)
+            // calendarState.setDayOfDisplayedMonth(item.item.initialDay)
+            // calendarState.selectDate(item.item.initialDay)
           });
         }}
       />
