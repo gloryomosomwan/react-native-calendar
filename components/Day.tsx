@@ -37,8 +37,6 @@ export default function Day({ date, firstDayOfMonth, selectedDatePosition, botto
     topPadding = insets.top
   }
 
-
-
   const onPress = () => {
     // if (bottomSheetTranslationY.value === 0 || bottomSheetTranslationY.value === -235) {
     //   if (elementRef.current) {

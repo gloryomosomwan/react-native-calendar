@@ -36,7 +36,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
 
   useEffect(() => {
     const unsubscribe = calendarState.subscribe(() => {
-      if (!isSameDay(calendarState.currentDate, selectedDate)) {
+      if (!isSameDay(calendarState.currentDate, calendarState.previousDate)) {
         setSelectedDate(calendarState.currentDate)
         if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
           data[0].initialDay = calendarState.currentDate
@@ -232,14 +232,20 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
     <GestureDetector gesture={panGesture}>
       <Animated.View style={[rMonthViewStyle]}>
 
-        <View style={{ position: 'absolute', top: 60, zIndex: 2 }}>
-          {/* <Button title='Today (Month)' onPress={scrollToToday} /> */}
-          <Text>{selectedDate.toLocaleString()}</Text>
+        {/* <View style={{ position: 'absolute', top: 310, zIndex: 2 }}>
+          <Text>Current:</Text>
+          <Text>{calendarState.currentDate.toLocaleString()}</Text>
         </View>
 
-        <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 30 }}>
-          {/* <Button title='change' onPress={changeState} /> */}
+        <View style={{ position: 'absolute', top: 310, zIndex: 2, left: 190 }}>
+          <Text>Previous:</Text>
+          <Text>{calendarState.previousDate.toLocaleString()}</Text>
         </View>
+
+        <View style={{ position: 'absolute', top: 70, zIndex: 2, left: 100 }}>
+          <Text>Selected Date:</Text>
+          <Text>{selectedDate.toLocaleString()}</Text>
+        </View> */}
 
         <FlatList
           ref={flatListRef}
