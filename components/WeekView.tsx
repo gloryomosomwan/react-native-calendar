@@ -9,10 +9,6 @@ import { useCalendar } from "./CalendarContext";
 
 const EXPANDED_MODE_THRESHOLD = -235
 
-const generateUniqueId = () => {
-  return `${Date.now()}-${Math.random()}`
-}
-
 type WeekViewProps = {
   bottomSheetTranslationY: SharedValue<number>
   selectedDatePosition: SharedValue<number>
