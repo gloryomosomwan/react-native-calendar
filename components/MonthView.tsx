@@ -24,28 +24,30 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   let startOfToday = new Date(new Date().toDateString())
 
   const { calendarState } = useCalendar()
-  let selectedDate = calendarState.currentDate
-  // const [selectedDate, setSelectedDate] = useState(calendarState.currentDate)
+  const [selectedDate, setSelectedDate] = useState(calendarState.currentDate)
+
+  const monthId = (date: Date) => startOfMonth(date).toISOString();
 
   const [data, setData] = useState([
-    { id: generateUniqueId(), initialDay: startOfMonth(subMonths(selectedDate, 1)) },
-    { id: generateUniqueId(), initialDay: selectedDate },
-    { id: generateUniqueId(), initialDay: startOfMonth(addMonths(selectedDate, 1)) },
+    { id: monthId(subMonths(selectedDate, 1)), initialDay: startOfMonth(subMonths(selectedDate, 1)) },
+    { id: monthId(selectedDate), initialDay: selectedDate },
+    { id: monthId(addMonths(selectedDate, 1)), initialDay: startOfMonth(addMonths(selectedDate, 1)) },
   ])
 
-  // useEffect(() => {
-  //   const unsubscribe = calendarState.subscribe(() => {
-  //     if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
-  //       data[0].initialDay = calendarState.currentDate
-  //       scrollToPreviousMonth('animated')
-  //     }
-  //     else if (isInLaterMonth(calendarState.currentDate, calendarState.previousDate)) {
-  //       data[2].initialDay = calendarState.currentDate
-  //       scrollToNextMonth('animated')
-  //     }
-  //   })
-  //   return unsubscribe
-  // }, [calendarState])
+  useEffect(() => {
+    const unsubscribe = calendarState.subscribe(() => {
+      setSelectedDate(calendarState.currentDate)
+      // if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
+      //   data[0].initialDay = calendarState.currentDate
+      //   scrollToPreviousMonth('animated')
+      // }
+      // else if (isInLaterMonth(calendarState.currentDate, calendarState.previousDate)) {
+      //   data[2].initialDay = calendarState.currentDate
+      //   scrollToNextMonth('animated')
+      // }
+    })
+    return unsubscribe
+  }, [calendarState])
 
   // useEffect(() => {
   //   // calendarState.selectDate(date)
@@ -84,7 +86,9 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   const flatListRef = useRef<FlatList>(null);
   const topRowPosition = useSharedValue(0)
   const insets = useSafeAreaInsets()
-  const [currentIndex, setCurrentIndex] = useState(1)
+  const currentIndex = useRef(1)
+  const isUserScrolling = useRef(false)
+  const lastOffset = useRef(0); // Create a ref to store the last offset
 
   const currentMode = useDerivedValue(() => {
     return bottomSheetTranslationY.value > EXPANDED_MODE_THRESHOLD
@@ -237,19 +241,47 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
     };
   });
 
-  const handleScroll = (event: any) => {
-    const newIndex = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width)
-    if (newIndex !== currentIndex) {
-      setCurrentIndex(newIndex)
-      // Only update calendar state if the index changed due to user interaction
-      if (newIndex === 0) {
-        calendarState.selectPreviousDate(calendarState.currentDate)
-        calendarState.selectDate(data[0].initialDay)
-      } else if (newIndex === 2) {
-        calendarState.selectPreviousDate(calendarState.currentDate)
-        calendarState.selectDate(data[2].initialDay)
-      }
-    }
+
+  const handleScrollEnd = (event: any) => {
+    console.log(event.nativeEvent.contentOffset.x)
+    // if (!isUserScrolling.current) return;
+
+    // const currentOffset = event.nativeEvent.contentOffset.x;
+    // console.log('Current Offset:', currentOffset);
+
+    // // Determine the scroll direction
+    // const direction = currentOffset > lastOffset.current ? 'right' : 'left';
+    // console.log('Scrolled:', direction);
+
+    // // Update the last offset
+    // lastOffset.current = currentOffset;
+
+    // // Calculate the new index
+    // const newIndex = Math.round(currentOffset / Dimensions.get('window').width);
+    // console.log('currentIndex:', currentIndex.current, 'newIndex:', newIndex);
+
+    // if (newIndex !== currentIndex.current) {
+    //   console.log('index');
+    //   currentIndex.current = newIndex;
+
+    //   if (newIndex === 0) {
+    //     calendarState.selectPreviousDate(calendarState.currentDate);
+    //     calendarState.selectDate(data[0].initialDay);
+    //   } else if (newIndex === 2) {
+    //     calendarState.selectPreviousDate(calendarState.currentDate);
+    //     calendarState.selectDate(data[2].initialDay);
+    //   }
+    // }
+
+    // isUserScrolling.current = false;
+  };
+
+  const changeStateAsync1 = () => {
+    calendarState.selectDate(data[2].initialDay)
+  }
+
+  const changeStateAsync2 = () => {
+    calendarState.selectDate(data[0].initialDay)
   }
 
   let initialTranslationX = useSharedValue(-1)
@@ -261,11 +293,13 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
       }
       if ((initialTranslationX.value - e.allTouches[0].absoluteX) > 50) {
         initialTranslationX.value = -1
+        runOnJS(changeStateAsync1)()
         runOnJS(scrollToNextMonth)('animated')
         stateManager.end()
       }
       else if ((initialTranslationX.value - e.allTouches[0].absoluteX < -50)) {
         initialTranslationX.value = -1
+        runOnJS(changeStateAsync2)()
         runOnJS(scrollToPreviousMonth)('animated')
         stateManager.end()
       }
@@ -275,9 +309,10 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
     <GestureDetector gesture={panGesture}>
       <Animated.View style={[rMonthViewStyle]}>
 
-        {/* <View style={{ position: 'absolute', top: 310, zIndex: 2 }}>
-          <Button title='Today (Month)' onPress={scrollToToday} />
-        </View> */}
+        <View style={{ position: 'absolute', top: 60, zIndex: 2 }}>
+          {/* <Button title='Today (Month)' onPress={scrollToToday} /> */}
+          <Text>{selectedDate.toLocaleString()}</Text>
+        </View>
 
         <View style={{ position: 'absolute', top: 40, zIndex: 2, left: 30 }}>
           {/* <Button title='change' onPress={changeState} /> */}
@@ -321,8 +356,12 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
           //     calendarState.selectDate(item.item.initialDay)
           //   });
           // }}
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
+          // onScroll={handleScroll}
+          // onScrollBeginDrag={() => {
+          //   isUserScrolling.current = true
+          // }}
+          // onScrollEndDrag={handleScrollEnd}
+          // scrollEventThrottle={16}
           scrollEnabled={false}
         />
       </Animated.View>

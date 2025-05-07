@@ -193,9 +193,9 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
     // 30 (size of header) + 5 (header margin) + 17 (weekday name text height)
     <Animated.View style={[rWeekViewStyle, styles.weekContainer, { paddingTop: topPadding + 30 + 5 + 17 }]}>
 
-      <View style={{ position: 'absolute', top: 310, zIndex: 3 }}>
+      {/* <View style={{ position: 'absolute', top: 310, zIndex: 3 }}>
         <Button title='Today (Week)' onPress={logState} />
-      </View>
+      </View> */}
 
       <FlatList
         ref={flatListRef}
