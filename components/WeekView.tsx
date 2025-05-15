@@ -1,8 +1,9 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text, Platform } from "react-native";
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle, useMemo } from "react";
 import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks, isSameWeek, getWeek } from "date-fns";
-import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate, useDerivedValue } from "react-native-reanimated";
+import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate, useDerivedValue, runOnJS } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 
 import Week from "./Week"
 import { useCalendar } from "./CalendarContext";
@@ -24,20 +25,32 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
   const centerWeekStart = startOfWeek(selectedDate);
 
   const weeksData = useMemo(() => [
-    { id: weekId(subWeeks(centerWeekStart, 1)), initialDay: subWeeks(centerWeekStart, 1) },
-    { id: weekId(centerWeekStart), initialDay: centerWeekStart },
-    { id: weekId(addWeeks(centerWeekStart, 1)), initialDay: addWeeks(centerWeekStart, 1) },
+    { id: weekId(subWeeks(selectedDate, 1)), initialDay: subWeeks(selectedDate, 1) },
+    { id: weekId(selectedDate), initialDay: selectedDate },
+    { id: weekId(addWeeks(selectedDate, 1)), initialDay: addWeeks(selectedDate, 1) },
   ], [centerWeekStart]);
 
   useEffect(() => {
     const unsubscribe = calendarState.subscribe(() => {
-      setSelectedDate(calendarState.currentDate)
+      if (activeAnimation.current === false) {
+        setSelectedDate(calendarState.currentDate)
+        // if (isInEarlierWeek(calendarState.currentDate, calendarState.previousDate)) {
+        // weeksData[0].initialDay = calendarState.currentDate
+        // scrollToPreviousWeek()
+        // }
+        // else if (isInLaterWeek(calendarState.currentDate, calendarState.previousDate)) {
+        // weeksData[2].initialDay = calendarState.currentDate
+        // scrollToNextWeek()
+        // }
+      }
     })
     return unsubscribe
   }, [calendarState])
 
   const flatListRef = useRef<FlatList>(null);
+  const activeAnimation = useRef<boolean>(false)
   const insets = useSafeAreaInsets()
+
   let topPadding = 0;
   if (Platform.OS === 'android') {
     topPadding = 0
@@ -165,23 +178,70 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
     };
   });
 
-  const logState = () => {
-    console.log(weeksData)
-  };
-
   useEffect(() => {
-    if (flatListRef.current) {
-      flatListRef.current.scrollToIndex({ index: 1, animated: false });
+    if (activeAnimation.current === false) {
+      if (flatListRef.current) {
+        flatListRef.current.scrollToIndex({ index: 1, animated: false });
+      }
     }
   }, [centerWeekStart]);
 
-  return (
-    // 30 (size of header) + 5 (header margin) + 17 (weekday name text height)
-    <Animated.View style={[rWeekViewStyle, styles.weekContainer, { paddingTop: topPadding + 30 + 5 + 17 }]}>
+  const synchronizeCalendarState = () => {
+    const visibleMonthDate = weeksData[1].initialDay // middle item is always the visible month
 
-      {/* <View style={{ position: 'absolute', top: 310, zIndex: 3 }}>
-        <Button title='Today (Week)' onPress={logState} />
-      </View> */}
+    if (!isSameWeek(visibleMonthDate, calendarState.currentDate)) {
+      console.log('syncing')
+      calendarState.selectPreviousDate(calendarState.currentDate)
+      calendarState.selectDate(visibleMonthDate)
+      calendarState.setDayOfDisplayedMonth(visibleMonthDate)
+      setSelectedDate(visibleMonthDate)
+    }
+  }
+
+
+  // const updateStateToNextWeek = () => {
+  //   calendarState.selectDate(weeksData[2].initialDay)
+  // }
+
+  // const updateStateToPreviousWeek = () => {
+  //   calendarState.selectDate(weeksData[0].initialDay)
+  // }
+
+  // let initialTranslationX = useSharedValue(-1)
+
+  // const panGesture = Gesture.Pan()
+  //   .onTouchesMove((e, stateManager) => {
+  //     if (initialTranslationX.value === -1) {
+  //       initialTranslationX.value = e.allTouches[0].absoluteX
+  //     }
+  //     if ((initialTranslationX.value - e.allTouches[0].absoluteX) > 50) {
+  //       initialTranslationX.value = -1
+  //       runOnJS(updateStateToNextWeek)()
+  //       runOnJS(scrollToNextWeek)('animated')
+  //       stateManager.end()
+  //     }
+  //     else if ((initialTranslationX.value - e.allTouches[0].absoluteX < -50)) {
+  //       initialTranslationX.value = -1
+  //       runOnJS(updateStateToPreviousWeek)()
+  //       runOnJS(scrollToPreviousWeek)('animated')
+  //       stateManager.end()
+  //     }
+  //   })
+
+
+  return (
+    <Animated.View style={[rWeekViewStyle, styles.weekContainer, { paddingTop: topPadding + 30 + 5 + 17 }]}>
+      {/* 30 (size of header) + 5 (header margin) + 17 (weekday name text height) */}
+
+      <View style={{ position: 'absolute', top: 310, zIndex: 3 }}>
+        {/* <Button title='Data' onPress={() => console.log(weeksData)} /> */}
+        {/* <Text>{weeksData}</Text> */}
+      </View>
+
+      <View style={{ position: 'absolute', top: 310, zIndex: 3, left: 130 }}>
+        {/* <Text>sel</Text>
+        <Text>{calendarState.currentDate.toLocaleString()}</Text> */}
+      </View>
 
       <FlatList
         ref={flatListRef}
@@ -212,13 +272,30 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
           minIndexForVisible: 1,
           autoscrollToTopThreshold: undefined
         }}
+        onMomentumScrollBegin={() => {
+          activeAnimation.current = true
+        }}
+        onMomentumScrollEnd={(e) => {
+          if (activeAnimation.current === true) {
+            synchronizeCalendarState()
+          }
+          activeAnimation.current = false
+        }}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
-            // calendarState.setDayOfDisplayedMonth(item.item.initialDay)
-            // calendarState.selectDate(item.item.initialDay)
+            if (activeAnimation.current === true) {
+              // calendarState.selectPreviousDate(calendarState.currentDate)
+              // calendarState.selectDate(item.item.initialDay)
+              // calendarState.setDayOfDisplayedMonth(item.item.initialDay)
+              // setSelectedDate(item.item.initialDay)
+            }
+            else {
+              console.log('animation not active')
+            }
           });
         }}
+      // scrollEnabled={false}
       />
     </Animated.View>
   )

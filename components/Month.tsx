@@ -1,4 +1,4 @@
-import { Platform, StyleSheet, View } from 'react-native'
+import { Platform, StyleSheet, View, Text } from 'react-native'
 import React, { memo } from 'react'
 import { startOfMonth, addDays, subDays, getDay, getDaysInMonth, isSameMonth } from 'date-fns'
 import { SharedValue } from 'react-native-reanimated'
@@ -37,6 +37,7 @@ export default function Month({ initialDay, selectedDatePosition, setCalendarBot
       }}
     >
       <View style={styles.weeks}>
+        <Text style={{ left: 130, color: 'blue' }}>{initialDay.toDateString()}</Text>
         {weeks.map((week, index) => (
           <View key={index} style={styles.week}>
             {week}
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    paddingTop: 92,
+    paddingTop: 102,
   },
   week: {
     flexDirection: 'row',

@@ -24,7 +24,7 @@ export default function Day({ date, firstDayOfMonth, selectedDatePosition, botto
       setSelectedDate(calendarState.currentDate)
     });
     return unsubscribe;
-  }, [])
+  }, [calendarState])
 
   const elementRef = useRef<View | null>(null)
   const insets = useSafeAreaInsets()
@@ -48,6 +48,8 @@ export default function Day({ date, firstDayOfMonth, selectedDatePosition, botto
     //   }
     //   handlePress(date)
     // }
+
+    // setSelectedDate(date)
     calendarState.selectPreviousDate(calendarState.currentDate)
     calendarState.selectDate(date)
   }
@@ -69,6 +71,7 @@ export default function Day({ date, firstDayOfMonth, selectedDatePosition, botto
         {
           dayType === 'month' ? (
             <>
+              {/* {isSameDay(date, selectedDate) && <View style={styles.selectedDateCircle} />} */}
               {isSameDay(date, selectedDate) && isSameMonth(date, firstDayOfMonth) && <View style={styles.selectedDateCircle} />}
               <Text style={[styles.text, !isSameMonth(date, firstDayOfMonth) && styles.notInCurrentMonth]}>{date.getDate()}</Text>
             </>

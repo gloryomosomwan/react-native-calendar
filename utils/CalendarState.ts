@@ -13,7 +13,7 @@ export class CalendarState {
   private _previousDate: Date
 
   constructor(initialDate: Date = new Date()) {
-    this._todayDate = new Date(new Date().toDateString());
+    this._todayDate = new Date(new Date().toISOString());
     this._currentDate = initialDate;
     this._previousDate = initialDate
     // this._viewMode = 'month';
@@ -39,8 +39,7 @@ export class CalendarState {
 
   // Select a specific date
   selectDate(date: Date) {
-    if (isSameDay(this._currentDate, date)) return;
-
+    // if (isSameDay(this._currentDate, date)) return;
     this._currentDate = date;
     // this._displayedPeriod = this.calculateRange(date);
     this.notifySubscribers();
@@ -48,6 +47,7 @@ export class CalendarState {
 
   selectPreviousDate(date: Date) {
     this._previousDate = date
+    this.notifySubscribers();
   }
 
   setDayOfDisplayedMonth(date: Date) {
