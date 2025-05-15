@@ -42,18 +42,17 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
 
   useEffect(() => {
     const unsubscribe = calendarState.subscribe(() => {
-      if (activeAnimation.current === false) {
+      if (manualScrollAnimation.current === false) {
         if (!isSameDay(calendarState.currentDate, calendarState.previousDate)) {
           setSelectedDate(calendarState.currentDate)
+        }
+        console.log('l')
+        if (calendarState.dayPressed === true) {
           if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
-            // data[0].initialDay = calendarState.currentDate
-            // scrollToPreviousMonth('animated')
-            // console.log('prev')
+            scrollToPreviousMonth('animated')
           }
           else if (isInLaterMonth(calendarState.currentDate, calendarState.previousDate)) {
-            // data[2].initialDay = calendarState.currentDate
-            // scrollToNextMonth('animated')
-            // console.log('next')
+            scrollToNextMonth('animated')
           }
         }
       }
@@ -61,10 +60,29 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
     return unsubscribe
   }, [calendarState])
 
+  // useEffect(() => {
+  //   const dayUnsubscribe = calendarState.daySubscribe(() => {
+  //     if (!isSameDay(calendarState.currentDate, calendarState.previousDate)) {
+  //       setSelectedDate(calendarState.currentDate)
+  //       if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
+  //         // data[0].initialDay = calendarState.currentDate
+  //         // console.log('prev')
+  //         scrollToPreviousMonth('animated')
+  //       }
+  //       else if (isInLaterMonth(calendarState.currentDate, calendarState.previousDate)) {
+  //         // data[2].initialDay = calendarState.currentDate
+  //         // console.log('next')
+  //         scrollToNextMonth('animated')
+  //       }
+  //     }
+  //   })
+  //   return dayUnsubscribe
+  // }), [calendarState]
+
   const flatListRef = useRef<FlatList>(null);
   const topRowPosition = useSharedValue(0)
   const insets = useSafeAreaInsets()
-  const activeAnimation = useRef<boolean>(false)
+  const manualScrollAnimation = useRef<boolean>(false)
 
   const setCalendarBottom = (y: number) => {
     calendarBottom.value = y
@@ -148,6 +166,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   };
 
   const scrollToNextMonth = (mode?: string) => {
+    manualScrollAnimation.current = true
     if (flatListRef.current) {
       if (mode === 'animated') {
         flatListRef?.current?.scrollToIndex({
@@ -161,6 +180,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
         })
       }
     }
+    manualScrollAnimation.current = false
   };
 
   // const scrollToToday = () => {
@@ -236,7 +256,9 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   }
 
   useEffect(() => {
-    if (activeAnimation.current === false) {
+    console.log('start usefx')
+    if (manualScrollAnimation.current === false && !calendarState.dayPressed) {
+      console.log('correction')
       if (flatListRef.current) {
         flatListRef.current.scrollToIndex({ index: 1, animated: false });
       }
@@ -378,18 +400,18 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
           autoscrollToTopThreshold: undefined
         }}
         onMomentumScrollBegin={() => {
-          activeAnimation.current = true
+          manualScrollAnimation.current = true
         }}
         onMomentumScrollEnd={(e) => {
-          if (activeAnimation.current === true) {
+          if (manualScrollAnimation.current === true) {
             synchronizeCalendarState()
           }
-          activeAnimation.current = false
+          manualScrollAnimation.current = false
         }}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
-            if (activeAnimation.current === true) {
+            if (manualScrollAnimation.current === true) {
               calendarState.selectPreviousDate(calendarState.currentDate)
               calendarState.selectDate(item.item.initialDay)
               calendarState.setDayOfDisplayedMonth(item.item.initialDay)

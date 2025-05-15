@@ -8,9 +8,11 @@ export class CalendarState {
   // private _viewMode: ViewMode;
   // private _displayedPeriod: DateRange;
   private _subscribers: Set<() => void>;
+  private _daySubscribers: Set<() => void>;
   private _todayDate: Date;
   private _dateOfDisplayedMonth: Date;
   private _previousDate: Date
+  private _dayPressed: boolean = false
 
   constructor(initialDate: Date = new Date()) {
     this._todayDate = new Date(new Date().toISOString());
@@ -19,8 +21,14 @@ export class CalendarState {
     // this._viewMode = 'month';
     // this._displayedPeriod = this.calculateRange(initialDate);
     this._subscribers = new Set();
+    this._daySubscribers = new Set();
     this._dateOfDisplayedMonth = initialDate
   }
+
+  // daySelectDate(date: Date) {
+  //   this._currentDate = date
+  //   this.notifyDaySubscribers()
+  // }
 
   // Calculate the visible range based on current mode and date
   // private calculateRange(date: Date): DateRange {
@@ -38,7 +46,13 @@ export class CalendarState {
   // }
 
   // Select a specific date
-  selectDate(date: Date) {
+  selectDate(date: Date, fromDayPress: boolean = false) {
+    if (fromDayPress) {
+      this._dayPressed = true
+      setTimeout(() => {
+        this._dayPressed = false
+      }, 300)
+    }
     // if (isSameDay(this._currentDate, date)) return;
     this._currentDate = date;
     // this._displayedPeriod = this.calculateRange(date);
@@ -47,7 +61,7 @@ export class CalendarState {
 
   selectPreviousDate(date: Date) {
     this._previousDate = date
-    this.notifySubscribers();
+    // this.notifySubscribers();
   }
 
   setDayOfDisplayedMonth(date: Date) {
@@ -157,10 +171,21 @@ export class CalendarState {
     };
   }
 
+  // daySubscribe(callback: () => void): () => void {
+  //   this._daySubscribers.add(callback);
+  //   return () => {
+  //     this._daySubscribers.delete(callback);
+  //   };
+  // }
+
   // Notify all subscribers
   private notifySubscribers() {
     this._subscribers.forEach(callback => callback());
   }
+
+  // private notifyDaySubscribers() {
+  //   this._daySubscribers.forEach(callback => callback());
+  // }
 
   // Getters
   get currentDate() { return this._currentDate; }
@@ -169,4 +194,5 @@ export class CalendarState {
   // get viewMode() { return this._viewMode; }
   // get displayedPeriod() { return this._displayedPeriod; }
   get todayDate() { return this._todayDate; }
+  get dayPressed() { return this._dayPressed }
 }
