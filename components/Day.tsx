@@ -26,12 +26,12 @@ export default function Day({ date, firstDayOfMonth, selectedDatePosition, botto
     return unsubscribe;
   }, [calendarState])
 
-  // useEffect(() => {
-  //   const dayUnsubscribe = calendarState.daySubscribe(() => {
-  //     setSelectedDate(calendarState.currentDate)
-  //   })
-  //   return dayUnsubscribe
-  // }, [calendarState])
+  useEffect(() => {
+    const dayUnsubscribe = calendarState.daySubscribe(() => {
+      setSelectedDate(calendarState.currentDate)
+    })
+    return dayUnsubscribe
+  }, [calendarState])
 
   const elementRef = useRef<View | null>(null)
   const insets = useSafeAreaInsets()
@@ -59,9 +59,9 @@ export default function Day({ date, firstDayOfMonth, selectedDatePosition, botto
     // setSelectedDate(date)
 
     calendarState.selectPreviousDate(calendarState.currentDate)
-    calendarState.selectDate(date, true)
+    // calendarState.selectDate(date, true)
 
-    // calendarState.daySelectDate(date)
+    calendarState.daySelectDate(date)
   }
 
   useLayoutEffect(() => {

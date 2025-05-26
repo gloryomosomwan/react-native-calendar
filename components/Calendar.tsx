@@ -34,10 +34,10 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         }
       ]}>
         <Header />
-        <WeekView
+        {/* <WeekView
           bottomSheetTranslationY={bottomSheetTranslationY}
           selectedDatePosition={selectedDatePosition}
-        />
+        /> */}
         <MonthView
           bottomSheetTranslationY={bottomSheetTranslationY}
           calendarBottom={calendarBottom}

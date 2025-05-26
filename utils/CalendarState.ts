@@ -25,10 +25,10 @@ export class CalendarState {
     this._dateOfDisplayedMonth = initialDate
   }
 
-  // daySelectDate(date: Date) {
-  //   this._currentDate = date
-  //   this.notifyDaySubscribers()
-  // }
+  daySelectDate(date: Date) {
+    this._currentDate = date
+    this.notifyDaySubscribers()
+  }
 
   // Calculate the visible range based on current mode and date
   // private calculateRange(date: Date): DateRange {
@@ -171,21 +171,21 @@ export class CalendarState {
     };
   }
 
-  // daySubscribe(callback: () => void): () => void {
-  //   this._daySubscribers.add(callback);
-  //   return () => {
-  //     this._daySubscribers.delete(callback);
-  //   };
-  // }
+  daySubscribe(callback: () => void): () => void {
+    this._daySubscribers.add(callback);
+    return () => {
+      this._daySubscribers.delete(callback);
+    };
+  }
 
   // Notify all subscribers
   private notifySubscribers() {
     this._subscribers.forEach(callback => callback());
   }
 
-  // private notifyDaySubscribers() {
-  //   this._daySubscribers.forEach(callback => callback());
-  // }
+  private notifyDaySubscribers() {
+    this._daySubscribers.forEach(callback => callback());
+  }
 
   // Getters
   get currentDate() { return this._currentDate; }
