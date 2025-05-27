@@ -24,6 +24,8 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
   const weekId = (date: Date) => startOfWeek(date).toISOString();
   const centerWeekStart = startOfWeek(selectedDate);
 
+  const dayPressed = useRef<boolean>(false);
+
   const weeksData = useMemo(() => [
     { id: weekId(subWeeks(selectedDate, 1)), initialDay: subWeeks(selectedDate, 1) },
     { id: weekId(selectedDate), initialDay: selectedDate },
@@ -33,6 +35,7 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
   useEffect(() => {
     const unsubscribe = calendarState.subscribe(() => {
       if (activeAnimation.current === false) {
+        console.log('yeah')
         setSelectedDate(calendarState.currentDate)
         // if (isInEarlierWeek(calendarState.currentDate, calendarState.previousDate)) {
         // weeksData[0].initialDay = calendarState.currentDate
@@ -46,6 +49,13 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
     })
     return unsubscribe
   }, [calendarState])
+
+  useEffect(() => {
+    const dayUnsubscribe = calendarState.daySubscribe(() => {
+      setSelectedDate(calendarState.currentDate)
+    })
+    return dayUnsubscribe
+  }), [calendarState]
 
   const flatListRef = useRef<FlatList>(null);
   const activeAnimation = useRef<boolean>(false)
@@ -190,14 +200,21 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
     const visibleMonthDate = weeksData[1].initialDay // middle item is always the visible month
 
     if (!isSameWeek(visibleMonthDate, calendarState.currentDate)) {
-      console.log('syncing')
       calendarState.selectPreviousDate(calendarState.currentDate)
       calendarState.selectDate(visibleMonthDate)
       calendarState.setDayOfDisplayedMonth(visibleMonthDate)
       setSelectedDate(visibleMonthDate)
+      console.log('week sync')
     }
   }
 
+  useEffect(() => {
+    if (activeAnimation.current === false && dayPressed.current === false) {
+      if (flatListRef.current) {
+        flatListRef.current.scrollToIndex({ index: 1, animated: false });
+      }
+    }
+  }, [selectedDate]);
 
   // const updateStateToNextWeek = () => {
   //   calendarState.selectDate(weeksData[2].initialDay)
@@ -276,10 +293,12 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
           activeAnimation.current = true
         }}
         onMomentumScrollEnd={(e) => {
+          console.log('scroll end')
           if (activeAnimation.current === true) {
             synchronizeCalendarState()
           }
           activeAnimation.current = false
+          dayPressed.current = false
         }}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
@@ -291,7 +310,7 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
               // setSelectedDate(item.item.initialDay)
             }
             else {
-              console.log('animation not active')
+              // console.log('animation not active')
             }
           });
         }}

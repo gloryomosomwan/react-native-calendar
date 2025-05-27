@@ -43,18 +43,21 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   useEffect(() => {
     const unsubscribe = calendarState.subscribe(() => {
       if (manualScrollAnimation.current === false) {
-        console.log('useEffect')
-        if (!isSameDay(calendarState.currentDate, calendarState.previousDate)) {
-          setSelectedDate(calendarState.currentDate)
-        }
-        if (calendarState.dayPressed === true) {
-          if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
-            scrollToPreviousMonth('animated')
-          }
-          else if (isInLaterMonth(calendarState.currentDate, calendarState.previousDate)) {
-            scrollToNextMonth('animated')
-          }
-        }
+        setSelectedDate(calendarState.currentDate)
+        // if (!isSameDay(calendarState.currentDate, calendarState.previousDate)) {
+        //   // setSelectedDate(calendarState.currentDate)
+        // }
+
+        // // if (calendarState.dayPressed === true) {
+        // if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
+        //   scrollToPreviousMonth()
+        // }
+        // else if (isInLaterMonth(calendarState.currentDate, calendarState.previousDate)) {
+        //   console.log(data[2])
+        //   scrollToNextMonth()
+        // }
+        // // }
+
       }
     })
     return unsubscribe
@@ -265,8 +268,8 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
       calendarState.selectPreviousDate(calendarState.currentDate)
       calendarState.selectDate(visibleMonthDate)
       calendarState.setDayOfDisplayedMonth(visibleMonthDate)
-      console.log('sync set')
       setSelectedDate(visibleMonthDate)
+      console.log('month sync')
     }
   }
 
@@ -341,8 +344,10 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
         }}
         onMomentumScrollBegin={() => {
           manualScrollAnimation.current = true
+          console.log('hey')
         }}
         onMomentumScrollEnd={(e) => {
+          console.log('scroll end')
           if (manualScrollAnimation.current === true) {
             synchronizeCalendarState()
           }
