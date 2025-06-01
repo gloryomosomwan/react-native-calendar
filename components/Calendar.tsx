@@ -1,6 +1,5 @@
-import { View, StyleSheet, Button, Text, Platform } from "react-native";
-import { useState, useRef, useEffect } from "react";
-import { runOnJS, SharedValue, useAnimatedReaction, useSharedValue } from "react-native-reanimated";
+import { View, StyleSheet, Platform } from "react-native";
+import { SharedValue, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { CalendarProvider } from "./CalendarContext";
@@ -34,10 +33,10 @@ export default function Calendar({ bottomSheetTranslationY, calendarBottom }: Ca
         }
       ]}>
         <Header />
-        <WeekView
+        {/* <WeekView
           bottomSheetTranslationY={bottomSheetTranslationY}
           selectedDatePosition={selectedDatePosition}
-        />
+        /> */}
         <MonthView
           bottomSheetTranslationY={bottomSheetTranslationY}
           calendarBottom={calendarBottom}

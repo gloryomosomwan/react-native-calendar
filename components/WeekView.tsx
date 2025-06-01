@@ -1,9 +1,8 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text, Platform } from "react-native";
-import { useState, useRef, useEffect, forwardRef, useImperativeHandle, useMemo } from "react";
-import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks, isSameWeek, getWeek } from "date-fns";
-import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate, useDerivedValue, runOnJS } from "react-native-reanimated";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { isAfter, isBefore, startOfWeek, addWeeks, subWeeks, isSameWeek } from "date-fns";
+import Animated, { SharedValue, useAnimatedStyle } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 
 import Week from "./Week"
 import { useCalendar } from "./CalendarContext";
@@ -35,7 +34,6 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
   useEffect(() => {
     const unsubscribe = calendarState.subscribe(() => {
       if (activeAnimation.current === false) {
-        console.log('yeah')
         setSelectedDate(calendarState.currentDate)
         // if (isInEarlierWeek(calendarState.currentDate, calendarState.previousDate)) {
         // weeksData[0].initialDay = calendarState.currentDate
@@ -48,14 +46,18 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
       }
     })
     return unsubscribe
-  }, [calendarState])
+  }, [calendarState.currentDate])
 
   useEffect(() => {
     const dayUnsubscribe = calendarState.daySubscribe(() => {
       setSelectedDate(calendarState.currentDate)
     })
     return dayUnsubscribe
-  }), [calendarState]
+  }), [calendarState.currentDate]
+
+  // useEffect(() => {
+  //   console.log('render')
+  // }, [selectedDate])
 
   const flatListRef = useRef<FlatList>(null);
   const activeAnimation = useRef<boolean>(false)
@@ -204,7 +206,6 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
       calendarState.selectDate(visibleMonthDate)
       calendarState.setDayOfDisplayedMonth(visibleMonthDate)
       setSelectedDate(visibleMonthDate)
-      console.log('week sync')
     }
   }
 
@@ -250,15 +251,36 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
     <Animated.View style={[rWeekViewStyle, styles.weekContainer, { paddingTop: topPadding + 30 + 5 + 17 }]}>
       {/* 30 (size of header) + 5 (header margin) + 17 (weekday name text height) */}
 
-      <View style={{ position: 'absolute', top: 310, zIndex: 3 }}>
-        {/* <Button title='Data' onPress={() => console.log(weeksData)} /> */}
-        {/* <Text>{weeksData}</Text> */}
+      {/* <View style={{ position: 'absolute', top: 400, zIndex: 2, left: 10 }}>
+        <Text>Selected Date:</Text>
+        <Text>{selectedDate.toLocaleString()}</Text>
       </View>
 
-      <View style={{ position: 'absolute', top: 310, zIndex: 3, left: 130 }}>
-        {/* <Text>sel</Text>
-        <Text>{calendarState.currentDate.toLocaleString()}</Text> */}
+      <View style={{ position: 'absolute', top: 450, zIndex: 2, left: 10 }}>
+        <Text>Current:</Text>
+        <Text>{calendarState.currentDate.toLocaleString()}</Text>
       </View>
+
+      <View style={{ position: 'absolute', top: 500, zIndex: 2, left: 10 }}>
+        <Text>Previous:</Text>
+        <Text>{calendarState.previousDate.toLocaleString()}</Text>
+      </View>
+
+      <View style={{ position: 'absolute', top: 400, zIndex: 2, left: 240 }}>
+        <Button title='selectedDate' onPress={() => { console.log(selectedDate) }} />
+      </View>
+
+      <View style={{ position: 'absolute', top: 430, zIndex: 2, left: 240 }}>
+        <Button title='currentDate' onPress={() => { console.log(calendarState.currentDate) }} />
+      </View>
+
+      <View style={{ position: 'absolute', top: 460, zIndex: 2, left: 240 }}>
+        <Button title='previousDate' onPress={() => { console.log(calendarState.previousDate) }} />
+      </View>
+
+      <View style={{ position: 'absolute', top: 490, zIndex: 2, left: 240 }}>
+        <Button title='data' onPress={() => { console.log(weeksData) }} />
+      </View> */}
 
       <FlatList
         ref={flatListRef}
@@ -293,9 +315,8 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
           activeAnimation.current = true
         }}
         onMomentumScrollEnd={(e) => {
-          console.log('scroll end')
           if (activeAnimation.current === true) {
-            synchronizeCalendarState()
+            // synchronizeCalendarState()
           }
           activeAnimation.current = false
           dayPressed.current = false
@@ -304,9 +325,9 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
         onViewableItemsChanged={(info) => {
           info.viewableItems.forEach(item => {
             if (activeAnimation.current === true) {
-              // calendarState.selectPreviousDate(calendarState.currentDate)
-              // calendarState.selectDate(item.item.initialDay)
-              // calendarState.setDayOfDisplayedMonth(item.item.initialDay)
+              calendarState.selectPreviousDate(calendarState.currentDate)
+              calendarState.selectDate(item.item.initialDay)
+              calendarState.setDayOfDisplayedMonth(item.item.initialDay)
               // setSelectedDate(item.item.initialDay)
             }
             else {

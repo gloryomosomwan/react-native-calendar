@@ -1,18 +1,13 @@
 import { View, StyleSheet, FlatList, Dimensions, Button, Text, Platform, StatusBar } from "react-native";
-import { useState, useRef, useEffect, forwardRef, useImperativeHandle, useMemo } from "react";
-import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, startOfWeek, addWeeks, subWeeks, differenceInCalendarWeeks, isSameMonth } from "date-fns";
-import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate, useDerivedValue, runOnJS, runOnRuntime, runOnUI } from "react-native-reanimated";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { addMonths, startOfMonth, isAfter, subMonths, isBefore, isSameDay, isSameMonth } from "date-fns";
+import Animated, { SharedValue, interpolate, useAnimatedStyle, useSharedValue, Extrapolate } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 
 import { useCalendar } from "./CalendarContext";
 import Month from "./Month";
 
 const EXPANDED_MODE_THRESHOLD = -235
-
-const generateUniqueId = () => {
-  return `${Date.now()}-${Math.random()}`
-}
 
 type MonthViewProps = {
   bottomSheetTranslationY: SharedValue<number>
@@ -25,6 +20,8 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
 
   const { calendarState } = useCalendar()
   const [selectedDate, setSelectedDate] = useState(calendarState.currentDate)
+  const sv = useSharedValue(false)
+
 
   const monthId = (date: Date) => startOfMonth(date).toISOString() + 'lol';
 
@@ -39,6 +36,10 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
     { id: monthId(selectedDate), initialDay: selectedDate },
     { id: monthId(addMonths(selectedDate, 1)), initialDay: startOfMonth(addMonths(selectedDate, 1)) },
   ], [selectedDate])
+
+  useEffect(() => {
+    console.log('selectedDate changed')
+  }, [selectedDate])
 
   useEffect(() => {
     const unsubscribe = calendarState.subscribe(() => {
@@ -61,13 +62,14 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
       }
     })
     return unsubscribe
-  }, [calendarState])
+  }, [])
 
   const dayPressed = useRef<boolean>(false);
 
   useEffect(() => {
     const dayUnsubscribe = calendarState.daySubscribe(() => {
       if (!isSameDay(calendarState.currentDate, calendarState.previousDate)) {
+        console.log('dayPressed set to true ')
         dayPressed.current = true
         if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
           // data[0].initialDay = calendarState.currentDate
@@ -77,14 +79,15 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
           // data[2].initialDay = calendarState.currentDate
           scrollToNextMonth('animated')
         }
+        dayPressed.current = false
+        console.log('dayPressed set to false')
         setTimeout(() => {
-          console.log(calendarState.currentDate)
-          setSelectedDate(calendarState.currentDate)
+          // setSelectedDate(calendarState.currentDate)
         }, 100)
       }
     })
     return dayUnsubscribe
-  }), [calendarState]
+  }), []
 
   const flatListRef = useRef<FlatList>(null);
   const topRowPosition = useSharedValue(0)
@@ -117,13 +120,14 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   }
 
   const fetchPreviousMonth = () => {
+    console.log('fetching previous month')
     // let newDay = startOfMonth(subMonths(selectedDate, 1));
     // if (isSameMonth(newDay, startOfToday)) {
     //   newDay = startOfToday
     // }
 
     setSelectedDate(prevDate => {
-      console.log('fetchPrev')
+      console.log('setting selected date in fetchPreviousMonth')
       // const newDate = new Date(prevDate);
       // newDate.setMonth(prevDate.getMonth() - 1);
       let newDate = startOfMonth(subMonths(prevDate, 1))
@@ -142,13 +146,14 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   }
 
   const fetchNextMonth = () => {
+    console.log('fetching next month')
     // let newDay = startOfMonth(addMonths(selectedDate, 1))
     // if (isSameMonth(newDay, startOfToday)) {
     //   newDay = startOfToday
     // }
 
     setSelectedDate(prevDate => {
-      console.log('fetchNext')
+      console.log('setting selectedDate in fetchNextMonth')
       // const newDate = new Date(prevDate)
       // newDate.setMonth(prevDate.getMonth() + 1)
       let newDate = startOfMonth(addMonths(prevDate, 1))
@@ -167,6 +172,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   }
 
   const scrollToPreviousMonth = (mode?: string) => {
+    console.log('scrolling to previous month')
     if (flatListRef.current) {
       if (mode === 'animated') {
         flatListRef?.current?.scrollToIndex({
@@ -184,6 +190,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   };
 
   const scrollToNextMonth = (mode?: string) => {
+    console.log('scrolling to next month')
     manualScrollAnimation.current = true
     if (flatListRef.current) {
       if (mode === 'animated') {
@@ -258,6 +265,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
         [1, 0],
         Extrapolate.CLAMP
       ),
+      // pointerEvents: sv.value === false ? 'auto' : 'none',
     };
   });
 
@@ -276,7 +284,8 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   useEffect(() => {
     if (manualScrollAnimation.current === false && dayPressed.current === false) {
       if (flatListRef.current) {
-        flatListRef.current.scrollToIndex({ index: 1, animated: false });
+        console.log('correction')
+        // flatListRef.current.scrollToIndex({ index: 1, animated: false });
       }
     }
   }, [selectedDate]);
@@ -285,7 +294,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
     // <GestureDetector gesture={panGesture}>
     <Animated.View style={[rMonthViewStyle]}>
 
-      {/* <View style={{ position: 'absolute', top: 400, zIndex: 2, left: 10 }}>
+      <View style={{ position: 'absolute', top: 400, zIndex: 2, left: 10 }}>
         <Text>Selected Date:</Text>
         <Text>{selectedDate.toLocaleString()}</Text>
       </View>
@@ -298,7 +307,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
       <View style={{ position: 'absolute', top: 500, zIndex: 2, left: 10 }}>
         <Text>Previous:</Text>
         <Text>{calendarState.previousDate.toLocaleString()}</Text>
-      </View> */}
+      </View>
 
       <View style={{ position: 'absolute', top: 400, zIndex: 2, left: 240 }}>
         <Button title='selectedDate' onPress={() => { console.log(selectedDate) }} />
@@ -310,6 +319,10 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
 
       <View style={{ position: 'absolute', top: 460, zIndex: 2, left: 240 }}>
         <Button title='previousDate' onPress={() => { console.log(calendarState.previousDate) }} />
+      </View>
+
+      <View style={{ position: 'absolute', top: 490, zIndex: 2, left: 240 }}>
+        <Button title='data' onPress={() => { console.log(data) }} />
       </View>
 
       <FlatList
@@ -330,29 +343,31 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
         getItemLayout={(data, index) => (
           { length: Dimensions.get('window').width, offset: Dimensions.get('window').width * index, index }
         )}
-        onStartReached={fetchPreviousMonth}
-        onStartReachedThreshold={0.2}
-        onEndReached={fetchNextMonth}
-        onEndReachedThreshold={0.2}
-        initialScrollIndex={1}
+        // onStartReached={fetchPreviousMonth}
+        // onStartReachedThreshold={0.2}
+        // onEndReached={fetchNextMonth}
+        // onEndReachedThreshold={0.2}
+        // initialScrollIndex={1}
         // initialNumToRender={3}
         decelerationRate={'normal'}
-        windowSize={3}
+        windowSize={5}
         maintainVisibleContentPosition={{
           minIndexForVisible: 1,
           autoscrollToTopThreshold: undefined
         }}
         onMomentumScrollBegin={() => {
           manualScrollAnimation.current = true
-          console.log('hey')
+          sv.value = true
+          console.trace('scroll start')
         }}
         onMomentumScrollEnd={(e) => {
-          console.log('scroll end')
+          console.trace('scroll end')
           if (manualScrollAnimation.current === true) {
             synchronizeCalendarState()
           }
           manualScrollAnimation.current = false
           dayPressed.current = false
+          sv.value = false
         }}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
@@ -361,6 +376,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
               calendarState.selectPreviousDate(calendarState.currentDate)
               calendarState.selectDate(item.item.initialDay)
               calendarState.setDayOfDisplayedMonth(item.item.initialDay)
+              console.log('viewable')
               // setSelectedDate(item.item.initialDay)
             }
             else {

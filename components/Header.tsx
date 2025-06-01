@@ -12,7 +12,14 @@ export default function Header() {
       setSelectedDate(calendarState.currentDate)
     });
     return unsubscribe;
-  }, [])
+  }, [calendarState])
+
+  useEffect(() => {
+    const dayUnsubscribe = calendarState.daySubscribe(() => {
+      setSelectedDate(calendarState.currentDate)
+    })
+    return dayUnsubscribe
+  }), [calendarState]
 
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   const insets = useSafeAreaInsets()
@@ -26,7 +33,8 @@ export default function Header() {
 
   return (
     <View style={[styles.header, { paddingTop: topPadding }]}>
-      <Text style={styles.monthName}>{selectedDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
+      {/* <Text style={styles.monthName}>{selectedDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text> */}
+      <Text style={styles.monthName}>{calendarState.currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
       <View style={styles.weekdayNames}>
         {daysOfWeek.map((day) => (
           <Text key={day} style={styles.dayName}>{day}</Text>
