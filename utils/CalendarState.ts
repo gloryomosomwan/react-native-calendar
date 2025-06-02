@@ -30,6 +30,10 @@ export class CalendarState {
     this.notifyDaySubscribers()
   }
 
+  today() {
+    this.selectDate(this.todayDate)
+  }
+
   // Calculate the visible range based on current mode and date
   // private calculateRange(date: Date): DateRange {
   //   if (this._viewMode === 'month') {

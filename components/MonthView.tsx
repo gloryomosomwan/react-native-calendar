@@ -20,9 +20,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   startOfToday.setUTCHours(0, 0, 0, 0)
 
   const { calendarState } = useCalendar()
-
   const [selectedDate, setSelectedDate] = useState(calendarState.currentDate)
-
   const monthId = (date: Date) => startOfMonth(date).toISOString();
 
   // const [data, setData] = useState([
@@ -32,11 +30,13 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   // ])
 
   const data = useMemo(() => [
+    { id: monthId(subMonths(selectedDate, 3)), initialDay: startOfMonth(subMonths(selectedDate, 3)) },
     { id: monthId(subMonths(selectedDate, 2)), initialDay: startOfMonth(subMonths(selectedDate, 2)) },
     { id: monthId(subMonths(selectedDate, 1)), initialDay: startOfMonth(subMonths(selectedDate, 1)) },
     { id: monthId(selectedDate), initialDay: selectedDate },
     { id: monthId(addMonths(selectedDate, 1)), initialDay: startOfMonth(addMonths(selectedDate, 1)) },
     { id: monthId(addMonths(selectedDate, 2)), initialDay: startOfMonth(addMonths(selectedDate, 2)) },
+    { id: monthId(addMonths(selectedDate, 3)), initialDay: startOfMonth(addMonths(selectedDate, 3)) },
   ], [selectedDate])
 
   // const data = [
@@ -47,58 +47,8 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   // ]
 
   const manualScrollAnimation = useRef<boolean>(false)
-  const activeProgrammaticScroll = useSharedValue(false)
-
-  useEffect(() => {
-    const unsubscribe = calendarState.subscribe(() => {
-      if (manualScrollAnimation.current === false) {
-        console.log('manualScrollAnimation')
-        setSelectedDate(calendarState.currentDate)
-        // if (!isSameDay(calendarState.currentDate, calendarState.previousDate)) {
-        //   // setSelectedDate(calendarState.currentDate)
-        // }
-
-        // // if (calendarState.dayPressed === true) {
-        // if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
-        //   scrollToPreviousMonth()
-        // }
-        // else if (isInLaterMonth(calendarState.currentDate, calendarState.previousDate)) {
-        //   console.log(data[2])
-        //   scrollToNextMonth()
-        // }
-        // // }
-
-      }
-    })
-    return unsubscribe
-  }, [])
-
   const dayPressed = useRef<boolean>(false);
-
-  useEffect(() => {
-    const dayUnsubscribe = calendarState.daySubscribe(() => {
-      if (!isSameDay(calendarState.currentDate, calendarState.previousDate)) {
-        // dayPressed.current = true
-        setSelectedDate(calendarState.currentDate)
-        if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
-          console.log('scroll prev')
-          activeProgrammaticScroll.value = true
-          scrollToPreviousMonth('animated')
-        }
-        else if (isInLaterMonth(calendarState.currentDate, calendarState.previousDate)) {
-          console.log('scroll next')
-          activeProgrammaticScroll.value = true
-          scrollToNextMonth('animated')
-        }
-        // dayPressed.current = false
-
-        // setTimeout(() => {
-        // }, 100)
-      }
-    })
-    return dayUnsubscribe
-  }, [])
-
+  const activeProgrammaticScroll = useSharedValue(false)
   const flatListRef = useRef<FlatList>(null);
   const topRowPosition = useSharedValue(0)
   const insets = useSafeAreaInsets()
@@ -116,6 +66,53 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
       topRowPosition.value = 0
     }
   })
+
+  useEffect(() => {
+    const unsubscribe = calendarState.subscribe(() => {
+      if (manualScrollAnimation.current === false) {
+        console.log('manualScrollAnimation')
+        setSelectedDate(calendarState.currentDate)
+        // if (!isSameDay(calendarState.currentDate, calendarState.previousDate)) {
+        //   // setSelectedDate(calendarState.currentDate)
+        // }
+
+        // // if (calendarState.dayPressed === true) {
+        // if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
+        // scrollToPreviousMonth()
+        // }
+        // else if (isInLaterMonth(calendarState.currentDate, calendarState.previousDate)) {
+        // scrollToNextMonth()
+        // }
+        // // }
+
+      }
+    })
+    return unsubscribe
+  }, [])
+
+  useEffect(() => {
+    const dayUnsubscribe = calendarState.daySubscribe(() => {
+      if (!isSameDay(calendarState.currentDate, calendarState.previousDate)) {
+        // dayPressed.current = true
+        setSelectedDate(calendarState.currentDate)
+
+        if (isInEarlierMonth(calendarState.currentDate, calendarState.previousDate)) {
+          // activeProgrammaticScroll.value = true
+          // scrollToPreviousMonth('animated')
+        }
+        else if (isInLaterMonth(calendarState.currentDate, calendarState.previousDate)) {
+          // activeProgrammaticScroll.value = true
+          // scrollToNextMonth('animated')
+        }
+
+        setTimeout(() => {
+          // dayPressed.current = false
+        }, 1000)
+      }
+    })
+    return dayUnsubscribe
+  }, [])
+
 
   function isInEarlierMonth(dateToCheck: Date, referenceDate: Date) {
     const monthOfDateToCheck = startOfMonth(dateToCheck);
@@ -193,12 +190,12 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
     if (flatListRef.current) {
       if (mode === 'animated') {
         flatListRef?.current?.scrollToIndex({
-          index: 1
+          index: 2
         });
       }
       else {
         flatListRef?.current?.scrollToIndex({
-          index: 1,
+          index: 2,
           animated: false,
           viewPosition: 0
         })
@@ -211,12 +208,12 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
       if (mode === 'animated') {
         console.log('yoooo')
         flatListRef?.current?.scrollToIndex({
-          index: 3,
+          index: 4,
         });
       }
       else {
         flatListRef?.current?.scrollToIndex({
-          index: 3,
+          index: 4,
           animated: false,
           viewPosition: 0
         })
@@ -281,12 +278,12 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
         [1, 0],
         Extrapolate.CLAMP
       ),
-      pointerEvents: activeProgrammaticScroll.value === false ? 'auto' : 'none',
+      // pointerEvents: activeProgrammaticScroll.value === false ? 'auto' : 'none',
     };
   });
 
   const synchronizeCalendarState = () => {
-    const visibleMonthDate = data[2].initialDay // middle item is always the visible month
+    const visibleMonthDate = data[3].initialDay // middle item is always the visible month
     console.log(visibleMonthDate)
 
     if (!isSameMonth(visibleMonthDate, calendarState.currentDate)) {
@@ -299,9 +296,10 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
   }
 
   useEffect(() => {
-    if (manualScrollAnimation.current === false && dayPressed.current === false) {
+    // if (manualScrollAnimation.current === false && dayPressed.current === false) {
+    if (manualScrollAnimation.current === false) {
       if (flatListRef.current) {
-        // flatListRef.current.scrollToIndex({ index: 1, animated: false });
+        flatListRef.current.scrollToIndex({ index: 3, animated: false });
       }
     }
   }, [selectedDate]);
@@ -325,6 +323,11 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
         <Text>{calendarState.previousDate.toLocaleString()}</Text>
       </View>
 
+      <View style={{ position: 'absolute', top: 550, zIndex: 2, left: 10 }}>
+        <Text>Previous:</Text>
+        <Text>{JSON.stringify(data)}</Text>
+      </View>
+
       <View style={{ position: 'absolute', top: 400, zIndex: 2, left: 240 }}>
         <Button title='selectedDate' onPress={() => { console.log(selectedDate) }} />
       </View>
@@ -338,7 +341,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
       </View>
 
       <View style={{ position: 'absolute', top: 490, zIndex: 2, left: 240 }}>
-        <Button title='data' onPress={() => { console.log(data) }} />
+        <Button title='today' onPress={() => { calendarState.today() }} />
       </View>
 
       <FlatList
@@ -354,7 +357,7 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
         )}
         pagingEnabled
         horizontal={true}
-        // keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id}
         showsHorizontalScrollIndicator={false}
         bounces={false}
         getItemLayout={(data, index) => (
@@ -365,13 +368,13 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
         // onStartReachedThreshold={0.2}
         // onEndReached={fetchNextMonth}
         // onEndReachedThreshold={0.2}
-        initialScrollIndex={2}
+        initialScrollIndex={3}
         // initialNumToRender={3}
 
         decelerationRate={'normal'}
-        windowSize={5}
+        windowSize={7}
         maintainVisibleContentPosition={{
-          minIndexForVisible: 2,
+          minIndexForVisible: 3,
           autoscrollToTopThreshold: undefined
         }}
         onMomentumScrollBegin={() => {
@@ -383,9 +386,9 @@ export default function MonthView({ bottomSheetTranslationY, calendarBottom, sel
             synchronizeCalendarState()
           }
           console.log('momentum scroll end')
-          activeProgrammaticScroll.value = false
+          // activeProgrammaticScroll.value = false
           manualScrollAnimation.current = false
-          dayPressed.current = false
+          // dayPressed.current = false
         }}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {

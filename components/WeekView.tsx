@@ -190,14 +190,6 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
     };
   });
 
-  useEffect(() => {
-    if (activeAnimation.current === false) {
-      if (flatListRef.current) {
-        flatListRef.current.scrollToIndex({ index: 1, animated: false });
-      }
-    }
-  }, [centerWeekStart]);
-
   const synchronizeCalendarState = () => {
     const visibleMonthDate = weeksData[1].initialDay // middle item is always the visible month
 
@@ -208,6 +200,14 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
       setSelectedDate(visibleMonthDate)
     }
   }
+
+  useEffect(() => {
+    if (activeAnimation.current === false) {
+      if (flatListRef.current) {
+        flatListRef.current.scrollToIndex({ index: 1, animated: false });
+      }
+    }
+  }, [centerWeekStart]);
 
   useEffect(() => {
     if (activeAnimation.current === false && dayPressed.current === false) {
@@ -304,9 +304,9 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
         onEndReached={fetchNextWeek}
         onEndReachedThreshold={0.2}
         initialScrollIndex={1}
-        initialNumToRender={3}
+        // initialNumToRender={3}
         decelerationRate={'normal'}
-        windowSize={5}
+        windowSize={3}
         maintainVisibleContentPosition={{
           minIndexForVisible: 1,
           autoscrollToTopThreshold: undefined
