@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Pressable, Dimensions, Platform } from 'react-native'
 import React, { useRef, useLayoutEffect, useEffect, useState } from 'react'
-import { isSameMonth, isSameDay, getWeekOfMonth, isBefore } from 'date-fns'
+import { isSameMonth, isSameDay, getWeekOfMonth } from 'date-fns'
 import { SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCalendar } from "./CalendarContext";
@@ -55,12 +55,7 @@ export default function Day({ date, firstDayOfMonth, selectedDatePosition, botto
     //   }
     //   handlePress(date)
     // }
-
-    // setSelectedDate(date)
-
     calendarState.selectPreviousDate(calendarState.currentDate)
-    // calendarState.selectDate(date, true)
-
     calendarState.daySelectDate(date)
   }
 
@@ -81,7 +76,6 @@ export default function Day({ date, firstDayOfMonth, selectedDatePosition, botto
         {
           dayType === 'month' ? (
             <>
-              {/* {isSameDay(date, selectedDate) && <View style={styles.selectedDateCircle} />} */}
               {isSameDay(date, selectedDate) && isSameMonth(date, firstDayOfMonth) && <View style={styles.selectedDateCircle} />}
               <Text style={[styles.text, !isSameMonth(date, firstDayOfMonth) && styles.notInCurrentMonth]}>{date.getDate()}</Text>
             </>
