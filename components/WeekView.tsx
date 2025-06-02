@@ -55,10 +55,6 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
     return dayUnsubscribe
   }), [calendarState.currentDate]
 
-  // useEffect(() => {
-  //   console.log('render')
-  // }, [selectedDate])
-
   const flatListRef = useRef<FlatList>(null);
   const activeAnimation = useRef<boolean>(false)
   const insets = useSafeAreaInsets()
@@ -127,40 +123,6 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
     }
   };
 
-  const scrollToToday = () => {
-    if (!isSameWeek(startOfToday, selectedDate)) {
-      if (isInEarlierWeek(startOfToday, selectedDate)) {
-        setSelectedDate(prevDate => {
-          const newDate = new Date(prevDate);
-          newDate.setDate(prevDate.getDate() - 7);
-          return newDate;
-        });
-        scrollToPreviousWeek('animated')
-        setSelectedDate(prevDate => {
-          const newDate = new Date(prevDate);
-          newDate.setDate(prevDate.getDate() + 7);
-          return newDate;
-        });
-      }
-      else if (isInLaterWeek(startOfToday, selectedDate)) {
-        setSelectedDate(prevDate => {
-          const newDate = new Date(prevDate);
-          newDate.setDate(prevDate.getDate() + 7);
-          return newDate;
-        });
-        scrollToNextWeek('animated')
-        setSelectedDate(prevDate => {
-          const newDate = new Date(prevDate);
-          newDate.setDate(prevDate.getDate() - 7);
-          return newDate;
-        });
-      }
-    }
-    else if (isSameWeek(startOfToday, selectedDate)) {
-      calendarState.selectDate(startOfToday)
-    }
-  }
-
   const viewabilityConfig = {
     itemVisiblePercentThreshold: 90, // Percentage of item that needs to be visible
     minimumViewTime: 50, // Minimum time (ms) an item must be visible to trigger
@@ -216,36 +178,6 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
       }
     }
   }, [selectedDate]);
-
-  // const updateStateToNextWeek = () => {
-  //   calendarState.selectDate(weeksData[2].initialDay)
-  // }
-
-  // const updateStateToPreviousWeek = () => {
-  //   calendarState.selectDate(weeksData[0].initialDay)
-  // }
-
-  // let initialTranslationX = useSharedValue(-1)
-
-  // const panGesture = Gesture.Pan()
-  //   .onTouchesMove((e, stateManager) => {
-  //     if (initialTranslationX.value === -1) {
-  //       initialTranslationX.value = e.allTouches[0].absoluteX
-  //     }
-  //     if ((initialTranslationX.value - e.allTouches[0].absoluteX) > 50) {
-  //       initialTranslationX.value = -1
-  //       runOnJS(updateStateToNextWeek)()
-  //       runOnJS(scrollToNextWeek)('animated')
-  //       stateManager.end()
-  //     }
-  //     else if ((initialTranslationX.value - e.allTouches[0].absoluteX < -50)) {
-  //       initialTranslationX.value = -1
-  //       runOnJS(updateStateToPreviousWeek)()
-  //       runOnJS(scrollToPreviousWeek)('animated')
-  //       stateManager.end()
-  //     }
-  //   })
-
 
   return (
     <Animated.View style={[rWeekViewStyle, styles.weekContainer, { paddingTop: topPadding + 30 + 5 + 17 }]}>
@@ -330,12 +262,8 @@ export default function WeekView({ bottomSheetTranslationY, selectedDatePosition
               calendarState.setDayOfDisplayedMonth(item.item.initialDay)
               // setSelectedDate(item.item.initialDay)
             }
-            else {
-              // console.log('animation not active')
-            }
           });
         }}
-      // scrollEnabled={false}
       />
     </Animated.View>
   )
