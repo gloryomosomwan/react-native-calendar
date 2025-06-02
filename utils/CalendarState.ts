@@ -47,12 +47,14 @@ export class CalendarState {
 
   // Select a specific date
   selectDate(date: Date, fromDayPress: boolean = false) {
-    if (fromDayPress) {
-      this._dayPressed = true
-      setTimeout(() => {
-        this._dayPressed = false
-      }, 300)
-    }
+
+    // if (fromDayPress) {
+    //   this._dayPressed = true
+    //   setTimeout(() => {
+    //     this._dayPressed = false
+    //   }, 300)
+    // }
+
     // if (isSameDay(this._currentDate, date)) return;
     this._currentDate = date;
     // this._displayedPeriod = this.calculateRange(date);

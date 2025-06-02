@@ -12,14 +12,14 @@ export default function Header() {
       setSelectedDate(calendarState.currentDate)
     });
     return unsubscribe;
-  }, [calendarState])
+  }, [])
 
   useEffect(() => {
     const dayUnsubscribe = calendarState.daySubscribe(() => {
       setSelectedDate(calendarState.currentDate)
     })
     return dayUnsubscribe
-  }), [calendarState]
+  }), []
 
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   const insets = useSafeAreaInsets()
